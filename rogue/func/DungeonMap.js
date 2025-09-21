@@ -382,6 +382,7 @@ function DungeonMap(r){
         for (let i = 0; i< d.MAXLINES; i++){
             let ws = "";
             for (let j = 0; j< d.MAXCOLS; j++){
+                //if (places[i][j].p_flags & !=0) ws+="?";
                 ws += places[i][j].p_ch;
             }
             vstr[i] = ws;

@@ -139,7 +139,7 @@ function rooms_f(r, dg){
 		let y, x;
 
 		if (rp.r_flags & d.ISMAZE)
-		this.do_maze(rp);
+			this.do_maze(rp);
 		else
 		{
 		this.vert(rp, rp.r_pos.x);				/* Draw left side */
@@ -199,6 +199,8 @@ function rooms_f(r, dg){
 
 	this.do_maze = function(rp) //(struct room *rp)
 	{
+		console.log("do_maze_start");
+
 		let sp; //SPOT *sp;
 		let starty, startx;
 		let pos; //static coord pos;
@@ -221,6 +223,8 @@ function rooms_f(r, dg){
 		pos.x = startx + Startx;
 		putpass(pos); //passage
 		this.dig(starty, startx);
+
+		console.log("do_maze_comp");
 	}
 
 	/*
@@ -366,8 +370,9 @@ function rooms_f(r, dg){
 		let ch;
 
 		rp = proom = roomin(cp);
+		rp = roomin(cp);
 		door_open(rp);
-		if (!(rp.r_flags & ISDARK) && !on(player, ISBLIND))
+		if (!(rp.r_flags & d.ISDARK) && !on(player, d.ISBLIND))
 		for (y = rp.r_pos.y; y < rp.r_max.y + rp.r_pos.y; y++)
 		{
 			move(y, rp.r_pos.x);
@@ -384,11 +389,11 @@ function rooms_f(r, dg){
 			{
 				tp.t_oldch = ch;
 				if (!see_monst(tp))
-				if (on(player, SEEMONST))
+				if (on(player, d.SEEMONST))
 				{
-					standout();
+					//standout();
 					addch(tp.t_disguise);
-					standend();
+					//standend();
 				}
 				else
 					addch(ch);

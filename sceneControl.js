@@ -47,7 +47,7 @@ class sceneControl extends GameTask {
 			if (stf){
 				if (keyon < g.time()){
 					if (io.input.keylist.length != 0){
-						g.rogue.running(g);
+						g.rogue.loopstep(g);
 						keyon = g.time() + keywait; 
 					}
 				}

@@ -432,42 +432,36 @@ function PlayerCharacter(r){
         player.t_room = rp; //proom
         this.door_open(rp);
         if (!(rp.r_flags & d.ISDARK) && !on(player, d.ISBLIND))
-        for (y = rp.r_pos.y; y < rp.r_max.y + rp.r_pos.y; y++)
-        {
-            r.UI.move(y, rp.r_pos.x);
-            for (x = rp.r_pos.x; x < rp.r_max.x + rp.r_pos.x; x++)
+            for (y = rp.r_pos.y; y < rp.r_max.y + rp.r_pos.y; y++)
             {
-            tp = r.dungeon.moat(y, x);
-            ch = r.dungeon.chat(y, x);
-            if (tp == null)
-                //if (CCHAR(inch()) != ch)
-                //    r.UI.addch(ch);
-                //else
-                    r.UI.move(y, x + 1);
-            else
-            {
-                tp.t_oldch = ch;
-                if (!this.see_monst(tp))
-                if (on(player, d.SEEMONST))
+                r.UI.move(y, rp.r_pos.x);
+                for (x = rp.r_pos.x; x < rp.r_max.x + rp.r_pos.x; x++)
                 {
-                    //standout();
-                    r.UI.addch(tp.t_disguise);
-                    //standend();
+                    tp = r.dungeon.moat(y, x);
+                    ch = r.dungeon.chat(y, x);
+                    if (tp == null)
+                        //if (CCHAR(inch()) != ch)
+                        //    r.UI.addch(ch);
+                        //else
+                            r.UI.move(y, x + 1);
+                    else
+                    {
+                        tp.t_oldch = ch;
+                        if (!this.see_monst(tp))
+                        if (on(player, d.SEEMONST))
+                        {
+                            //standout();
+                            r.UI.addch(tp.t_disguise);
+                            //standend();
+                        }
+                        else
+                            r.UI.addch(ch);
+                        else
+                            r.UI.addch(tp.t_disguise);
+                    }
                 }
-                else
-                    r.UI.addch(ch);
-                else
-                    r.UI.addch(tp.t_disguise);
             }
-            }
-        }
         r.UI.comment("enter_room");
-    }
-
-    //部屋を照らし、暗い部屋のモンスターを画面から消去します。
-    this.door_open = function(){
-
-        r.UI.comment("door_open");
     }
     /*
     * see_monst:
@@ -556,7 +550,7 @@ function PlayerCharacter(r){
     this.do_move = function(dy, dx)
     {
         hit_bound =()=>{
-            if (r.passgo && running && (proom.r_flags & d.ISGONE)
+            if (r.passgo && r.running && (proom.r_flags & d.ISGONE)
             && !on(player, d.ISBLIND))
             {
                 let	b1, b2;
@@ -630,20 +624,17 @@ function PlayerCharacter(r){
         */
         if (on(player, d.ISHUH) && r.rnd(5) != 0)
         {
-        nh = this.rndmove(player);
-        if ((nh.x == hero.x)&&(nh.y == hero.y))
-            {
-                after = false;
-                running = false;
-                to_death = false;
-                return;
-            }
+            nh = this.rndmove(player);
+            if ((nh.x == hero.x)&&(nh.y == hero.y))
+                {
+                    after = false;
+                    running = false;
+                    to_death = false;
+                    return;
+                }
         }
         else
         {
-            //console.log(hero);
-            //console.log(nh);
-
             nh.y = hero.y + dy;
             nh.x = hero.x + dx;
         }
@@ -679,52 +670,52 @@ function PlayerCharacter(r){
         }
         switch (ch)
         {
-        case ' ':
-        case '|':
-        case '-':
-            hit_bound()
-            running = false;
-            after = false;
-            break;
-        case d.DOOR:
-            running = false;
-            if (r.dungeon.flat(hero.y, hero.x) & d.F_PASS)
-                enter_room(nh);
-            move_stuff();
-            break;
-        case d.TRAP:
-            ch = be_trapped(nh);
-            if (ch == T_DOOR || ch == d.T_TELEP)
-                return;
-            move_stuff();
-            break;
-        case d.PASSAGE:
-            /*
-            * when you're in a corridor, you don't know if you're in
-            * a maze room or not, and there ain't no way to find out
-            * if you're leaving a maze room, so it is necessary to
-            * always recalculate proom.
-            */
-            proom = r.dungeon.roomin(hero);
-            move_stuff();
-        case d.FLOOR:
-            if (!(fl & d.F_REAL))
-            be_trapped(hero);
-            move_stuff();
-            break;
-        case d.STAIRS:
-            seenstairs = true;
-            /* FALLTHROUGH */
-        default:
-            running = false;
-            if (isupper(ch) || r.dungeon.moat(nh.y, nh.x))
-                fight(nh, cur_weapon, false);
-            else
-            {
-                if (ch != d.STAIRS)
-                    take = ch;
+            case ' ':
+            case '|':
+            case '-':
+                hit_bound()
+                running = false;
+                after = false;
+                break;
+            case d.DOOR:
+                running = false;
+                if (r.dungeon.flat(hero.y, hero.x) & d.F_PASS)
+                    enter_room(nh);
                 move_stuff();
-            }
+                break;
+            case d.TRAP:
+                ch = be_trapped(nh);
+                if (ch == d.T_DOOR || ch == d.T_TELEP)
+                    return;
+                move_stuff();
+                break;
+            case d.PASSAGE:
+                /*
+                * when you're in a corridor, you don't know if you're in
+                * a maze room or not, and there ain't no way to find out
+                * if you're leaving a maze room, so it is necessary to
+                * always recalculate proom.
+                */
+                proom = r.dungeon.roomin(hero);
+                move_stuff();
+            case d.FLOOR:
+                if (!(fl & d.F_REAL))
+                be_trapped(hero);
+                move_stuff();
+                break;
+            case d.STAIRS:
+                seenstairs = true;
+                /* FALLTHROUGH */
+            default:
+                running = false;
+                if (isupper(ch) || r.dungeon.moat(nh.y, nh.x))
+                    fight(nh, cur_weapon, false);
+                else
+                {
+                    if (ch != d.STAIRS)
+                        take = ch;
+                    move_stuff();
+                }
         }
     }
 
@@ -779,6 +770,8 @@ function PlayerCharacter(r){
             for (x = rp.r_pos.x; x < rp.r_pos.x + rp.r_max.x; x++)
             if (isupper(r.dungeon.winat(y, x)))
                 wake_monster(y, x);
+        r.UI.comment("door_open");
+
     }
 
     /*

@@ -189,7 +189,7 @@ function GameManager(g){
         return dtotal;
     }
     //gameloop
-    this.running = function(g){
+    this.loopstep = function(g){
 
         if (playing) this.UI.command();/* Command execution */
     }
@@ -273,5 +273,6 @@ function GameManager(g){
         for (let i in ws){
             g.console[0].mvprintw(ws[i], 0, i);
         }
+        this.dungeon.passf.add_pass();
     }
 }

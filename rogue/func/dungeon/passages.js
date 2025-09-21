@@ -79,7 +79,7 @@ function passages_f(r, dg){
             {
                 do
                 r1 = r.rnd(MAXROOMS);
-                while(rdes[r1].ingraph);
+                while(!rdes[r1].ingraph);
             }
             /*
             * otherwise, connect new room to the graph, and draw a tunnel
@@ -87,13 +87,14 @@ function passages_f(r, dg){
             */
             else
             {
-                r2.ingraph = true;
+                rdes[r2].ingraph = true;
                 i = r1; 
                 j = r2;
                 this.conn(i, j); //console.log(`i:${i} j:${j}`); 
                 rdes[r1].isconn[j] = true;
                 rdes[r2].isconn[i] = true;
                 roomcount++;
+                console.log(r1 + "," + r2);
             }
         } while (roomcount < MAXROOMS);
 
@@ -125,6 +126,10 @@ function passages_f(r, dg){
             }
         }
         this.passnum();
+
+        let st = "";
+        for (let i in rdes){st += (rdes[i].ingraph?"*":".")}
+        console.log(st);
     }
 
     /*
