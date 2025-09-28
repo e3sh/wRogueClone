@@ -57,7 +57,7 @@ function rogueDefines(){
         WEAPON    : ')',
         ARMOR     : ']',
         AMULET    : ',',
-        RING      : ':',
+        RING      : '=',
         STICK     : '/',
         CALLABLE : -1,
         R_OR_S   : -2,

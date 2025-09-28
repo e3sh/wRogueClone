@@ -68,7 +68,7 @@ function GameManager(g){
     let playing = true;			/* true until he quits */
     let q_comm = false;			/* Are we executing a 'Q' command? */
 
-    //bool after;				/* true if we want after daemons */
+    let after;				/* true if we want after daemons */
     //bool again;				/* Repeating the last command */
     let running = false;			/* true if player is running  (走行中フラグ)*/
     let door_stop = false;			/* Stop running when we pass a door (ドア通過時停止フラグ)*/
@@ -89,6 +89,7 @@ function GameManager(g){
     this.wizard = wizard;
     this.playing = playing;
 
+    this.after = after;
     this.running = running;
 
     this.oldpos = oldpos;

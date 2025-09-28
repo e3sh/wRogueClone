@@ -184,6 +184,7 @@ function DungeonMap(r){
             r.UI.printw(`Welcome ${whoami}`);
         }
         r.UI.comment("new_level");
+        console.log(`new_level ${level}`);
     }
 
     /*
@@ -408,6 +409,65 @@ function DungeonMap(r){
             r.UI.addch(this.chat(y, x));
         }
         r.UI.msg("---More (level map)---");
+    }
+
+    /*
+    * d_level:
+    *	He wants to go down a level
+    */
+    //void
+    this.d_level = function()
+    {
+        const hero = r.player.player.t_pos;
+
+        if (levit_check())
+            return;
+        if (this.chat(hero.y, hero.x) != d.STAIRS)
+            r.UI.msg("I see no way down");
+        else
+        {
+            level++;
+            //seenstairs = FALSE;
+            this.new_level();
+        }
+    }
+
+    /*
+    * u_level:
+    *	He wants to go up a level
+    */
+    //void
+    this.u_level = function()
+    {
+        if (levit_check())
+            return;
+        if (chat(hero.y, hero.x) == d.STAIRS)
+            if (r.player.amulet)
+            {
+                level--;
+                if (level == 0)
+                    total_winner();
+                r.dungeon.new_level();
+                r.UI.msg("you feel a wrenching sensation in your gut");
+            }
+            else
+                r.UI.msg("your way is magically blocked");
+        else
+            r.UI.msg("I see no way up");
+    }
+
+    /*
+    * levit_check:
+    *	Check to see if she's levitating, and if she is, print an
+    *	appropriate message.
+    */
+    //bool
+    function levit_check()
+    {
+        if (!on(r.player.player, d.ISLEVIT))
+            return false;
+        r.UI.msg("You can't.  You're floating off the ground!");
+            return true;
     }
 
 }

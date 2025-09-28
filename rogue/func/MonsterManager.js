@@ -20,7 +20,7 @@ function MonsterManager(r){
     * `vf_hit` (Venus Flytrapのヒット回数) など。
     */
 
-    let monsters = [];
+    let monsters = r.globalValiable.monsters;//  [];
     let mlist = r.dungeon.mlist;
     let vf_hit;
 
@@ -92,7 +92,7 @@ function MonsterManager(r){
             r.UI.endmsg();
             r.UI.has_hit = false;
         }
-        r.UI.comment("runners");
+        //r.UI.comment("runners");
     }
     /*
     * move_monst:
@@ -456,29 +456,144 @@ function MonsterManager(r){
         return (!(mp.t_room.r_flags & d.ISDARK));
     }
 
+    /*
+    * List of monsters in rough order of vorpalness
+    */
+    //static char lvl_mons[] =  {
+    const lvl_mons = [
+        'K', 'E', 'B', 'S', 'H', 'I', 'R', 'O', 'Z', 'L', 'C', 'Q', 'A',
+        'N', 'Y', 'F', 'T', 'W', 'P', 'X', 'U', 'M', 'V', 'G', 'J', 'D'
+    ];
+    //static char wand_mons[] = {
+    const wand_mons = [
+        'K', 'E', 'B', 'S', 'H',   0, 'R', 'O', 'Z',   0, 'C', 'Q', 'A',
+        0, 'Y',   0, 'T', 'W', 'P',   0, 'U', 'M', 'V', 'G', 'J',   0
+    ];
+    /*
+    * randmonster:
+    *	Pick a monster to show up.  The lower the level,
+    *	the meaner the monster.
+    * 現在のレベルに適したランダムなモンスターの種類を返します
+    */
+    this.randmonster = function(wander)
+    {
+        let d;
+        let mons; //char
 
+        mons = (wander ? wand_mons : lvl_mons);
+        do
+        {
+            d = r.dungeon.level + (r.rnd(10) - 6);
+            if (d < 0)
+                d = r.rnd(5);
+            if (d > 25)
+                d = r.rnd(5) + 21;
+        } while (mons[d] == 0);
+        return mons[d];
 
-
-
-    
-    //現在のレベルに適したランダムなモンスターの種類を返します
-    this.randmonster = function(){
-
-        
-
+        r.UI.comment(".randmonster");
     }
-    //新しいモンスターを生成し、リストに追加します。
-    this.new_monster = function(){
+    /*
+    * new_monster:
+    *	Pick a new monster and add it to the list
+    * 新しいモンスターを生成し、リストに追加します。
+    */
+    this.new_monster = function(tp, type, cp)//THING *tp, char type, coord *cp))
+    {
+        let mp; //struct monster *mp;
+        let lev_add;
 
+        if ((lev_add = r.dungeon.level - d.AMULETLEVEL) < 0)
+            lev_add = 0;
+        r.attach(mlist, tp);
+        tp.type = type;
+        tp.disguise = type;
+        tp.pos = cp;
+        r.UI.move(cp.y, cp.x);
+        tp.oldch = r.UI.inch();//CCHAR( inch() );
+        tp.room = r.dungeon.roomin(cp); //console.log(cp);
+        r.dungeon.places[cp.y][cp.x].monst = tp;
+        mp = monsters[tp.type.charCodeAt() - 'A'.charCodeAt() ]; //console.log(mp, tp);
+        console.log(tp, mp);
+        tp.t_stats.s_lvl = mp.m_stats.s_lvl + lev_add;
+        tp.t_stats.s_hpt = r.roll(tp.t_stats.s_lvl, 8);
+        tp.t_stats.s_maxhp = tp.t_stats.s_hpt; 
+        tp.t_stats.s_arm = mp.m_stats.s_arm - lev_add;
+        tp.t_stats.s_dmg = mp.m_stats.s_dmg;
+        tp.t_stats.s_str = mp.m_stats.s_str;
+        tp.t_stats.s_exp = mp.m_stats.s_exp + lev_add * 10 + exp_add(tp);
+        tp.t_flags = mp.m_flags;
+        if (r.dungeon.level > 29)
+            tp.t_flags |= d.ISHASTE;
+        tp.t_turn = true;
+        tp.t_pack = null;
+        if (r.player.isWearing(d.R_AGGR))
+            runto(cp);
+        if (type == 'X')
+            tp.t_disguise = rnd_thing();
+
+        r.UI.comment(".new_monster");
     }
-    //
+    /*
+    * expadd:
+    *	Experience to add for this monster's level/hit points
+    */
+    //int
+    function exp_add(tp)//THING *tp)
+    {
+        let mod;
+
+        if (tp.t_stats.s_lvl == 1)
+            mod = tp.t_stats.s_maxhp / 8;
+        else
+            mod = tp.t_stats.s_maxhp / 6;
+        if (tp.t_stats.s_lvl > 9)
+            mod *= 20;
+        else if (tp.t_stats.s_lvl > 6)
+            mod *= 4;
+        return Math.floor(mod);
+    }
+    /*
+    * wanderer:
+    *	Create a new wandering monster and aim it at the player
+    */
     this.wanderer = function(){
+        let tp; //THING *tp;
+        let cp; //static coord cp;
+
+        tp = new_item();
+        do
+        {
+            find_floor(NULL, cp, FALSE, TRUE);  // struct room *) NULL
+        } while (roomin(cp) == proom);
+        new_monster(tp, randmonster(TRUE), cp);
+        if (on(player, SEEMONST))
+        {
+        standout();
+        if (!on(player, ISHALU))
+            addch(tp.t_type);
+        else
+            addch(rnd(26) + 'A');
+        standend();
+        }
+        runto(tp.t_pos);
+        if (wizard)
+        msg(`started a wandering ${monsters[tp.t_type-'A'].m_name}`);
+
         r.UI.comment("wanderer");
 
     }
-    //モンスターにアイテムをランダムに与えます。
-    this.give_pack = function(){
+    /*
+    * give_pack:
+    *	Give a pack to a monster if it deserves one
+    * モンスターにアイテムをランダムに与えます。
+    */
+    this.give_pack = function(tp){
 
+        if (r.dungeon.level >= r.dungeon.max_level && r.rnd(100) < monsters[tp.t_type-'A'].m_carry)
+	        r.attach(tp.t_pack, new_thing());
+
+        r.UI.comment(".give_pack");
     }
 
 }

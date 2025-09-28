@@ -119,7 +119,7 @@ function DaemonScheduler(r){
         wire.d_arg  = arg;
         wire.d_time = time;
 
-        r.UI.comment("fuse");
+        //r.UI.comment("fuse");
     }
 
     /*

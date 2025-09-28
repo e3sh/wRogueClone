@@ -62,7 +62,7 @@ function rogueTypes(){
         this.s_arm = ary[3];			/* Armor class */
         this.s_hpt = ary[4];			/* Hit points */
         this.s_dmg = ary[5];			//string? /* String describing damage done */
-        this.s_maxhp = ary[6];		/* Max hit points */
+        this.s_maxhp = Boolean(ary[6])?ary[6]:ary[4];	/* Max hit points */
     };
     let stats = this.stats;
 
@@ -80,7 +80,7 @@ function rogueTypes(){
             this._t_oldch;			/* Character that was where it was */
             this._t_dest = {};		/* Where it is running to */ //coord 
             this._t_flags;			/* State word */
-            this._t_stats = new stats(Array(7));		/* Physical description */ //struct stats
+            this._t_stats = new stats([0,0,0,0,0,"0/0",0]);		/* Physical description */ //struct stats
             this._t_room;		/* Current room for thing */ //struct room 
             this._t_pack;		/* What the thing is carrying */ //union thing 
             this._t_reserved;

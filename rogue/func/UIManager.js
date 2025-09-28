@@ -109,7 +109,7 @@ function UIManager(r, g){
         return res;
     }
 
-    this.clear   = function(){         g.console[0].clear();     }
+    this.clear   = function(num){ if (isNaN(num)) num=0; g.console[num].clear();     }
     
     this.msg    = function(text){      g.console[1].insertln(); g.console[1].printw(text); }
     this.addmsg = this.msg;
@@ -118,6 +118,7 @@ function UIManager(r, g){
     
     this.debug  = function(text){      this.comment(`d: ${text}`); }
     this.comment = function(text){     g.console[2].insertln(); g.console[2].printw(text); }
+    this.submsg = function(text){     g.console[3].insertln(); g.console[3].printw(text); }
     /*
     * readchar:
     *	Reads and returns a character, checking for gross input errors
@@ -232,6 +233,9 @@ function UIManager(r, g){
     * terse (メッセージ表示オプション), 
     * last_comm, l_last_comm, last_dir, l_last_dir, last_pick, l_last_pick (直前のコマンド情報)
     */
+    let pr;     //after bgchr
+    let oldc;   //before bgchr
+
     this.command = function()
     {
         let player = r.player.player;
@@ -239,6 +243,9 @@ function UIManager(r, g){
         const purse = stat.pur;
         const hero = player.t_pos; 
         const cur_ring = stat.ring;
+
+        //let after = r.after;
+        //let running = r.running;
 
         let no_command = stat.nocmd;
         //let to_death = stat.death;
@@ -284,7 +291,7 @@ function UIManager(r, g){
             //if (!((running || count) && jump))
             //    refresh();			/* Draw screen */
             take = 0;
-            after = true;
+            r.after = true;
 
             /*
             * Read command or continue run
@@ -330,33 +337,70 @@ function UIManager(r, g){
                 last_pick = null;
             }
 
-            if (ch.includes("Numpad4")) r.player.do_move( 0,-1);
-            if (ch.includes("Numpad2")) r.player.do_move( 1, 0);
-            if (ch.includes("Numpad8")) r.player.do_move(-1, 0);
-            if (ch.includes("Numpad6")) r.player.do_move( 0, 1);
-            if (ch.includes("Numpad7")) r.player.do_move(-1,-1);
-            if (ch.includes("Numpad9")) r.player.do_move(-1, 1);
-            if (ch.includes("Numpad1")) r.player.do_move( 1,-1);
-            if (ch.includes("Numpad3")) r.player.do_move( 1, 1);
+            oldc = pr;
+            if (ch.includes("Numpad4")) pr = r.player.do_move( 0,-1);
+            if (ch.includes("Numpad2")) pr = r.player.do_move( 1, 0);
+            if (ch.includes("Numpad8")) pr = r.player.do_move(-1, 0);
+            if (ch.includes("Numpad6")) pr = r.player.do_move( 0, 1);
+            if (ch.includes("Numpad7")) pr = r.player.do_move(-1,-1);
+            if (ch.includes("Numpad9")) pr = r.player.do_move(-1, 1);
+            if (ch.includes("Numpad1")) pr = r.player.do_move( 1,-1);
+            if (ch.includes("Numpad3")) pr = r.player.do_move( 1, 1);
 
-            switch (ch)
+            let opcmdf = false;
+            if (ch.includes("Numpad5")) {
+                pr = r.player.do_move( 0, 0);
+                opcmdf = true;
+            }
+            if (ch.includes("KeyI"))  {
+                //r.after = false; inventory(pack, 0);
+                let st = r.player.get_invstat();
+                r.UI.clear(3);
+                for (let i in st){
+                    r.UI.submsg(st[i]);
+                }
+            }
+            if (ch.includes("KeyD")) ;//drop();
+            if (ch.includes("KeyR")) ;//read_scroll();
+            if (ch.includes("KeyE")) ;//eat();
+            if (ch.includes("KeyW")) ;//wear();
+            if (ch.includes("KeyT")) ;//take_off();
+            if (ch.includes("KeyP")) ;//ring_on();
+            if (ch.includes("KeyR")) ;//ring_off();
+            if (ch.includes("KeyS")) ;//search();
+
+            if (r.after)
             {
-                case 'h': do_move(0, -1);
-                    break;  
-                case 'j': do_move(1, 0);
-                    break;  
-                case 'k': do_move(-1, 0);
-                    break;  
-                case 'l': do_move(0, 1);
-                    break;  
-                case 'y': do_move(-1, -1);
-                    break;  
-                case 'u': do_move(-1, 1);
-                    break;  
-                case 'b': do_move(1, -1);
-                    break;  
-                case 'n': do_move(1, 1);
-                    break;  
+                r.UI.comment(`[${pr} ${oldc}`);// ${r.after?"m":"s"}]`);
+                switch (pr)
+                {
+                    case d.DOOR:
+                        r.UI.msg(`DOOR:ROOM ${(oldc==d.PASSAGE)?"IN":"OUT"}`);
+                        break;
+                    case d.STAIRS: r.UI.msg("STAIRS");
+                        if (opcmdf) r.dungeon.d_level(); //or u_level(); 
+                        break;  
+                    case d.GOLD:   r.UI.msg("GOLD");
+                        break;  
+                    case d.FOOD:   r.UI.msg("FOOD");
+                        break;  
+                    case d.POTION: r.UI.msg("POTION");
+                        break;  
+                    case d.SCROLL: r.UI.msg("SCROLL");
+                        break;  
+                    case d.WEAPON: r.UI.msg("WEAPON");
+                        break;  
+                    case d.ARMOR:  r.UI.msg("ARMOR");
+                        break;  
+                    case d.RING:    r.UI.msg("RING");
+                        break;  
+                    case d.MAGIC:   r.UI.msg("MAGIC");
+                        break;  
+                    case d.STICK:   r.UI.msg("STICK");
+                        break;  
+                    case d.AMULET:  r.UI.msg("AMULET");
+                        break;  
+                }
             }
         }
         r.daemon.do_daemons(d.AFTER);
@@ -376,6 +420,7 @@ function UIManager(r, g){
         if (this.wait_for("KeyQ")) r.mapcheckTest();
         if (this.wait_for("KeyZ")) r.dungeon.show_map();
 
+        this.look(true);
 
         let s = " ";
         let ki = this.readchar();

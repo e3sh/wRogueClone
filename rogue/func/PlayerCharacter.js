@@ -66,6 +66,7 @@ function PlayerCharacter(r){
     this.amulet = amulet;
     this.to_death = to_death;
 
+    this.isWearing = ISWEARING;
     /*
     **関連する関数（提案されるメソッドの例）:**
     *   `init_player()` (初期化)。
@@ -87,13 +88,18 @@ function PlayerCharacter(r){
 
     this.get_invstat = function(){
         let str = [];
-        str.push("pstat:");
-        str.push("pack:");
-        str.push("cur_armor");
-        str.push("cur_weapon");
-        str.push("cur_ring");
-        str.push("inpack");
-        str.push("amulet");
+        
+        //str.push(`pstats: ${pstats}`);
+        for (let i in pack_used){
+            str.push(`pack${i}:${pack_used[i]}`);
+        }
+        str.push(`cur_armor ${cur_armor.o_arm}`);
+        str.push(`cur_weapon ${cur_weapon.o_damage}`);
+        str.push(`cur_ring_R ${cur_ring[0].o_which}`);
+        str.push(`cur_ring_L ${cur_ring[1].o_which}`);
+        str.push(`food_left ${food_left}`);
+        //str.push(`inpack ${inpack}`);
+        //str.push(`amulet ${amulet}`);
 
         return str;
     }
@@ -549,6 +555,11 @@ function PlayerCharacter(r){
     */
     this.do_move = function(dy, dx)
     {
+        //if (!r.after){
+        //    r.after = true;
+        //    return;
+        //}
+
         hit_bound =()=>{
             if (r.passgo && r.running && (proom.r_flags & d.ISGONE)
             && !on(player, d.ISBLIND))
@@ -607,7 +618,7 @@ function PlayerCharacter(r){
             if ((fl & d.F_PASS) && r.dungeon.chat(r.oldpos.y, r.oldpos.x) == d.DOOR)
                 leave_room(nh);
             hero = nh;
-            r.player.player.t_pos = nh;
+            r.player.player.t_pos = hero;//nh;
         }
 
         let ch, fl;
@@ -627,8 +638,8 @@ function PlayerCharacter(r){
             nh = this.rndmove(player);
             if ((nh.x == hero.x)&&(nh.y == hero.y))
                 {
-                    after = false;
-                    running = false;
+                    r.after = false;
+                    r.running = false;
                     to_death = false;
                     return;
                 }
@@ -647,14 +658,14 @@ function PlayerCharacter(r){
             hit_bound();
         if (!this.diag_ok(hero, nh))
         {
-            after = false;
-            running = false;
+            r.after = false;
+            r.running = false;
             return;
         }
         if (r.running && ((nh.x == hero.x)&&(nh.y == hero.y)))
-            after = running = false;
+            r.after = r.running = false;
         fl = r.dungeon.flat(nh.y, nh.x);
-        ch = r.dungeon.winat(nh.y, nh.x);
+        ch = r.dungeon.winat(nh.y, nh.x); //console.log(ch);
         if (!(fl & d.F_REAL) && ch == d.FLOOR)
         {
             if (!on(player, d.ISLEVIT))
@@ -668,20 +679,27 @@ function PlayerCharacter(r){
             r.UI.msg("you are being held");
             return;
         }
+ 
         switch (ch)
         {
             case ' ':
             case '|':
             case '-':
                 hit_bound()
-                running = false;
-                after = false;
+                r.running = false;
+                r.after = false;
+
+                nh.y -= dy;
+                nh.x -= dx;
+
                 break;
             case d.DOOR:
-                running = false;
+                r.running = false;
+                //console.log((r.dungeon.flat(hero.y, hero.x) & d.F_PASS))
                 if (r.dungeon.flat(hero.y, hero.x) & d.F_PASS)
                     enter_room(nh);
                 move_stuff();
+                //console.log("door");
                 break;
             case d.TRAP:
                 ch = be_trapped(nh);
@@ -698,16 +716,21 @@ function PlayerCharacter(r){
                 */
                 proom = r.dungeon.roomin(hero);
                 move_stuff();
+                //console.log("passage");
+                break;
             case d.FLOOR:
                 if (!(fl & d.F_REAL))
                 be_trapped(hero);
                 move_stuff();
+                //console.log("floor");
                 break;
             case d.STAIRS:
                 seenstairs = true;
+                //console.log("stairs");
                 /* FALLTHROUGH */
+                break;
             default:
-                running = false;
+                r.running = false;
                 if (isupper(ch) || r.dungeon.moat(nh.y, nh.x))
                     fight(nh, cur_weapon, false);
                 else
@@ -717,6 +740,7 @@ function PlayerCharacter(r){
                     move_stuff();
                 }
         }
+        return ch;
     }
 
     /*
@@ -877,6 +901,9 @@ function PlayerCharacter(r){
             break;
         }
         flush_type();
+
+        r.UI.comment("be_trapped");
+
         return tr;
     }
 
@@ -979,4 +1006,5 @@ function PlayerCharacter(r){
         ch = this.floor_ch();
         return ch;
     }
+
 }
