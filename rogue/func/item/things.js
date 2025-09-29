@@ -1,0 +1,752 @@
+/*
+ * Contains functions for dealing with things like potions, scrolls,
+ * and other items.
+ */
+function thingsf(r){
+
+	const d = r.define;
+    const t = r.types;
+
+	/*
+	* vowelstr:
+	*      For printfs: if string starts with a vowel, return "n" for an
+	*	"an".
+	*/
+	//char *
+	const vowelstr =(str)=>
+	{
+		switch (str)
+		{
+			case 'a': case 'A':
+			case 'e': case 'E':
+			case 'i': case 'I':
+			case 'o': case 'O':
+			case 'u': case 'U':
+				return "n";
+			default:
+				return "";
+		}
+	}
+	/*
+	* inv_name:
+	*	Return the name of something as it would appear in an
+	*	inventory.
+	*/
+	this.inv_name = function(obj, drop)//THING *obj, bool drop)
+	{
+		res = r.item.get_itemparam();
+
+		const p_colors	= res.P_COLOR;
+		const r_stones	= res.RING_ST;
+		const ws_type	= res.WS_TYPE;
+		const ws_made	= res.WS_MADE;
+		const ws_info	= res.WANDSTAFF;
+		const scr_info	= res.SCROLL;
+		const weap_info = res.WEAPON;
+		const arm_info	= res.ARM;
+		const a_class	= res.AC;
+		const pot_info	= res.POD;
+		const ring_info = res.RING;
+		const s_names 	= res.SC_NAME;
+
+		const fruit = "slime-mold";
+
+		/*
+		* num:
+		*	Figure out the plus number for armor/weapons
+		*/
+		//char *
+		//const num =(int n1, int n2, char type)
+		const num =(n1, n2, type)=>
+		{
+			let numbuf;
+
+			numbuf = (n1 < 0) ? `${n1}` : `+${n1}`;
+			if (type == WEAPON)
+				numbef += (n2 < 0) ? `,${n2}` : `,+${n2}`;
+
+			return numbuf;
+		}
+
+		let pb;
+		let op;	//struct obj_info *op;
+		let sp;
+		let which;
+
+		pb = "";
+		which = obj.o_which;
+		switch (obj.o_type)
+		{
+			case d.POTION:
+				pb = nameit(obj, "potion", p_colors[which], pot_info[which], ()=>{return "";});
+				break; 
+			case d.RING:
+				pb = nameit(obj, "ring", r_stones[which], ring_info[which], r.item.rings.ring_num);
+				break; 
+			case d.STICK:
+				pb = nameit(obj, ws_type[which], ws_made[which], ws_info[which], charge_str);
+				break; 
+			case d.SCROLL:
+				if (obj.o_count == 1)
+				{
+					pb = "A scroll ";
+				}
+				else
+				{
+					pb = `${obj.o_count} scrolls `;
+				}
+				op = scr_info[which];
+				if (op.oi_know)
+					pb = pb + `of ${op.oi_name}`;
+				else if (op.oi_guess)
+					pb = pb + `called ${op.oi_guess}`;
+				else
+					pb = pb + `titled '${s_names[which]}'`;
+				break; 
+			case d.FOOD:
+				if (which == 1)
+					if (obj.o_count == 1)
+						pb = `A${vowelstr(fruit)} ${fruit}`;
+					else
+						pb = `${obj.o_count} ${fruit}`;
+					else
+					if (obj.o_count == 1)
+						pb = pb + "Some food";
+					else
+						pb = pb + `${obj.o_count} rations of food`;
+				break; 
+			case d.WEAPON:
+					sp = weap_info[which].oi_name;
+					if (obj.o_count > 1)
+						pb = obj.o_count + " ";
+					else
+						pb = `A${vowelstr(sp)}`;
+
+					if (obj.o_flags & d.ISKNOW)
+						pb = pb + `${num(obj.o_hplus,obj.o_dplus,d.WEAPON)} ${sp}`;
+					else
+						pb = pb + "" + sp;
+					if (obj.o_count > 1)
+						pb = pb + "s";
+					if (obj.o_label != null)
+					{
+						pb = pb + ` called ${obj.o_label}`;
+					}
+				break; 
+			case d.ARMOR:
+				sp = arm_info[which].oi_name;
+				if (obj.o_flags & ISKNOW)
+				{
+					pb = `${num(a_class[which] - obj.o_arm, 0, ARMOR)} ${sp}`;
+					if (!terse)
+						pb = pb + "protection ";
+					pb = pb + `${10 - obj.o_arm}]`;
+				}
+				else
+					pb = pb + sp;
+				if (obj.o_label != null)
+				{
+					pb = pb + " called " + obj.o_label;
+				}
+				break; 
+			case d.AMULET:
+				pb = "The Amulet of Yendor";
+				break; 
+			case d.GOLD:
+				pb = `${obj.o_goldval} Gold pieces`;
+	//#ifdef MASTER
+				break; 
+			default:
+				r.UI.debug(`Picked up something funny ${obj.o_type}`);
+				pb = `Something bizarre ${unctrl(obj.o_type)}`;
+	//#endif
+		}
+		let inv_describe = false;
+		if (inv_describe)
+		{
+			if (obj == cur_armor)
+				pb = pb +  " (being worn)";
+			if (obj == cur_weapon)
+				pb = pb + " (weapon in hand)";
+			if (obj == cur_ring[d.LEFT])
+				pb = pb + " (on left hand)";
+			else if (obj == cur_ring[d.RIGHT])
+				pb = pb + " (on right hand)";
+		}
+		//if (drop && isupper(prbuf[0]))
+		//	prbuf[0] = tolower(prbuf[0]);
+		//else if (!drop && islower(prbuf))
+		//	prbuf = toupper(prbuf);
+		//prbuf[MAXSTR-1] = '\0';
+		return pb;//prbuf;
+	}
+
+	/*
+	* drop:
+	*	Put something down
+	*/
+	//void
+	function drop()
+	{
+		let ch;
+		let obj;	//THING *obj;
+
+		ch = chat(hero.y, hero.x);
+		if (ch != FLOOR && ch != PASSAGE)
+		{
+			after = FALSE;
+			msg("there is something there already");
+			return;
+		}
+		if ((obj = get_item("drop", 0)) == NULL)
+			return;
+		if (!dropcheck(obj))
+			return;
+		obj = leave_pack(obj, TRUE, !ISMULT(obj.o_type));
+		/*
+		* Link it into the level object list
+		*/
+		attach(lvl_obj, obj);
+		chat(hero.y, hero.x) = obj.o_type;
+		flat(hero.y, hero.x) |= F_DROPPED;
+		obj.o_pos = hero;
+		if (obj.o_type == AMULET)
+			amulet = FALSE;
+		msg("dropped %s", inv_name(obj, TRUE));
+	}
+
+	/*
+	* dropcheck:
+	*	Do special checks for dropping or unweilding|unwearing|unringing
+	*/
+	//bool
+	function dropcheck(obj)//THING *obj)
+	{
+		if (obj == NULL)
+		return TRUE;
+		if (obj != cur_armor && obj != cur_weapon
+		&& obj != cur_ring[LEFT] && obj != cur_ring[RIGHT])
+			return TRUE;
+		if (obj.o_flags & ISCURSED)
+		{
+			msg("you can't.  It appears to be cursed");
+			return FALSE;
+		}
+		if (obj == cur_weapon)
+		cur_weapon = NULL;
+		else if (obj == cur_armor)
+		{
+			waste_time();
+			cur_armor = NULL;
+		}
+		else
+		{
+			cur_ring[obj == cur_ring[LEFT] ? LEFT : RIGHT] = NULL;
+			switch (obj.o_which)
+			{
+				case R_ADDSTR:
+				chg_str(-obj.o_arm);
+				break;
+				case R_SEEINVIS:
+				unsee();
+				extinguish(unsee);
+				break;
+			}
+		}
+		return TRUE;
+	}
+
+	/*
+	* new_thing:
+	*	Return a new thing
+	*/
+	//THING *
+	function new_thing()
+	{
+		let cur;//THING *cur;
+		let r;
+
+		cur = new_item();
+		cur.o_hplus = 0;
+		cur.o_dplus = 0;
+		cur.o_damage = "0x0";
+		cur.o_hurldmg = "0x0";
+		cur.o_arm = 11;
+		cur.o_count = 1;
+		cur.o_group = 0;
+		cur.o_flags = 0;
+		/*
+		* Decide what kind of object it will be
+		* If we haven't had food for a while, let it be food.
+		*/
+		switch (no_food > 3 ? 2 : pick_one(things, NUMTHINGS))
+		{
+		case 0:
+			cur.o_type = POTION;
+			cur.o_which = pick_one(pot_info, MAXPOTIONS);
+		break; case 1:
+			cur.o_type = SCROLL;
+			cur.o_which = pick_one(scr_info, MAXSCROLLS);
+		break; case 2:
+			cur.o_type = FOOD;
+			no_food = 0;
+			if (rnd(10) != 0)
+			cur.o_which = 0;
+			else
+			cur.o_which = 1;
+		break; case 3:
+			init_weapon(cur, pick_one(weap_info, MAXWEAPONS));
+			if ((r = rnd(100)) < 10)
+			{
+			cur.o_flags |= ISCURSED;
+			cur.o_hplus -= rnd(3) + 1;
+			}
+			else if (r < 15)
+			cur.o_hplus += rnd(3) + 1;
+		break; case 4:
+			cur.o_type = ARMOR;
+			cur.o_which = pick_one(arm_info, MAXARMORS);
+			cur.o_arm = a_class[cur.o_which];
+			if ((r = rnd(100)) < 20)
+			{
+			cur.o_flags |= ISCURSED;
+			cur.o_arm += rnd(3) + 1;
+			}
+			else if (r < 28)
+			cur.o_arm -= rnd(3) + 1;
+		break; case 5:
+			cur.o_type = RING;
+			cur.o_which = pick_one(ring_info, MAXRINGS);
+			switch (cur.o_which)
+			{
+			case R_ADDSTR:
+			case R_PROTECT:
+			case R_ADDHIT:
+			case R_ADDDAM:
+				if ((cur.o_arm = rnd(3)) == 0)
+				{
+				cur.o_arm = -1;
+				cur.o_flags |= ISCURSED;
+				}
+			break; case R_AGGR:
+			case R_TELEPORT:
+				cur.o_flags |= ISCURSED;
+			}
+		break; case 6:
+			cur.o_type = STICK;
+			cur.o_which = pick_one(ws_info, MAXSTICKS);
+			fix_stick(cur);
+	//#ifdef MASTER
+		break; default:
+			debug("Picked a bad kind of object");
+			wait_for(' ');
+	//#endif
+		}
+		return cur;
+	}
+
+	/*
+	* pick_one:
+	*	Pick an item out of a list of nitems possible objects
+	*/
+	//int
+	function pick_one(info, nitems)//struct obj_info *info, int nitems)
+	{
+		let end, start, i;	//struct obj_info *end;
+		//struct obj_info *start;
+		//int i;
+
+		start = info;
+		for (end = info[nitems], i = rnd(100); info < end; info++)
+		if (i < info.oi_prob)
+			break;
+		if (info == end)
+		{
+		//#ifdef MASTER
+			if (wizard)
+			{
+				msg("bad pick_one: %d from %d items", i, nitems);
+				for (info = start; info < end; info++)
+					msg("%s: %d%%", info.oi_name, info.oi_prob);
+			}
+		//#endif
+			info = start;
+		}
+		return (info - start);
+	}
+
+	/*
+	* discovered:
+	*	list what the player has discovered in this game of a certain type
+	*/
+	let line_cnt = 0;
+	let newpage = false;//FALSE;
+	let lastfmt, lastarg;
+
+	//void
+	function discovered()
+	{
+		let ch;
+		let disc_list;
+
+		do {
+			disc_list = FALSE;
+			if (!terse)
+				addmsg("for ");
+			addmsg("what type");
+			if (!terse)
+				addmsg(" of object do you want a list");
+			msg("? (* for all)");
+			ch = readchar();
+			switch (ch)
+			{
+			case ESCAPE:
+				msg("");
+				return;
+			case POTION:
+			case SCROLL:
+			case RING:
+			case STICK:
+			case '*':
+				disc_list = TRUE;
+				break;
+			default:
+				if (terse)
+					msg("Not a type");
+				else
+					msg("Please type one of %c%c%c%c (ESCAPE to quit)", POTION, SCROLL, RING, STICK);
+			}
+		} while (!disc_list);
+		if (ch == '*')
+		{
+			print_disc(POTION);
+			add_line("", NULL);
+			print_disc(SCROLL);
+			add_line("", NULL);
+			print_disc(RING);
+			add_line("", NULL);
+			print_disc(STICK);
+			end_line();
+		}
+		else
+		{
+			print_disc(ch);
+			end_line();
+		}
+	}
+
+	/*
+	* print_disc:
+	*	Print what we've discovered of type 'type'
+	*/
+	const MAX4 =(a,b,c,d)=>{return (a > b ? (a > c ? (a > d ? a : d) : (c > d ? c : d)) : (b > c ? (b > d ? b : d) : (c > d ? c : d)))}
+
+	//void
+	function print_disc(type)
+	{
+		let info = NULL;//struct obj_info *info = NULL;
+		let i, maxnum = 0, num_found;
+		let obj;	//static THING obj;
+		let order = [];//static int order[MAX4(MAXSCROLLS, MAXPOTIONS, MAXRINGS, MAXSTICKS)];
+
+		switch (type)
+		{
+		case SCROLL:
+			maxnum = MAXSCROLLS;
+			info = scr_info;
+			break;
+		case POTION:
+			maxnum = MAXPOTIONS;
+			info = pot_info;
+			break;
+		case RING:
+			maxnum = MAXRINGS;
+			info = ring_info;
+			break;
+		case STICK:
+			maxnum = MAXSTICKS;
+			info = ws_info;
+			break;
+		}
+		set_order(order, maxnum);
+		obj.o_count = 1;
+		obj.o_flags = 0;
+		num_found = 0;
+		for (i = 0; i < maxnum; i++)
+		if (info[order[i]].oi_know || info[order[i]].oi_guess)
+		{
+			obj.o_type = type;
+			obj.o_which = order[i];
+			add_line("%s", inv_name(obj, FALSE));
+			num_found++;
+		}
+		if (num_found == 0)
+		add_line(nothing(type), NULL);
+	}
+
+	/*
+	* set_order:
+	*	Set up order for list
+	*/
+	//void
+	function set_order(order, numthings)
+	{
+		let i, r, t;
+
+		for (i = 0; i< numthings; i++)
+			order[i] = i;
+
+		for (i = numthings; i > 0; i--)
+		{
+			r = rnd(i);
+			t = order[i - 1];
+			order[i - 1] = order[r];
+			order[r] = t;
+		}
+	}
+
+	/*
+	* add_line:
+	*	Add a line to the list of discoveries
+	*/
+	/* VARARGS1 */
+	//char
+	function add_line(fmt, arg)
+	{
+		let tw, sw;	//WINDOW *tw, *sw;
+		let x, y;
+		const prompt = "--Press space to continue--";
+		let maxlen = -1;
+
+		if (line_cnt == 0)
+		{
+			wclear(hw);
+			if (inv_type == INV_SLOW)
+			mpos = 0;
+		}
+		if (inv_type == INV_SLOW)
+		{
+			if (fmt != '\0')
+				if (msg(fmt, arg) == ESCAPE)
+				return ESCAPE;
+			line_cnt++;
+		}
+		else
+		{
+			if (maxlen < 0)
+				maxlen = strlen(prompt);
+			if (line_cnt >= LINES - 1 || fmt == NULL)
+			{
+				if (inv_type == INV_OVER && fmt == NULL && !newpage)
+				{
+				msg("");
+				refresh();
+				tw = newwin(line_cnt + 1, maxlen + 2, 0, COLS - maxlen - 3);
+				sw = subwin(tw, line_cnt + 1, maxlen + 1, 0, COLS - maxlen - 2);
+						for (y = 0; y <= line_cnt; y++) 
+						{ 
+							wmove(sw, y, 0); 
+							for (x = 0; x <= maxlen; x++) 
+								waddch(sw, mvwinch(hw, y, x)); 
+						} 
+				wmove(tw, line_cnt, 1);
+				waddstr(tw, prompt);
+				/*
+				* if there are lines below, use 'em
+				*/
+				if (LINES > NUMLINES)
+				{
+					if (NUMLINES + line_cnt > LINES)
+					mvwin(tw, LINES - (line_cnt + 1), COLS - maxlen - 3);
+					else
+					mvwin(tw, NUMLINES, 0);
+				}
+				touchwin(tw);
+				wrefresh(tw);
+				wait_for(' ');
+						if (md_hasclreol())
+				{
+					werase(tw);
+					leaveok(tw, TRUE);
+					wrefresh(tw);
+				}
+				delwin(tw);
+				touchwin(stdscr);
+				}
+				else
+				{
+				wmove(hw, LINES - 1, 0);
+				waddstr(hw, prompt);
+				wrefresh(hw);
+				wait_for(' ');
+				clearok(curscr, TRUE);
+				wclear(hw);
+				touchwin(stdscr);
+				}
+				newpage = TRUE;
+				line_cnt = 0;
+				maxlen = strlen(prompt);
+			}
+			if (fmt != NULL && !(line_cnt == 0 && fmt == '\0'))
+			{
+				mvwprintw(hw, line_cnt++, 0, fmt, arg);
+				getyx(hw, y, x);
+				if (maxlen < x)
+				maxlen = x;
+				lastfmt = fmt;
+				lastarg = arg;
+			}
+		}
+		return ~ESCAPE;
+	}
+
+	/*
+	* end_line:
+	*	End the list of lines
+	*/
+	//void
+	function end_line()
+	{
+		if (inv_type != INV_SLOW)
+		{
+			if (line_cnt == 1 && !newpage)
+			{
+				mpos = 0;
+				msg(lastfmt, lastarg);
+			}
+			else
+				add_line(NULL, NULL);
+		}
+		line_cnt = 0;
+		newpage = FALSE;
+	}
+
+	/*
+	* nothing:
+	*	Set up prbuf so that message for "nothing found" is there
+	*/
+	//char *
+	function nothing(type)
+	{
+		let sp, tystr = NULL;
+
+		if (terse)
+			sprintf(prbuf, "Nothing");
+		else
+			sprintf(prbuf, "Haven't discovered anything");
+		if (type != '*')
+		{
+			sp = prbuf[strlen(prbuf)];
+			switch (type)
+			{
+				case POTION: tystr = "potion";
+				break; case SCROLL: tystr = "scroll";
+				break; case RING: tystr = "ring";
+				break; case STICK: tystr = "stick";
+			}
+			sprintf(sp, " about any %ss", tystr);
+		}
+		return prbuf;
+	}
+
+	/*
+	* nameit:
+	*	Give the proper name to a potion, stick, or ring
+	*/
+	//void
+	function nameit(obj, type, which, op, prfunc)//THING *obj, char *type, char *which, struct obj_info *op,
+		//char *(*prfunc)(THING *))
+	{
+		let pb;
+
+		if (op.oi_know || op.oi_guess)
+		{
+			if (obj.o_count == 1)
+				pb = `A ${type}`;
+			else
+				pb = `${obj.o_count} ${type}`;
+			if (op.oi_know)
+				pb = pb + `of ${op.oi_name}${prfunc(obj)}(${which})`;
+			else if (op.oi_guess)
+				pb = pb + `called ${op.oi_guess}${prfunc(obj)}(${which})`;
+		}
+		else if (obj.o_count == 1)
+				pb = `A${vowelstr(which)} ${which} ${type}`;
+			else
+				pb = `${obj.o_count} ${which} ${type}`;
+
+		return pb;
+	}
+
+	/*
+	* nullstr:
+	*	Return a pointer to a null-length string
+	*/
+	//char *
+	function nullstr(ignored)//THING *ignored)
+	{
+		NOOP(ignored);
+		return "";
+	}
+
+	//# ifdef	MASTER
+	/*
+	* pr_list:
+	*	List possible potions, scrolls, etc. for wizard.
+	*/
+	//void
+	function pr_list()
+	{
+		let ch;
+
+		if (!terse)
+			addmsg("for ");
+		addmsg("what type");
+		if (!terse)
+			addmsg(" of object do you want a list");
+		msg("? ");
+		ch = readchar();
+		switch (ch)
+		{
+		case POTION:
+			pr_spec(pot_info, MAXPOTIONS);
+		break; case SCROLL:
+			pr_spec(scr_info, MAXSCROLLS);
+		break; case RING:
+			pr_spec(ring_info, MAXRINGS);
+		break; case STICK:
+			pr_spec(ws_info, MAXSTICKS);
+		break; case ARMOR:
+			pr_spec(arm_info, MAXARMORS);
+		break; case WEAPON:
+			pr_spec(weap_info, MAXWEAPONS);
+		break; default:
+			return;
+		}
+	}
+
+	/*
+	* pr_spec:
+	*	Print specific list of possible items to choose from
+	*/
+	//void
+	function pr_spec(info, nitems)//struct obj_info *info, int nitems)
+	{
+		let endp;	//struct obj_info *endp;
+		let i, lastprob;
+
+		endp = info[nitems];
+		lastprob = 0;
+		for (i = '0'; info < endp; i++)
+		{
+			if (i == '9' + 1)
+				i = 'a';
+			sprintf(prbuf, "%c: %%s (%d%%%%)", i, info.oi_prob - lastprob);
+			lastprob = info.oi_prob;
+			add_line(prbuf, info.oi_name);
+			info++;
+		}
+		end_line();
+	}
+	//# endif	/* MASTER */
+}

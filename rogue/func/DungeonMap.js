@@ -128,7 +128,7 @@ function DungeonMap(r){
         /*
         * Throw away stuff left on the previous level (if anything)
         */
-        r.free_list(lvl_obj);
+        r.free_list(r.dungeon.lvl_obj);
         this.roomf.do_rooms();				/* Draw rooms */
         this.passf.do_passages();			/* Draw passages */
         no_food++;
@@ -182,9 +182,11 @@ function DungeonMap(r){
         if (level == 1) {
             r.UI.move(0, 0);
             r.UI.printw(`Welcome ${whoami}`);
+        }else{
+            r.UI.msg(`Dungeon level ${level}`);
         }
         r.UI.comment("new_level");
-        console.log(`new_level ${level}`);
+        //console.log(`new_level ${level}`);
     }
 
     /*
@@ -194,14 +196,14 @@ function DungeonMap(r){
     */
     this.find_obj = function(y, x){
         let obj;
-
-        for (obj = lvl_obj; Boolean(obj); obj = obj.l_next)
+        //console.log(r.dungeon.lvl_obj);
+        for (obj = r.dungeon.lvl_obj; obj != null; obj = obj.l_next)
         {
             if (obj.o_pos.y == y && obj.o_pos.x == x)
                 return obj;
         }
         //sprintf(prbuf, "Non-object %d,%d", y, x);
-        r.UI.msg(prbuf);
+        r.UI.msg(`]Non-object x:${x} y:${y}`);
         return null;
     }
     /*
@@ -235,7 +237,7 @@ function DungeonMap(r){
             * Pick a new object and link it in the list
             */
             obj = r.item.new_thing(); //things.c
-            r.attach(lvl_obj, obj);
+            lvl_obj = r.attach(lvl_obj, obj);
             /*
             * Put it somewhere
             */
@@ -248,8 +250,8 @@ function DungeonMap(r){
         */
         if (level >= d.AMULETLEVEL && !amulet)
         {
-            obj = r.new_item();
-            r.attach(lvl_obj, obj);
+            obj = r.item.new_item();
+            lvl_obj = r.attach(lvl_obj, obj);
             obj.o_hplus = 0;
             obj.o_dplus = 0;
             obj.o_damage = "0x0";
@@ -262,6 +264,10 @@ function DungeonMap(r){
             this.roomf.find_floor(null, obj.o_pos, false, false);
             places[obj.o_pos.y][obj.o_pos.x].p_ch = d.AMULET;
         }
+        r.dungeon.lvl_obj = lvl_obj;
+
+        console.log(r.dungeon.lvl_obj);
+
         r.UI.comment("put_things");
     }
     /*
@@ -327,7 +333,7 @@ function DungeonMap(r){
            this.roomf.find_floor(rp, mp, 2 * d.MAXTRIES, false);
             tp = r.item.new_thing();
             tp.o_pos = mp;
-            r.attach(lvl_obj, tp);
+            lvl_obj = r.attach(lvl_obj, tp);
             //chat(mp.y, mp.x) = tp.o_type;
             places[mp.y][mp.x].p_ch = tp.o_type; 
         }

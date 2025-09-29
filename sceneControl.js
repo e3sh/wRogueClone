@@ -7,7 +7,7 @@ class sceneControl extends GameTask {
 
 		let io, stf, waitc 
 		let keyon;
-		const keywait = 250; //0.25s
+		const keywait = 100; //0.10s
 
 		this.init = function(g){
 			//create

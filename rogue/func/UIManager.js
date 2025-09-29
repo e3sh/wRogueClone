@@ -250,7 +250,7 @@ function UIManager(r, g){
         let no_command = stat.nocmd;
         //let to_death = stat.death;
 
-        let ch;
+        let ch ,ki;
         let ntimes = 1;			/* Number of player moves */
         let fp; //*fp
         let mp; //THING *mp;
@@ -306,7 +306,7 @@ function UIManager(r, g){
                     ch = countch;
                 else
                 {
-                    ch = r.UI.readchar();
+                    //ch = r.UI.readchar();
                     move_on = false;
                     if (mpos != 0)		/* Erase message if its there */
                         msg("");
@@ -318,8 +318,8 @@ function UIManager(r, g){
             {
                 if (--no_command == 0)
                 {
-                player.t_flags |= d.ISRUN;
-                r.UI.msg("you can move again");
+                    player.t_flags |= d.ISRUN;
+                    r.UI.msg("you can move again");
                 }
             }
             /*
@@ -337,22 +337,23 @@ function UIManager(r, g){
                 last_pick = null;
             }
 
+            ki = this.readchar();
             oldc = pr;
-            if (ch.includes("Numpad4")) pr = r.player.do_move( 0,-1);
-            if (ch.includes("Numpad2")) pr = r.player.do_move( 1, 0);
-            if (ch.includes("Numpad8")) pr = r.player.do_move(-1, 0);
-            if (ch.includes("Numpad6")) pr = r.player.do_move( 0, 1);
-            if (ch.includes("Numpad7")) pr = r.player.do_move(-1,-1);
-            if (ch.includes("Numpad9")) pr = r.player.do_move(-1, 1);
-            if (ch.includes("Numpad1")) pr = r.player.do_move( 1,-1);
-            if (ch.includes("Numpad3")) pr = r.player.do_move( 1, 1);
+            if (ki.includes("Numpad4")) pr = r.player.do_move( 0,-1);
+            if (ki.includes("Numpad2")) pr = r.player.do_move( 1, 0);
+            if (ki.includes("Numpad8")) pr = r.player.do_move(-1, 0);
+            if (ki.includes("Numpad6")) pr = r.player.do_move( 0, 1);
+            if (ki.includes("Numpad7")) pr = r.player.do_move(-1,-1);
+            if (ki.includes("Numpad9")) pr = r.player.do_move(-1, 1);
+            if (ki.includes("Numpad1")) pr = r.player.do_move( 1,-1);
+            if (ki.includes("Numpad3")) pr = r.player.do_move( 1, 1);
 
             let opcmdf = false;
-            if (ch.includes("Numpad5")) {
+            if (ki.includes("Numpad5")) {
                 pr = r.player.do_move( 0, 0);
                 opcmdf = true;
             }
-            if (ch.includes("KeyI"))  {
+            if (ki.includes("KeyI"))  {
                 //r.after = false; inventory(pack, 0);
                 let st = r.player.get_invstat();
                 r.UI.clear(3);
@@ -360,14 +361,19 @@ function UIManager(r, g){
                     r.UI.submsg(st[i]);
                 }
             }
-            if (ch.includes("KeyD")) ;//drop();
-            if (ch.includes("KeyR")) ;//read_scroll();
-            if (ch.includes("KeyE")) ;//eat();
-            if (ch.includes("KeyW")) ;//wear();
-            if (ch.includes("KeyT")) ;//take_off();
-            if (ch.includes("KeyP")) ;//ring_on();
-            if (ch.includes("KeyR")) ;//ring_off();
-            if (ch.includes("KeyS")) ;//search();
+            if (ki.includes("KeyD")) ;//drop();
+            if (ki.includes("KeyR")) ;//read_scroll();
+            if (ki.includes("KeyE")) ;//eat();
+            if (ki.includes("KeyW")) ;//wear();
+            if (ki.includes("KeyT")) ;//take_off();
+            if (ki.includes("KeyP")) ;//ring_on();
+            if (ki.includes("KeyR")) ;//ring_off();
+            if (ki.includes("KeyS")) ;//search();
+            if (ki.includes("KeyM")) {
+                r.after = false;
+                r.player.packf.move_on = !(r.player.packf.move_on);
+                r.UI.comment(`mv_on[${r.player.packf.move_on}]`);// ${r.after?"m":"s"}]`);
+            }//search();
 
             if (r.after)
             {
@@ -375,30 +381,28 @@ function UIManager(r, g){
                 switch (pr)
                 {
                     case d.DOOR:
-                        r.UI.msg(`DOOR:ROOM ${(oldc==d.PASSAGE)?"IN":"OUT"}`);
+                        //r.UI.msg(`DOOR:ROOM ${(oldc==d.PASSAGE)?"IN":"OUT"}`);
+                        if (oldc==d.PASSAGE) r.dungeon.roomf.enter_room(hero);
+                        if (oldc==d.FLOOR)   r.dungeon.roomf.leave_room(hero);
                         break;
-                    case d.STAIRS: r.UI.msg("STAIRS");
-                        if (opcmdf) r.dungeon.d_level(); //or u_level(); 
-                        break;  
-                    case d.GOLD:   r.UI.msg("GOLD");
-                        break;  
-                    case d.FOOD:   r.UI.msg("FOOD");
-                        break;  
-                    case d.POTION: r.UI.msg("POTION");
-                        break;  
-                    case d.SCROLL: r.UI.msg("SCROLL");
-                        break;  
-                    case d.WEAPON: r.UI.msg("WEAPON");
-                        break;  
-                    case d.ARMOR:  r.UI.msg("ARMOR");
-                        break;  
-                    case d.RING:    r.UI.msg("RING");
-                        break;  
-                    case d.MAGIC:   r.UI.msg("MAGIC");
-                        break;  
-                    case d.STICK:   r.UI.msg("STICK");
-                        break;  
-                    case d.AMULET:  r.UI.msg("AMULET");
+                    case d.STAIRS: //r.UI.msg("STAIRS");
+                        if (opcmdf) 
+                            r.dungeon.d_level(); //or u_level();
+                        else
+                            r.UI.msg(`find down stairs push[5]key next dungeon level`); 
+                        break;
+                    case d.GOLD:  
+                    case d.FOOD:  
+                    case d.POTION:
+                    case d.SCROLL:
+                    case d.WEAPON:
+                    case d.ARMOR:  
+                    case d.RING:   
+                    case d.MAGIC:  
+                    case d.STICK:  
+                    case d.AMULET:
+                        r.player.packf.pick_up(pr);
+                        //r.UI.msg(`GET ITEM:${pr}/mode${r.player.packf.move_on}`); 
                         break;  
                 }
             }
@@ -423,9 +427,8 @@ function UIManager(r, g){
         this.look(true);
 
         let s = " ";
-        let ki = this.readchar();
 		for (let i in ki){s += `${ki[i]},`}
-        this.comment("command"+s);
+            this.comment("command"+s);
     }
 
     /*
@@ -635,8 +638,8 @@ function UIManager(r, g){
             case d.TRAP:
                 break;
             default:
-            if (y != stairs.y || x != stairs.x || !seenstairs)
-                ch = rnd_thing();
+                if (y != stairs.y || x != stairs.x || !seenstairs)
+                    ch = rnd_thing();
             break;
         }
         return ch;
@@ -650,25 +653,28 @@ function UIManager(r, g){
     //erase_lamp(coord *pos, struct room *rp)
     this.erase_lamp = function(pos, rp)
     {
-        let player = r.player.player;
+        return;
+        const player = r.player.player;
+        const hero = r.player.hero;
+
         let y, x, ey, sy, ex;
 
         if (!(see_floor && (rp.r_flags & (d.ISGONE|d.ISDARK)) == d.ISDARK
-        && !on(player,d.ISBLIND)))
-            return;
+            && !on(player,d.ISBLIND)))
+                return;
 
         ey = pos.y + 1;
         ex = pos.x + 1;
         sy = pos.y - 1;
         for (x = pos.x - 1; x <= ex; x++)
-        for (y = sy; y <= ey; y++)
-        {
-            if (y == hero.y && x == hero.x)
-                continue;
-            r.UI.move(y, x);
-            if (r.UI.inch() == d.FLOOR)
-                r.UI.addch(' ');
-        }
+            for (y = sy; y <= ey; y++)
+            {
+                if (y == hero.y && x == hero.x)
+                    continue;
+                r.UI.move(y, x);
+                if (r.UI.inch() == d.FLOOR)
+                    r.UI.addch(' ');
+            }
     }
 
     /*

@@ -91,6 +91,7 @@ function GameManager(g){
 
     this.after = after;
     this.running = running;
+    this.jump = jump;
 
     this.oldpos = oldpos;
     this.oldrp = oldrp;
@@ -211,6 +212,8 @@ function GameManager(g){
             item.l_next.l_prev = item.l_prev;
         item.l_next = null;
         item.l_prev = null;
+        
+        return list;
     }
     /*
     * attach: add an item to the head of a list
@@ -230,6 +233,7 @@ function GameManager(g){
             item.l_prev = null;
         }
         list = item;
+        return list;
     }
     /*
     * free_list: Throw the whole blamed thing away
@@ -244,6 +248,7 @@ function GameManager(g){
             ptr = item.l_next;
             item = null;
         }
+        return ptr;
     }
     /*
     * discard: Free up an item

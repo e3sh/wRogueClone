@@ -68,10 +68,10 @@ function MonsterManager(r){
         let wastarget;
         let orig_pos; //static coord orig_pos;
 
-        for (tp = mlist; tp != null; tp = next)
+        for (tp = mlist; tp != null; tp = tp.l_next)
         {
             /* remember this in case the monster's "next" is changed */
-            next = tp.l_next;
+            //next = tp.l_next;
             if (!on(tp, d.ISHELD) && on(tp, d.ISRUN))
             {
                 orig_pos = tp.t_pos;
@@ -205,11 +205,11 @@ function MonsterManager(r){
             }
             else if (ce(cthis, th.t_dest))
             {
-                for (obj = lvl_obj; obj != null; obj = next(obj))
+                for (obj = r.dungeon.lvl_obj; obj != null; obj = next(obj))
                 if (th.t_dest == obj.o_pos)
                 {
-                    r.detach(lvl_obj, obj);
-                    r.attach(th.t_pack, obj);
+                    r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
+                    th.t_pack = r.attach(th.t_pack, obj);
                     r.dungeon.chat(obj.o_pos.y, obj.o_pos.x) =
                         (th.t_room.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
                     th.t_dest = r.monster.find_dest(th);
@@ -279,7 +279,7 @@ function MonsterManager(r){
         if ((prob = monsters[tp.t_type - 'A'].m_carry) <= 0 || tp.t_room == proom
         || see_monst(tp))
             return hero;
-        for (obj = lvl_obj; obj != null; obj = next(obj))
+        for (obj = r.dungeon.lvl_obj; obj != null; obj = next(obj))
         {
         if (obj.o_type == d.SCROLL && obj.o_which == d.S_SCARE)
             continue;
@@ -370,7 +370,7 @@ function MonsterManager(r){
                     */
                     if (ch == d.SCROLL)
                     {
-                    for (obj = lvl_obj; obj != null; obj = next(obj))
+                    for (obj = r.dungeon.lvl_obj; obj != null; obj = next(obj))
                     {
                         if (y == obj.o_pos.y && x == obj.o_pos.x)
                         break;
@@ -505,7 +505,7 @@ function MonsterManager(r){
 
         if ((lev_add = r.dungeon.level - d.AMULETLEVEL) < 0)
             lev_add = 0;
-        r.attach(mlist, tp);
+        mlist = r.attach(mlist, tp);
         tp.type = type;
         tp.disguise = type;
         tp.pos = cp;
@@ -591,7 +591,7 @@ function MonsterManager(r){
     this.give_pack = function(tp){
 
         if (r.dungeon.level >= r.dungeon.max_level && r.rnd(100) < monsters[tp.t_type-'A'].m_carry)
-	        r.attach(tp.t_pack, new_thing());
+	        tp.t_pack = r.attach(tp.t_pack, new_thing());
 
         r.UI.comment(".give_pack");
     }

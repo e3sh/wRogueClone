@@ -95,8 +95,10 @@ function DaemonScheduler(r){
             /*
             * Executing each one, giving it the proper arguments
             */
-            if ((dev.d_type == flag) && (dev.d_time == d.DAEMON))
+            if ((dev.d_type == flag) && (dev.d_time == d.DAEMON)){
                 dev.d_func(dev.d_arg);
+                //console.log(dev.d_func);
+            }
         }
         //r.UI.comment("do_daemons");
     }

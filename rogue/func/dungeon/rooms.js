@@ -6,11 +6,15 @@ function rooms_f(r, dg){
     const d = r.define;
     const t = r.types;
 
+	const proom = r.player.player.t_room;
+	
 	const rooms = dg.rooms;
 	const level = dg.level;
 	const places = dg.places;
 	const max_level = dg.max_level;
 
+	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
+	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
 	/*
 	* do_rooms:
 	*	Create rooms and corridors with a connectivity graph
@@ -114,7 +118,7 @@ function rooms_f(r, dg){
 				gold.o_flags = d.ISMANY;
 				gold.o_group = d.GOLDGRP;
 				gold.o_type = d.GOLD;
-				r.attach(dg.lvl_obj, gold);
+				dg.lvl_obj = r.attach(dg.lvl_obj, gold);
 			}
 			/*
 			* Put the monster in
@@ -364,42 +368,46 @@ function rooms_f(r, dg){
 	*/
 	this.enter_room = function(cp)//(coord *cp)
 	{
+		let player = r.player.player;
+		
 		let rp; //struct room *rp;
 		let tp; //THING *tp;
 		let y, x;
 		let ch;
 
-		rp = proom = roomin(cp);
-		rp = roomin(cp);
-		door_open(rp);
+		player.t_room = r.dungeon.roomin(cp);
+		rp = player.t_room;//proom;//r.dungeon.roomin(cp);
+		r.player.door_open(rp);
 		if (!(rp.r_flags & d.ISDARK) && !on(player, d.ISBLIND))
 		for (y = rp.r_pos.y; y < rp.r_max.y + rp.r_pos.y; y++)
 		{
-			move(y, rp.r_pos.x);
+			r.UI.move(y, rp.r_pos.x);
 			for (x = rp.r_pos.x; x < rp.r_max.x + rp.r_pos.x; x++)
 			{
-			tp = moat(y, x);
-			ch = chat(y, x);
-			if (tp == NULL)
-				if (CCHAR(inch()) != ch)
-				addch(ch);
+				tp = dg.moat(y, x);
+				ch = dg.chat(y, x);
+				if (tp == null)
+					if (r.UI.inch() != ch){
+						r.UI.move(y, x);
+						r.UI.addch(ch);
+					}
+					else
+						r.UI.move(y, x + 1);
 				else
-				move(y, x + 1);
-			else
-			{
-				tp.t_oldch = ch;
-				if (!see_monst(tp))
-				if (on(player, d.SEEMONST))
 				{
-					//standout();
-					addch(tp.t_disguise);
-					//standend();
+					tp.t_oldch = ch;
+					if (!see_monst(tp))
+					if (on(player, d.SEEMONST))
+					{
+						//standout();
+						r.UI.addch(tp.t_disguise);
+						//standend();
+					}
+					else
+						r.UI.addch(ch);
+					else
+					r.UI.addch(tp.t_disguise);
 				}
-				else
-					addch(ch);
-				else
-				addch(tp.t_disguise);
-			}
 			}
 		}
 	}
@@ -410,54 +418,56 @@ function rooms_f(r, dg){
 	*/
 	this.leave_room = function(cp)//coord *cp)
 	{
+		let player = r.player.player;
+
 		let pp; //PLACE *pp;
 		let rp; //struct room *rp;
 		let y, x;
 		let floor;
 		let ch;
 
-		rp = proom;
+		rp = player.t_room;//proom;
 
-		if (rp.r_flags & ISMAZE)
+		if (rp.r_flags & d.SMAZE)
 		return;
 
-		if (rp.r_flags & ISGONE)
-		floor = PASSAGE;
-		else if (!(rp.r_flags & ISDARK) || on(player, ISBLIND))
-		floor = FLOOR;
+		if (rp.r_flags & d.ISGONE)
+			floor = d.PASSAGE;
+		else if (!(rp.r_flags & d.ISDARK) || on(player, d.ISBLIND))
+			floor = d.FLOOR;
 		else
-		floor = ' ';
+			floor = ' ';
 
-		proom = passages[flat(cp.y, cp.x) & F_PNUM];
+		player.t_room = dg.passages[dg.flat(cp.y, cp.x) & d.F_PNUM];
 		for (y = rp.r_pos.y; y < rp.r_max.y + rp.r_pos.y; y++)
 		for (x = rp.r_pos.x; x < rp.r_max.x + rp.r_pos.x; x++)
 		{
-			move(y, x);
-			switch ( ch = CCHAR(inch()) )
+			r.UI.move(y, x);
+			switch ( ch = r.UI.inch() )
 			{
-			case FLOOR:
+			case d.FLOOR:
 				if (floor == ' ' && ch != ' ')
-				addch(' ');
+					r.UI.addch(' ');
 				break;
 			default:
 				/*
 				* to check for monster, we have to strip out
 				* standout bit
 				*/
-				if (isupper(toascii(ch)))
+				if (isupper(ch));//toascii(ch)))
 				{
-					if (on(player, SEEMONST))
+					if (on(player, d.SEEMONST))
 					{
-						standout();
-						addch(ch);
-						standend();
+						//standout();
+						r.UI.addch(ch);
+						//standend();
 						break;
 					}
-					pp = INDEX(y,x);
-					addch(pp.p_ch == DOOR ? DOOR : floor);
+					pp = dg.INDEX(y,x);
+					r.UI.addch(pp.p_ch == d.DOOR ? d.DOOR : floor);
 				}
 			}
 		}
-		door_open(rp);
+		r.player.door_open(rp);
 	}
 }

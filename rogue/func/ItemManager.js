@@ -64,6 +64,11 @@ function ItemManager(r){
     const wood  = v.wood;
     const metal = v.metal;
 
+    this.rings = new rings(r);
+    this.things = new thingsf(r);
+
+    this.inv_name = this.things.inv_name;
+
     const shuffle =(ary)=>{
         //console.log(ary);
         for (let j =0; j <100; j++){ //shuffle count
@@ -93,6 +98,24 @@ function ItemManager(r){
     * `whatIs()`, `identifyItem()` (識別コマンド処理), `uncurseItem()` (呪い解除) など。
     */
    /* Set up prob tables for objects init.c 全てのアイテムの出現確率の確認*/
+    this.get_itemparam = function(){
+        return {
+            THINGS: things,
+            ARM:    arm_info,  
+            POD:    pot_info ,
+            RING:   ring_info,
+            SCROLL: scr_info ,
+            WEAPON: weap_info ,
+            WANDSTAFF:  ws_info,
+            AC: a_class,
+            P_COLOR:p_colors,
+            RING_ST:r_stones,
+            SC_NAME:s_names ,
+            WS_MADE:ws_made ,
+            WS_TYPE:ws_type ,
+        }
+    }
+
     this.init_probs = function(){
         //Sum up the probabilities for items appearing
         const sumprobs =(info, name)=>{

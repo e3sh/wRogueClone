@@ -35,7 +35,7 @@ function PlayerCharacter(r){
 
     let max_stats  = new t.stats(d.INIT_STATS); 
 
-    let food_left;			/* Amount of food in hero's stomach (食料残量)*/
+    let food_left = 0;			/* Amount of food in hero's stomach (食料残量)*/
     let hungry_state = 0;   /* How hungry is he  (空腹状態)*/	
     let no_command = 0;	/* Number of turns asleep  (行動不能ターン数)*/
     let no_move = 0;    /* Number of turns held in place (行動不能ターン数)*/		
@@ -44,6 +44,7 @@ function PlayerCharacter(r){
     let see_floor = true;	/* Show the lamp illuminated floor */
     let terse = false;		/* true if we should be short (メッセージ表示オプション)*/
     let to_death = false;	/* Fighting is to the death! (戦死フラグ)*/
+    let move_on = false;	/* Next move shouldn't pick up items */
     
     let amulet = false; /* He found the amulet */ 
 
@@ -57,10 +58,14 @@ function PlayerCharacter(r){
     let pack_used = Array(27);  /* Is the character used in the pack?  (インベントリ文字の使用状況)*/
     pack_used.fill(false);
 
+    let quiet = 0;				/* Number of quiet turns */
+
     const GOLDCALC = (Math.floor(Math.random(50 + 10 * level)) + 2);
     const ISRING = (h,r)=>  {cur_ring[h] != null && cur_ring[h].o_which == r} //指定した手に特定のリングを着用しているか
     const ISWEARING =(r)=>  {return (ISRING(d.LEFT, r) || ISRING(d.RIGHT, r))}
     const ISMULT = (type)=> {return (type == d.POTION || type == d.SCROLL || type == d.FOOD)}
+
+    this.packf = new packf(r);
 
     this.player = player;
     this.amulet = amulet;
@@ -90,8 +95,8 @@ function PlayerCharacter(r){
         let str = [];
         
         //str.push(`pstats: ${pstats}`);
-        for (let i in pack_used){
-            str.push(`pack${i}:${pack_used[i]}`);
+        for (let i in this.packf.pack_used){
+            str.push(`pack${i}:${this.packf.pack_used[i]}`);
         }
         str.push(`cur_armor ${cur_armor.o_arm}`);
         str.push(`cur_weapon ${cur_weapon.o_damage}`);
@@ -177,7 +182,63 @@ function PlayerCharacter(r){
     //プレイヤーの空腹状態を管理し、食料の消化を行い、飢餓による影響を処理します。
     this.stomach = function(){
         //daemon
+        let oldfood; //register int oldfood;
+        let orig_hungry = hungry_state;	//int orig_hungry = hungry_state;
+
+        if (food_left <= 0)
+        {
+            if (food_left-- < -d.STARVETIME)
+                alert("death('s')");
+            /*
+            * the hero is fainting
+            */
+            if (no_command || r.rnd(5) != 0)
+                return;
+            no_command += r.rnd(8) + 4;
+            hungry_state = 3;
+            if (!terse)
+                r.UI.addmsg(choose_str("the munchies overpower your motor capabilities.  ",
+                        "you feel too weak from lack of food.  "));
+            r.UI.msg(choose_str("You freak out", "You faint"));
+        }
+        else
+        {
+            oldfood = food_left;
+            food_left -= r.item.rings.ring_eat(d.LEFT) + r.item.rings.ring_eat(d.RIGHT) + 1 - (amulet?1:0);
+
+
+            if (food_left < d.MORETIME && oldfood >= d.MORETIME)
+            {
+                hungry_state = 2;
+                r.UI.msg(choose_str("the munchies are interfering with your motor capabilites",
+                    "you are starting to feel weak"));
+            }
+            else if (food_left < 2 * d.MORETIME && oldfood >= 2 * d.MORETIME)
+            {
+                hungry_state = 1;
+                if (terse)
+                    r.UI.msg(choose_str("getting the munchies", "getting hungry"));
+                else
+                    r.UI.msg(choose_str("you are getting the munchies",
+                        "you are starting to get hungry"));
+            }
+        }
+        if (hungry_state != orig_hungry) { 
+            player.t_flags &= ~d.ISRUN; 
+            r.running = false; 
+            to_death = false; 
+            count = 0; 
+        } 
     }
+    /*	Choose the first or second string depending on whether it the
+    *	player is tripping
+    */
+    //char *
+    function choose_str(ts, ns)
+    {
+        return (on(player, d.ISHALU) ? ts : ns);
+    }
+
     /*
     * doctor:
     *	A healing daemon that restors hit points after rest
@@ -185,6 +246,29 @@ function PlayerCharacter(r){
     */
     this.doctor = function(){
         //daemon
+        let lv, ohp;	//register int lv, ohp;
+
+        lv = pstats.s_lvl;
+        ohp = pstats.s_hpt;
+        quiet++;
+        if (lv < 8)
+        {
+            if (quiet + (lv << 1) > 20)
+                pstats.s_hpt++;
+        }
+        else
+        if (quiet >= 3)
+            pstats.s_hpt += rnd(lv - 7) + 1;
+        if (ISRING(d.LEFT, d.R_REGEN))
+            pstats.s_hpt++;
+        if (ISRING(d.RIGHT, d.R_REGEN))
+            pstats.s_hpt++;
+        if (ohp != pstats.s_hpt)
+        {
+            if (pstats.s_hpt > maxhp)
+                pstats.s_hpt = maxhp;
+            quiet = 0;
+        }
     }
     /*
     *　visuals()
@@ -192,7 +276,45 @@ function PlayerCharacter(r){
     */ 
     this.visuals = function(){
         //daemon
+        let tp;	//register THING *tp;
+        let seemonst;	//register bool seemonst;
 
+        if (!r.after || (r.running && r.jump))
+            return;
+        /*
+        * change the things
+        */
+        for (tp = r.dungeon.lvl_obj; tp != null; tp = tp.l_next)
+        if (cansee(tp.o_pos.y, tp.o_pos.x))
+            r.UI.mvaddch(tp.o_pos.y, tp.o_pos.x, rnd_thing());
+
+        /*
+        * change the stairs
+        */
+        //if (!seenstairs && cansee(stairs.y, stairs.x))
+        //    r.UI.mvaddch(stairs.y, stairs.x, rnd_thing());
+
+        /*
+        * change the monsters
+        */
+        seemonst = on(player, d.SEEMONST);
+        for (tp = mlist; tp != null; tp = tp.l_next)
+        {
+            r.UI.move(tp.t_pos.y, tp.t_pos.x);
+            if (see_monst(tp))
+            {
+                if (tp.t_type == 'X' && tp.t_disguise != 'X')
+                    r.UI.addch(rnd_thing());
+                else
+                    r.UI.addch(String.fromCharCode(rnd(26) + 'A'.charCodeAt(0)));
+            }
+            else if (seemonst)
+            {
+                //standout();
+                r.UI.addch(String.fromCharCode(rnd(26) + 'A'.charCodeAt(0)));
+                //standend();
+            }
+        }
     }
 
     /*
@@ -204,6 +326,7 @@ function PlayerCharacter(r){
     * モンスターのターゲットが拾われたアイテムだった場合の処理、Amulet of Yendorが拾われた場合のフラグ設定などを行います。
     */
     this.add_pack = function(obj, silent){
+
 		//THING *op, *lp;
 		let op, lp;
 		//bool from_floor;
@@ -224,7 +347,7 @@ function PlayerCharacter(r){
 		if (obj.o_type == d.SCROLL && obj.o_which == d.S_SCARE)
 		if (obj.o_flags & d.ISFOUND)
 		{
-			r.detach(r.dungeon.lvl_obj, obj);
+			r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
 			r.UI.mvaddch(v.hero.y, v.hero.x, this.floor_ch());
 			r.dungeon.chat(hero.y, hero.x) = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
 			r.discard(obj);
@@ -367,6 +490,8 @@ function PlayerCharacter(r){
 	*/
 	this.pack_char = function()
 	{
+        return this.packf.pack_char();
+
 		let bp = -1;
 		//for (bp = v.pack_used; bp; bp++)
 		//	continue;
@@ -404,7 +529,7 @@ function PlayerCharacter(r){
 
 		if (from_floor)
 		{
-            r.detach(lvl_obj, obj);
+            r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
             r.UI.mvaddch(hero.y, hero.x, floor_ch());
             r.dungeon.chat(hero.y, hero.x) = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
 		}
@@ -429,6 +554,8 @@ function PlayerCharacter(r){
     */
     this.enter_room = function(cp){
 
+        r.dungeon.roomf.enter_room(cp);
+        /*
         let rp; //struct room *rp;
         let tp; //THING *tp;
         let y, x;
@@ -467,6 +594,7 @@ function PlayerCharacter(r){
                     }
                 }
             }
+        */
         r.UI.comment("enter_room");
     }
     /*
@@ -616,7 +744,7 @@ function PlayerCharacter(r){
         const move_stuff =()=>{
             r.UI.mvaddch(hero.y, hero.x, this.floor_at());
             if ((fl & d.F_PASS) && r.dungeon.chat(r.oldpos.y, r.oldpos.x) == d.DOOR)
-                leave_room(nh);
+                r.dungeon.roomf.leave_room(nh);
             hero = nh;
             r.player.player.t_pos = hero;//nh;
         }
@@ -942,7 +1070,7 @@ function PlayerCharacter(r){
             }
             if (ch == SCROLL)
             {
-                for (obj = lvl_obj; obj != null; obj = next(obj))
+                for (obj = r.dungeon.lvl_obj; obj != null; obj = obj.l_next)
                 if (y == obj.o_pos.y && x == obj.o_pos.x)
                     break;
                 if (obj != null && obj.o_which == S_SCARE){

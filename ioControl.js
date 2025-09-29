@@ -14,7 +14,7 @@ class ioControl extends GameTask {
 			//fontID,prompt	,charw, linew, location x,y
 			[80, 25,"std"	,["_" ," "], 8,16,	0,	0], //0:printw, addch, move, clear
 			[80,  5,"std"	,["_" ," "], 8,16,	0,400],	//1:msg
-			[32, 58,"small"	,["_" ," "], 6, 8,590, 16], //2:debug, comment
+			[32, 58,"small"	,["_" ," "], 6, 8,640, 16], //2:debug, comment
 			[32, 50,"small"	,["_" ," "], 6, 8,	0,	0], //3:
 		]
 
@@ -112,7 +112,7 @@ class ioControl extends GameTask {
 	draw(g){// this.visible が true時にループ毎に実行される。
 
 		let r = g.fpsload.result();
-		g.font["std"].putchr(`FPS:${Math.floor(r.fps)}`,640 - 50, 0);
+		g.font["std"].putchr(`FPS:${Math.floor(r.fps)}`,640, 0);
 
 		for (let i in this.layout){
 			let d = this.layout[i];

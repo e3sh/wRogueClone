@@ -68,41 +68,43 @@ function rogueTypes(){
 
     /*
     * Structure for monsters and player
+    * ゲーム内のすべての動的な要素を統一的に管理します。
     */
     this.thing = function() {
-
+        //実体属性
         function th(){
             //union thing *_l_next, *_l_prev;	/* Next pointer in link */
-            this._t_pos = {};		/* Position */ //coord 
-            this._t_turn;			/* If slowed, is it a turn to move */ //boolean
-            this._t_type;			/* What it is */
-            this._t_disguise;		/* What mimic looks like */
-            this._t_oldch;			/* Character that was where it was */
-            this._t_dest = {};		/* Where it is running to */ //coord 
-            this._t_flags;			/* State word */
+            this._t_pos = {};		/* Position */ //coord 実体が現在いる**座標**（`coord`型）
+            this._t_turn;			/* If slowed, is it a turn to move */
+            this._t_type;			/* What it is */  //boolean その実体の基本的な**種別**を示す文字（例: プレイヤーは`@`、モンスターは`A`〜`Z`）。
+            this._t_disguise;		/* What mimic looks like */ //その実体の**見かけの文字**。モンスターがアイテムに擬態している場合などに使用されます。 |
+            this._t_oldch;			/* Character that was where it was */ //実体が移動する前のマスに元々あった**マップ文字**。 
+            this._t_dest = {};		/* Where it is running to */ //coord  //モンスターが追跡している**目標の座標**（`coord *`型）へのポインタ。プレイヤーの位置（`&hero`）を指すことが多いです。 |
+            this._t_flags;			/* State word */ //実体の**状態**を示すビットマスクフラグ。`ISRUN`（走行中）、`ISHUH`（混乱）、`ISINVIS`（不可視）、`ISMEAN`（攻撃的）などが含まれます。 |
+            //実体の**身体能力の統計値**（HP、筋力、経験値、レベル、防御力）を格納する構造体。 
             this._t_stats = new stats([0,0,0,0,0,"0/0",0]);		/* Physical description */ //struct stats
-            this._t_room;		/* Current room for thing */ //struct room 
-            this._t_pack;		/* What the thing is carrying */ //union thing 
+            this._t_room;		/* Current room for thing */ //struct room //実体が現在いる**部屋**（`struct room`）へのポインタ。
+            this._t_pack;		/* What the thing is carrying */ //union thing //その実体（プレイヤーまたはモンスター）が所持している**アイテムの連結リスト**（インベントリ）の先頭へのポインタ。
             this._t_reserved;
         };
-
+        //オブジェクト属性
         function ob(){
             //union thing *_l_next, *_l_prev;	/* Next pointer in link */
-            this._o_type;			/* What kind of object it is */
-            this._o_pos = {};	    /* Where it lives on the screen */ //coord
+            this._o_type;			/* What kind of object it is */ //アイテムの**種類**を示す文字（例: `POTION` (!)、`SCROLL` (?)、`WEAPON` ())など）
+            this._o_pos = {};	    /* Where it lives on the screen */ //coord //アイテムが床に落ちている場合の**座標**。
             this._o_text;			/* What it says if you read it */ //string
             this._o_launch;			/* What you need to launch it */
-            this._o_packch;			/* What character it is in the pack */
+            this._o_packch;			/* What character it is in the pack */ //プレイヤーのインベントリ内でアイテムを識別するための**文字**（'a'、'b'など）
             this._o_damage; // =[8];		/* Damage if used like sword */
             this._o_hurldmg; //= [8];		/* Damage if thrown */
-            this._o_count;			/* count for plural objects */
-            this._o_which;			/* Which object of a type it is */
-            this._o_hplus;			/* Plusses to hit */
+            this._o_count;			/* count for plural objects */ //ポーションや矢など、スタック可能なアイテムの**数量**。 
+            this._o_which;			/* Which object of a type it is */ //アイテムの`o_type`内における**具体的な種類**を示す番号（例: どの種類のポーションか、どの種類の武器か）
+            this._o_hplus;			/* Plusses to hit */ //武器の**命中ボーナス/ダメージボーナス**
             this._o_dplus;			/* Plusses to damage */
-            this._o_arm;			/* Armor protection */
-            this._o_flags;			/* information about objects */
+            this._o_arm;			/* Armor protection */ //防具の**防御力**（アーマークラス）。杖/ワンドでは**チャージ数**（`o_charges`）、金貨では**価値**（`o_goldval`） としても使用されます。
+            this._o_flags;			/* information about objects */ //アイテムの**状態**を示すフラグ。`ISCURSED`（呪い）、`ISKNOW`（既知）、`ISPROT`（保護）などが含まれます。
             this._o_group;			/* group number for this object */
-            this._o_label;			/* Label for object */ //String
+            this._o_label;			/* Label for object */ //String //プレイヤーが`call`コマンドで未識別アイテムに付けた**推測名**
         };
 
         const _t = new th();
