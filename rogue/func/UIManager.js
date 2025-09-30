@@ -360,6 +360,7 @@ function UIManager(r, g){
                 for (let i in st){
                     r.UI.submsg(st[i]);
                 }
+                r.player.packf.inventory(player.t_pack, 0);
             }
             if (ki.includes("KeyD")) ;//drop();
             if (ki.includes("KeyR")) ;//read_scroll();
@@ -421,8 +422,9 @@ function UIManager(r, g){
         else if (ISRING(d.RIGHT, d.R_TELEPORT) && r.rnd(50) == 0)
             teleport();
 
-        if (this.wait_for("KeyQ")) r.mapcheckTest();
+        if (this.wait_for("KeyQ")) r.debug.mapcheckTest();
         if (this.wait_for("KeyZ")) r.dungeon.show_map();
+        if (this.wait_for("ArrowDown")) r.debug.checkListsCount();
 
         this.look(true);
 
@@ -653,7 +655,7 @@ function UIManager(r, g){
     //erase_lamp(coord *pos, struct room *rp)
     this.erase_lamp = function(pos, rp)
     {
-        return;
+        //return;
         const player = r.player.player;
         const hero = r.player.hero;
 

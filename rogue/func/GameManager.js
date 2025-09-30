@@ -36,6 +36,7 @@ function GameManager(g){
     this.daemon =  new DaemonScheduler(this);
     this.UI     =  new UIManager(this, g);
     this.system =  new SystemAdapter(this)
+    this.debug  =  new debug(this, g);
 
     /*
     **カプセル化するグローバル変数（例）:**
@@ -97,8 +98,7 @@ function GameManager(g){
     this.oldrp = oldrp;
 
     this.passgo = passgo;
-
-    
+ 
     /* 
     **関連する関数（提案されるメソッドの例）:**
     *   `main()`, `playit()` (ゲーム開始とメインループ)。
@@ -206,9 +206,9 @@ function GameManager(g){
     {
         if (list == item)
             list = item.l_next;
-        if (Boolean(item.l_prev))
+        if (item.l_prev != null)
             item.l_prev.l_next = item.l_next;
-        if (Boolean(item.l_next))
+        if (item.l_next != null)
             item.l_next.l_prev = item.l_prev;
         item.l_next = null;
         item.l_prev = null;
@@ -221,7 +221,7 @@ function GameManager(g){
     */
     this.attach = function(list, item)
     {
-        if (Boolean(list))
+        if (list != null)
         {
             item.l_next = list;
             list.l_prev = item;
@@ -242,7 +242,7 @@ function GameManager(g){
     this.free_list = function(ptr)
     {
         let item;
-        while (Boolean(ptr))
+        while (ptr != null)
         {
             item = ptr;
             ptr = item.l_next;
@@ -269,16 +269,5 @@ function GameManager(g){
         item.l_next = null;
         item.l_prev = null;
         return item;
-    }
-
-    //debug
-    this.mapcheckTest = function()
-    {
-        let ws = this.dungeon.placesCheck();
-
-        for (let i in ws){
-            g.console[0].mvprintw(ws[i], 0, i);
-        }
-        this.dungeon.passf.add_pass();
     }
 }

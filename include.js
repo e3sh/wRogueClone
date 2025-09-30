@@ -22,6 +22,7 @@ const w = [
     r + "ItemManager.js",
     r + "item/rings.js",
     r + "item/things.js",
+    r + "item/sticks.js",
     r + "UIManager.js",
     r + "DaemonScheduler.js",
     r + "SystemAdapter.js",

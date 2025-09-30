@@ -94,7 +94,7 @@ function passages_f(r, dg){
                 rdes[r1].isconn[j] = true;
                 rdes[r2].isconn[i] = true;
                 roomcount++;
-                console.log(r1 + "," + r2);
+                //console.log(r1 + "," + r2);
             }
         } while (roomcount < MAXROOMS);
 
@@ -127,9 +127,9 @@ function passages_f(r, dg){
         }
         this.passnum();
 
-        let st = "";
-        for (let i in rdes){st += (rdes[i].ingraph?"*":".")}
-        console.log(st);
+        //let st = "";
+        //for (let i in rdes){st += (rdes[i].ingraph?"*":".")}
+        //console.log(st);
     }
 
     /*

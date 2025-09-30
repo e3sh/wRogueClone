@@ -31,3 +31,65 @@ function SystemAdapter(r){
     */
 } //` (シングルトンまたは依存性注入)
 
+/**
+ * DEBUG ROUTINE
+ * @param {GameManager} r GameManagerインスタンス
+ * @param {GameCore}    g GameCoreインスタンス
+ */
+function debug(r, g){
+
+    const d = r.define;
+    const t = r.types;
+
+    this.checkListsCount = function()
+    {
+        const mlist   = r.dungeon.mlist;  
+        const lvl_obj = r.dungeon.lvl_obj;
+
+        let mlcount = 0;
+        for (let m = mlist; m != null ; m = m.l_next) {
+            mlcount++;
+            r.UI.submsg(`m y:${m.t_pos.y} x:${m.t_pos.x} f:${m.t_flags}`);
+            r.UI.mvaddch(m.t_pos.y, m.t_pos.x, "&");
+        }
+        //console.log(mlcount);
+
+        let locount = 0;
+        for (let l = lvl_obj; l != null ; l = l.l_next){
+            locount++;
+            r.UI.submsg(`l y:${l.o_pos.y} x:${l.o_pos.x} f:${l.o_flags}`);
+            r.UI.mvaddch(l.o_pos.y, l.o_pos.x, "$");
+        } 
+        //console.log(locount);
+
+        r.UI.submsg(`mlist:${mlcount} lvl_obj:${locount}`);
+    }
+
+    //debug
+    this.mapcheckTest = function()
+    {
+        let ws = this.placesCheck();
+
+        for (let i in ws){
+            g.console[0].mvprintw(ws[i], 0, i);
+        }
+        r.dungeon.passf.add_pass();
+    }
+
+    //debug
+    this.placesCheck = function(){
+
+        const places = r.dungeon.places;
+        let vstr = []; 
+
+        for (let i = 0; i< d.MAXLINES; i++){
+            let ws = "";
+            for (let j = 0; j< d.MAXCOLS; j++){
+                //if (places[i][j].p_flags != 0) ws+="?"; else 
+                ws += places[i][j].p_ch != " "?places[i][j].p_ch:"/";
+            }
+            vstr[i] = ws;
+        }
+        return vstr;
+    }
+}

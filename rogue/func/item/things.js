@@ -84,7 +84,7 @@ function thingsf(r){
 				pb = nameit(obj, "ring", r_stones[which], ring_info[which], r.item.rings.ring_num);
 				break; 
 			case d.STICK:
-				pb = nameit(obj, ws_type[which], ws_made[which], ws_info[which], charge_str);
+				pb = nameit(obj, ws_type[which], ws_made[which], ws_info[which], r.item.sticks.charge_str);//charge_str ,file :sticks
 				break; 
 			case d.SCROLL:
 				if (obj.o_count == 1)
@@ -120,12 +120,12 @@ function thingsf(r){
 					if (obj.o_count > 1)
 						pb = obj.o_count + " ";
 					else
-						pb = `A${vowelstr(sp)}`;
+						pb = `A${vowelstr(sp)} `;
 
 					if (obj.o_flags & d.ISKNOW)
 						pb = pb + `${num(obj.o_hplus,obj.o_dplus,d.WEAPON)} ${sp}`;
 					else
-						pb = pb + "" + sp;
+						pb = pb + `${pb} ${sp}`;
 					if (obj.o_count > 1)
 						pb = pb + "s";
 					if (obj.o_label != null)
@@ -135,9 +135,9 @@ function thingsf(r){
 				break; 
 			case d.ARMOR:
 				sp = arm_info[which].oi_name;
-				if (obj.o_flags & ISKNOW)
+				if (obj.o_flags & d.ISKNOW)
 				{
-					pb = `${num(a_class[which] - obj.o_arm, 0, ARMOR)} ${sp}`;
+					pb = `${num(a_class[which] - obj.o_arm, 0, d.ARMOR)} ${sp}`;
 					if (!terse)
 						pb = pb + "protection ";
 					pb = pb + `${10 - obj.o_arm}]`;
@@ -521,14 +521,14 @@ function thingsf(r){
 		if (line_cnt == 0)
 		{
 			wclear(hw);
-			if (inv_type == INV_SLOW)
+			if (inv_type == d.INV_SLOW)
 			mpos = 0;
 		}
-		if (inv_type == INV_SLOW)
+		if (inv_type == d.INV_SLOW)
 		{
 			if (fmt != '\0')
-				if (msg(fmt, arg) == ESCAPE)
-				return ESCAPE;
+				if (msg(fmt, arg) == d.ESCAPE)
+				return d.ESCAPE;
 			line_cnt++;
 		}
 		else

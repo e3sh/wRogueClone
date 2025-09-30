@@ -66,6 +66,7 @@ function ItemManager(r){
 
     this.rings = new rings(r);
     this.things = new thingsf(r);
+    this.sticks = new sticks(r);
 
     this.inv_name = this.things.inv_name;
 

@@ -266,7 +266,7 @@ function DungeonMap(r){
         }
         r.dungeon.lvl_obj = lvl_obj;
 
-        console.log(r.dungeon.lvl_obj);
+        //console.log(r.dungeon.lvl_obj);
 
         r.UI.comment("put_things");
     }
@@ -379,22 +379,6 @@ function DungeonMap(r){
         default:
             return (!( /^[a-zA-Z]+$/.test(ch) ));
         }
-    }
-
-    //debug
-    this.placesCheck = function(){
-
-        vstr = [] 
-
-        for (let i = 0; i< d.MAXLINES; i++){
-            let ws = "";
-            for (let j = 0; j< d.MAXCOLS; j++){
-                //if (places[i][j].p_flags & !=0) ws+="?";
-                ws += places[i][j].p_ch;
-            }
-            vstr[i] = ws;
-        }
-        return vstr;
     }
 
     /*

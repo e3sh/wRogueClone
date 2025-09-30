@@ -12,10 +12,10 @@ class ioControl extends GameTask {
 
 		const cp = [
 			//fontID,prompt	,charw, linew, location x,y
-			[80, 25,"std"	,["_" ," "], 8,16,	0,	0], //0:printw, addch, move, clear
+			[80, 24,"std"	,["_" ," "], 8,16,	0,	0], //0:printw, addch, move, clear
 			[80,  5,"std"	,["_" ," "], 8,16,	0,400],	//1:msg
-			[32, 58,"small"	,["_" ," "], 6, 8,640, 16], //2:debug, comment
-			[32, 50,"small"	,["_" ," "], 6, 8,	0,	0], //3:
+			[32, 26,"small"	,["_" ," "], 6, 8,640, 16], //2:debug, comment
+			[32, 26,"small"	,["_" ," "], 6, 8,640,240], //3:
 		]
 
 		let cnsl = [];

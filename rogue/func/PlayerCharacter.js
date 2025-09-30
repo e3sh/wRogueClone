@@ -206,7 +206,6 @@ function PlayerCharacter(r){
             oldfood = food_left;
             food_left -= r.item.rings.ring_eat(d.LEFT) + r.item.rings.ring_eat(d.RIGHT) + 1 - (amulet?1:0);
 
-
             if (food_left < d.MORETIME && oldfood >= d.MORETIME)
             {
                 hungry_state = 2;

@@ -4,7 +4,8 @@
 function packf(r){
 
 	let pack_used = Array(27);  /* Is the character used in the pack?  (インベントリ文字の使用状況)*/
-	pack_used.fill(false);
+	for (let i = 0; i <26; i++) pack_used[i] = false;
+	//pack_used.fill(false);
 	this.pack_used = pack_used;
 	let inpack = 0;				/* Number of things in pack */
 
@@ -66,6 +67,7 @@ function packf(r){
 		{
 			player.t_pack = obj;
 			obj.o_packch = this.pack_char();
+			console.log(obj.o_packch);
 			inpack++;
 		}
 		else
@@ -193,6 +195,7 @@ function packf(r){
 
 		if (from_floor)
 		{
+			console.log("get item from_floor")
 			r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
 			r.UI.mvaddch(hero.y, hero.x, this.floor_ch());
 
@@ -231,7 +234,7 @@ function packf(r){
 		else
 		{
 			last_pick = null;
-			this.pack_used[obj.o_packch - 'a'] = false;
+			this.pack_used[Number(obj.o_packch.charCodeAt(0) - 'a'.charCodeAt(0))] = false;
 			pack = r.detach(pack, obj);
 		}
 		return nobj;
@@ -255,7 +258,8 @@ function packf(r){
 				break;
 			}	
 		}
-		return (bp + 'a'.charCodeAt(0));
+		this.pack_used[bp] = true;
+		return (String.fromCharCode(Number('a'.charCodeAt(0)) + Number(bp)));
 	}
 
 	/*
@@ -265,38 +269,41 @@ function packf(r){
 	*/
 	this.inventory = function(list, type)	//THING *list, int type)
 	{
-		let inv_temp = [];//static char inv_temp[MAXSTR];
+		let inv_temp = "";// = [];//static char inv_temp[MAXSTR];
 
 		n_objs = 0;
-		for (; list != null; list = next(list))
+		for (; list != null; list = list.l_next)
 		{
-			if (type && type != list.o_type && !(type == CALLABLE &&
-				list.o_type != FOOD && list.o_type != AMULET) &&
-				!(type == R_OR_S && (list.o_type == RING || list.o_type == STICK)))
-				continue;
+			if (type && type != list.o_type && !(type == d.CALLABLE &&
+				list.o_type != d.FOOD && list.o_type != d.AMULET) &&
+				!(type == d.R_OR_S && (list.o_type == d.RING || list.o_type == d.STICK)))
+					continue;
 			n_objs++;
-				sprintf(inv_temp, "%c) %%s", list.o_packch);
-			msg_esc = TRUE;
-			if (add_line(inv_temp, inv_name(list, false)) == ESCAPE)
-			{
-				msg_esc = false;
-				msg("");
-				return TRUE;
-			}
-			msg_esc = false;
+			inv_temp = `${list.o_packch}) `;// ${}`"%c) %%s", list.o_packch);
+			//msg_esc = true;
+			inv_temp += r.item.things.inv_name(list, false);
+			r.UI.submsg(inv_temp);
+			console.log(inv_temp);	
+			//if (add_line(inv_temp, inv_name(list, false)) == d.ESCAPE)
+			//{
+			//	msg_esc = false;
+			//	msg("");
+			//	return true;
+			//}
+			//msg_esc = false;
 		}
 		if (n_objs == 0)
 		{
 			if (terse)
-				msg(type == 0 ? "empty handed" :
+				r.UI.msg(type == 0 ? "empty handed" :
 						"nothing appropriate");
 			else
-				msg(type == 0 ? "you are empty handed" :
+				r.UI.msg(type == 0 ? "you are empty handed" :
 						"you don't have anything appropriate");
 			return false;
 		}
-		end_line();
-		return TRUE;
+		//end_line();
+		return true;
 	}
 
 	/*
