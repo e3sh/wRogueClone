@@ -116,7 +116,7 @@ function sticks(r){
 						let pp;//THING *pp;
 
 						pp = tp.t_pack;
-						detach(mlist, tp);
+						r.dungeon.mlist = detach(r.dungeon.mlist, tp);
 						if (see_monst(tp))
 							r.UI.mvaddch(y, x, chat(y, x));
 						oldch = tp.t_oldch;
@@ -252,7 +252,7 @@ function sticks(r){
 			corp = null;
 		inpass = (bool)(proom.r_flags & d.ISGONE);
 		dp = drainee;
-		for (mp = mlist; mp != null; mp = next(mp))
+		for (mp = r.dungeon.mlist; mp != null; mp = next(mp))
 			if (mp.t_room == proom || mp.t_room == corp ||
 				(inpass && chat(mp.t_pos.y, mp.t_pos.x) == d.DOOR &&
 				passages[flat(mp.t_pos.y, mp.t_pos.x) & d.F_PNUM] == proom))

@@ -73,7 +73,7 @@ function rings(r){
 
 		if (!terse)
 			addmsg("you are now wearing ");
-		msg("%s (%c)", inv_name(obj, TRUE), obj.o_packch);
+		msg("%s (%c)", r.item.things.inv_name(obj, TRUE), obj.o_packch);
 	}
 
 	/*
@@ -108,7 +108,7 @@ function rings(r){
 			return;
 		}
 		if (dropcheck(obj))
-			msg("was wearing %s(%c)", inv_name(obj, TRUE), obj.o_packch);
+			msg("was wearing %s(%c)", r.item.things.inv_name(obj, TRUE), obj.o_packch);
 	}
 
 	/*

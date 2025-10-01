@@ -15,6 +15,16 @@ function rooms_f(r, dg){
 
 	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
+
+	let ffresult = {x:0, y:0};
+	this.get_findfloor_result =()=> {
+		//console.log(ffresult);
+		let rx = ffresult.x;
+		let ry = ffresult.y;
+		
+		return { x:rx, y:ry };
+	}
+
 	/*
 	* do_rooms:
 	*	Create rooms and corridors with a connectivity graph
@@ -113,7 +123,7 @@ function rooms_f(r, dg){
 				gold = r.new_item();
 				gold.o_goldval = rp[i].r_goldval = d.GOLDCALC;
 				this.find_floor(rp[i], rp[i].r_gold, false, false);
-				gold.o_pos = rp[i].r_gold;
+				gold.o_pos = this.get_findfloor_result();//rp[i].r_gold;
 				//chat(rp[i].r_gold.y, rp[i].r_gold.x) = d.GOLD;
 				gold.o_flags = d.ISMANY;
 				gold.o_group = d.GOLDGRP;
@@ -127,8 +137,8 @@ function rooms_f(r, dg){
 			{
 				tp = r.new_item();
 				this.find_floor(rp[i], mp, false, true);
-				r.monster.new_monster(tp, r.monster.randmonster(false), mp);
-				r.monster.give_pack(tp);
+				tp = r.monster.new_monster(tp, r.monster.randmonster(false), this.get_findfloor_result());//mp);
+				tp = r.monster.give_pack(tp);
 			}
 		}
 	}
@@ -321,6 +331,7 @@ function rooms_f(r, dg){
 	
 		cp.x = rp.r_pos.x + r.rnd(rp.r_max.x - 2) + 1;
 		cp.y = rp.r_pos.y + r.rnd(rp.r_max.y - 2) + 1;
+		return cp;
 	}
 
     /*
@@ -350,7 +361,8 @@ function rooms_f(r, dg){
                 rp = rooms[dg.rnd_room()];
                 compchar = ((rp.r_flags & d.ISMAZE) ? d.PASSAGE : d.FLOOR);
             }
-            this.rnd_pos(rp, cp);
+            cp = this.rnd_pos(rp, cp);
+			ffresult = cp;
             pp = r.dungeon.INDEX(cp.y, cp.x);
             if (monst)
             {

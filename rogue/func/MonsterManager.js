@@ -63,6 +63,8 @@ function MonsterManager(r){
     */
     this.runners = function(){
 
+        const mlist = r.dungeon.mlist;
+
         let tp; //register THING *tp;
         let next; //THING *next;
         let wastarget;
@@ -92,6 +94,7 @@ function MonsterManager(r){
             r.UI.endmsg();
             r.UI.has_hit = false;
         }
+        //r.UI.comment("d-runners");
         //r.UI.comment("runners");
     }
     /*
@@ -101,12 +104,13 @@ function MonsterManager(r){
     this.move_monst = function(tp)//(THING *tp)
     {
         if (!on(tp, d.ISSLOW) || tp.t_turn)
-        if (do_chase(tp) == -1)
-            return(-1);
+            if (this.do_chase(tp) == -1)
+                return(-1);
         if (on(tp, d.ISHASTE))
-        if (do_chase(tp) == -1)
-            return(-1);
+            if (this.do_chase(tp) == -1)
+                return(-1);
         tp.t_turn ^= true;
+        console.log("mm");
         return(0);
     }
     /*
@@ -132,7 +136,7 @@ function MonsterManager(r){
         if (th.t_dest == hero)	/* Find room of chasee */
             ree = proom;
         else
-        ree = r.dungeon.roomin(th.t_dest);
+            ree = r.dungeon.roomin(th.t_dest);
         /*
         * We don't count doors as inside rooms for this routine
         */
@@ -190,6 +194,7 @@ function MonsterManager(r){
                     return(0);
                 }
             }
+            console.log("over");
         }
         over();
         /*
@@ -276,7 +281,7 @@ function MonsterManager(r){
 
         const hero = r.player.player.t_pos;
 
-        if ((prob = monsters[tp.t_type - 'A'].m_carry) <= 0 || tp.t_room == proom
+        if ((prob = monsters[Number(tp.t_type.charCodeAt(0)) - Number('A'.charCodeAt(0))].m_carry) <= 0 || tp.t_room == proom
         || see_monst(tp))
             return hero;
         for (obj = r.dungeon.lvl_obj; obj != null; obj = next(obj))
@@ -505,15 +510,15 @@ function MonsterManager(r){
 
         if ((lev_add = r.dungeon.level - d.AMULETLEVEL) < 0)
             lev_add = 0;
-        mlist = r.attach(mlist, tp);
-        tp.type = type;
-        tp.disguise = type;
-        tp.pos = cp;
-        r.UI.move(cp.y, cp.x);
-        tp.oldch = r.UI.inch();//CCHAR( inch() );
-        tp.room = r.dungeon.roomin(cp); //console.log(cp);
+        r.dungeon.mlist = r.attach(r.dungeon.mlist, tp);
+        tp.t_type = type;
+        tp.t_disguise = type;
+        tp.t_pos = cp;
+        r.UI.move(cp.y, cp.x);//console.log(cp);
+        tp.t_oldch = r.UI.inch();//CCHAR( inch() );
+        tp.t_room = r.dungeon.roomin(cp); //console.log(cp);
         r.dungeon.places[cp.y][cp.x].monst = tp;
-        mp = monsters[tp.type.charCodeAt() - 'A'.charCodeAt() ]; //console.log(mp, tp);
+        mp = monsters[Number(tp.t_type.charCodeAt()) - Number('A'.charCodeAt()) ]; //console.log(mp, tp);
         //console.log(tp, mp);
         tp.t_stats.s_lvl = mp.m_stats.s_lvl + lev_add;
         tp.t_stats.s_hpt = r.roll(tp.t_stats.s_lvl, 8);
@@ -533,6 +538,7 @@ function MonsterManager(r){
             tp.t_disguise = rnd_thing();
 
         r.UI.comment(".new_monster");
+        return tp;
     }
     /*
     * expadd:
@@ -564,21 +570,21 @@ function MonsterManager(r){
         tp = new_item();
         do
         {
-            find_floor(NULL, cp, FALSE, TRUE);  // struct room *) NULL
-        } while (roomin(cp) == proom);
-        new_monster(tp, randmonster(TRUE), cp);
-        if (on(player, SEEMONST))
+            r.dungeon.roomf.find_floor(NULL, cp, FALSE, TRUE);  // struct room *) NULL
+        } while (roomin(r.dungeon.roomf.get_find_floor_result()) == proom);
+        tp = new_monster(tp, randmonster(TRUE), r.dungeon.roomf.get_find_floor_result());//cp);
+        if (on(player, d.SEEMONST))
         {
-        standout();
-        if (!on(player, ISHALU))
-            addch(tp.t_type);
-        else
-            addch(rnd(26) + 'A');
-        standend();
+            //standout();
+            if (!on(player, d.ISHALU))
+                r.UI.addch(tp.t_type);
+            else
+                r.UI.addch(String.fromCharCode(r.rnd(26) + 'A'.charCodeAt(0)));
+            //standend();
         }
         runto(tp.t_pos);
         if (wizard)
-        msg(`started a wandering ${monsters[tp.t_type-'A'].m_name}`);
+            r.UI.msg(`started a wandering ${monsters[Number(tp.t_type.charCodeAt(0))-Number('A'.charCodeAt(0))].m_name}`);
 
         r.UI.comment("wanderer");
 
@@ -593,6 +599,7 @@ function MonsterManager(r){
         if (r.dungeon.level >= r.dungeon.max_level && r.rnd(100) < monsters[tp.t_type-'A'].m_carry)
 	        tp.t_pack = r.attach(tp.t_pack, new_thing());
 
+        return tp;
         r.UI.comment(".give_pack");
     }
 

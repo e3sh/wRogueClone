@@ -95,9 +95,14 @@ function PlayerCharacter(r){
         let str = [];
         
         //str.push(`pstats: ${pstats}`);
-        for (let i in this.packf.pack_used){
-            str.push(`pack${i}:${this.packf.pack_used[i]}`);
+        let wst = "";
+        for (let i in this.packf.pack_used)
+        {
+            if (this.packf.pack_used[i])
+                wst += String.fromCharCode(Number("a".charCodeAt(0)) + Number(i));//str.push(`pack${i}:${this.packf.pack_used[i]}`);
         }
+        str.push(`pack:${wst}`);
+
         str.push(`cur_armor ${cur_armor.o_arm}`);
         str.push(`cur_weapon ${cur_weapon.o_damage}`);
         str.push(`cur_ring_R ${cur_ring[0].o_which}`);
@@ -138,7 +143,7 @@ function PlayerCharacter(r){
         obj = r.item.new_item();
         obj.o_type = d.FOOD;
         obj.o_count = 1;
-        this.add_pack(obj, true);
+        this.packf.add_pack(obj, true);
         /*
         * And his suit of armor
         */
@@ -149,7 +154,7 @@ function PlayerCharacter(r){
         obj.o_flags |= d.ISKNOW;
         obj.o_count = 1;
         cur_armor = obj;
-        this.add_pack(obj, true);
+        this.packf.add_pack(obj, true);
         /*
         * Give him his weaponry.  First a mace.
         */
@@ -158,7 +163,7 @@ function PlayerCharacter(r){
         obj.o_hplus = 1;
         obj.o_dplus = 1;
         obj.o_flags |= d.ISKNOW;
-        this.add_pack(obj, true);
+        this.packf.add_pack(obj, true);
         cur_weapon = obj;
         /*
         * Now a +1 bow
@@ -167,7 +172,7 @@ function PlayerCharacter(r){
         r.item.init_weapon(obj, d.BOW);
         obj.o_hplus = 1;
         obj.o_flags |= d.ISKNOW;
-        this.add_pack(obj, true);
+        this.packf.add_pack(obj, true);
         /*
         * Now some arrows
         */
@@ -175,7 +180,22 @@ function PlayerCharacter(r){
         r.item.init_weapon(obj, d.ARROW);
         obj.o_count = r.rnd(15) + 25;
         obj.o_flags |= d.ISKNOW;
-        this.add_pack(obj, true);
+        this.packf.add_pack(obj, true);
+        /*
+        * Give him some food
+        */
+        obj = r.item.new_item();
+        obj.o_type = d.FOOD;
+        obj.o_count = 1;
+        this.packf.add_pack(obj, true);
+        /*
+        * Give him some food
+        */
+        obj = r.item.new_item();
+        obj.o_type = d.FOOD;
+        obj.o_count = 1;
+        this.packf.add_pack(obj, true);
+
 
         r.UI.comment("init_player");
     }
@@ -228,6 +248,7 @@ function PlayerCharacter(r){
             to_death = false; 
             count = 0; 
         } 
+        //r.UI.comment("d-stomach");
     }
     /*	Choose the first or second string depending on whether it the
     *	player is tripping
@@ -268,6 +289,7 @@ function PlayerCharacter(r){
                 pstats.s_hpt = maxhp;
             quiet = 0;
         }
+        //r.UI.comment("d-doctor");
     }
     /*
     *　visuals()
@@ -297,7 +319,7 @@ function PlayerCharacter(r){
         * change the monsters
         */
         seemonst = on(player, d.SEEMONST);
-        for (tp = mlist; tp != null; tp = tp.l_next)
+        for (tp = r.dungeon.mlist; tp != null; tp = tp.l_next)
         {
             r.UI.move(tp.t_pos.y, tp.t_pos.x);
             if (see_monst(tp))
@@ -324,139 +346,8 @@ function PlayerCharacter(r){
     * オブジェクトをプレイヤーのパックに追加します。スケアモンスターのスクロールの特殊処理、同じタイプのスタック可能なアイテムのまとめ、
     * モンスターのターゲットが拾われたアイテムだった場合の処理、Amulet of Yendorが拾われた場合のフラグ設定などを行います。
     */
-    this.add_pack = function(obj, silent){
-
-		//THING *op, *lp;
-		let op, lp;
-		//bool from_floor;
-		let from_floor;
-
-		from_floor = false;
-		if (!Boolean(obj))
-		{
-			obj = r.dungeon.find_obj(hero.y, hero.x);
-			if (obj == null)
-				return;
-			from_floor = true;
-		}
-
-		/*
-		* Check for and deal with scare monster scrolls
-		*/
-		if (obj.o_type == d.SCROLL && obj.o_which == d.S_SCARE)
-		if (obj.o_flags & d.ISFOUND)
-		{
-			r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
-			r.UI.mvaddch(v.hero.y, v.hero.x, this.floor_ch());
-			r.dungeon.chat(hero.y, hero.x) = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
-			r.discard(obj);
-			r.UI.msg("the scroll turns to dust as you pick it up");
-			return;
-		}
-
-		if (!Boolean(pack))
-        {
-			pack = obj;
-			obj.o_packch = this.pack_char();
-			inpack++;
-		}
-		else
-		{
-            lp = null;
-            for (let op = pack; Boolean(op); op = op.l_next)
-            {
-                if (op.o_type != obj.o_type)
-                lp = op;
-                else
-                {
-                    while (op.o_type == obj.o_type && op.o_which != obj.o_which)
-                    {
-                        lp = op;
-                        if (!Boolean(op.l_next))
-                            break;
-                        else
-                            op = op.l_next;
-                    }
-                    if (op.o_type == obj.o_type && op.o_which == obj.o_which)
-                    {
-                        if (ISMULT(op.o_type))
-                        {
-                            if (!this.pack_room(from_floor, obj))
-                                return;
-                            op.o_count++;
-                            r.discard(obj);
-                            obj = op;
-                            lp = null;
-                        }
-                        else if (obj.o_group)
-                        {
-                            lp = op;
-                            while (op.o_type == obj.o_type
-                                && op.o_which == obj.o_which
-                                && op.o_group != obj.o_group)
-                            {
-                                lp = op;
-                                if (!Boolean(op.l_next))
-                                break;
-                                else
-                                op = op.l_next;
-                            }
-                            if (op.o_type == obj.o_type
-                                && op.o_which == obj.o_which
-                                && op.o_group == obj.o_group)
-                            {
-                                op.o_count += obj.o_count;
-                                inpack--;
-                                if (!this.pack_room(from_floor, obj)) return;
-                                r.discard(obj);
-                                obj = op;
-                                lp = null;
-                            }
-                        }
-                        else
-                            lp = op;
-                    }
-                    break;
-                }
-            }
-
-            if (Boolean(lp))
-            {
-                if (!this.pack_room(from_floor, obj))
-                    return;
-                else
-                {
-                    obj.o_packch = this.pack_char();
-                    obj.l_next = lp.l_next;
-                    obj.l_prev = lp;
-                    if (Boolean(lp.l_next))
-                        lp.l_next.lprev = obj;
-                    lp.l_next = obj;
-                }
-            }
-		}
-		obj.o_flags |= d.ISFOUND;
-
-		/*
-		* If this was the object of something's desire, that monster will
-		* get mad and run at the hero.
-		*/
-		for (op = r.dungeon.mlist; Boolean(op); op = op.l_next)
-            if (op.t_dest == obj.o_pos)
-                op.t_dest = hero;
-
-		if (obj.o_type == d.AMULET)
-			amulet = true;
-		/*
-		* Notify the user
-		*/
-		if (!silent)
-		{
-            if (!terse)
-                r.UI.addmsg("you now have ");
-            r.UI.msg(`${inv_name(obj, !terse)} ${obj.o_packch}`);
-		}
-    }
+    //this.add_pack = this.packf.add_pack;
+    
     /*
 	* floor_ch:
 	*	Return the appropriate floor character for her room
@@ -482,60 +373,8 @@ function PlayerCharacter(r){
         else
             return true;
     }
+
     /*
-	* pack_char:
-	*	Return the next unused pack character.
-	* 次の未使用のパック文字（'a'〜'z'）を返します。
-	*/
-	this.pack_char = function()
-	{
-        return this.packf.pack_char();
-
-		let bp = -1;
-		//for (bp = v.pack_used; bp; bp++)
-		//	continue;
-		for (let i in pack_used)
-		{
-			if (!pack_used[i])
-			{ 
-				bp = i;
-				break;
-			}	
-		}
-		return (bp + 'a'.charCodeAt(0));
-	}
-	/*
-	* pack_room:
-	*	See if there's room in the pack.  If not, print out an
-	*	appropriate message
-	* パックに空きがあるかをチェックします。
-	*/
-	this.pack_room = function(from_floor, obj)
-	{
-		if (++inpack > d.MAXPACK)
-		{
-		if (!terse)
-			r.UI.addmsg("there's ");
-		r.UI.addmsg("no room");
-		if (!v.terse)
-			r.UI.addmsg(" in your pack");
-    		r.UI.endmsg();
-            if (from_floor)
-                this.move_msg(obj);
-            inpack = d.MAXPACK;
-            return false;
-		}
-
-		if (from_floor)
-		{
-            r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
-            r.UI.mvaddch(hero.y, hero.x, floor_ch());
-            r.dungeon.chat(hero.y, hero.x) = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
-		}
-
-		return true;
-	}
-	/*
 	* move_msg:
 	*	Print out the message if you are just moving onto an object
 	* オブジェクトの上に移動したときのメッセージを表示します。
@@ -544,7 +383,7 @@ function PlayerCharacter(r){
 	{
 		if (!terse)
 		r.UI.addmsg("you ");
-		r.UI.msg(`moved onto ${inv_name(obj, true)}`);
+		r.UI.msg(`moved onto ${r.item.things.inv_name(obj, true)}`);
 	}
     /*
     * enter_room:
@@ -552,50 +391,9 @@ function PlayerCharacter(r){
     * 
     */
     this.enter_room = function(cp){
-
-        r.dungeon.roomf.enter_room(cp);
-        /*
-        let rp; //struct room *rp;
-        let tp; //THING *tp;
-        let y, x;
-        let ch;
-
-        rp = r.dungeon.roomin(cp);
-        player.t_room = rp; //proom
-        this.door_open(rp);
-        if (!(rp.r_flags & d.ISDARK) && !on(player, d.ISBLIND))
-            for (y = rp.r_pos.y; y < rp.r_max.y + rp.r_pos.y; y++)
-            {
-                r.UI.move(y, rp.r_pos.x);
-                for (x = rp.r_pos.x; x < rp.r_max.x + rp.r_pos.x; x++)
-                {
-                    tp = r.dungeon.moat(y, x);
-                    ch = r.dungeon.chat(y, x);
-                    if (tp == null)
-                        //if (CCHAR(inch()) != ch)
-                        //    r.UI.addch(ch);
-                        //else
-                            r.UI.move(y, x + 1);
-                    else
-                    {
-                        tp.t_oldch = ch;
-                        if (!this.see_monst(tp))
-                        if (on(player, d.SEEMONST))
-                        {
-                            //standout();
-                            r.UI.addch(tp.t_disguise);
-                            //standend();
-                        }
-                        else
-                            r.UI.addch(ch);
-                        else
-                            r.UI.addch(tp.t_disguise);
-                    }
-                }
-            }
-        */
-        r.UI.comment("enter_room");
+        return r.dungeon.roomf.enter_room(cp);
     }
+
     /*
     * see_monst:
     *	Return TRUE if the hero can see the monster

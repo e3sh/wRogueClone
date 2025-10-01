@@ -228,6 +228,8 @@ function DaemonScheduler(r){
     this.swander = function()
     {
         r.daemon.start_daemon(r.daemon.rollwand, 0, d.BEFORE);
+
+        //r.UI.comment("d-swander");
     }
 
     /*
@@ -248,5 +250,7 @@ function DaemonScheduler(r){
             }
             between = 0;
         }
+        //r.UI.comment("d-rollwand");
+
     }
 }

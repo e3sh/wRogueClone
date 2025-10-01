@@ -212,7 +212,7 @@ function thingsf(r){
 		obj.o_pos = hero;
 		if (obj.o_type == AMULET)
 			amulet = FALSE;
-		msg("dropped %s", inv_name(obj, TRUE));
+		msg("dropped %s", this.inv_name(obj, TRUE));
 	}
 
 	/*
@@ -477,7 +477,7 @@ function thingsf(r){
 		{
 			obj.o_type = type;
 			obj.o_which = order[i];
-			add_line("%s", inv_name(obj, FALSE));
+			add_line("%s", this.inv_name(obj, FALSE));
 			num_found++;
 		}
 		if (num_found == 0)

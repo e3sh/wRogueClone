@@ -49,16 +49,16 @@ function debug(r, g){
         let mlcount = 0;
         for (let m = mlist; m != null ; m = m.l_next) {
             mlcount++;
-            r.UI.submsg(`m y:${m.t_pos.y} x:${m.t_pos.x} f:${m.t_flags}`);
-            r.UI.mvaddch(m.t_pos.y, m.t_pos.x, "&");
+            r.UI.submsg(`${m.t_type} y:${m.t_pos.y} x:${m.t_pos.x} _m`);
+            r.UI.mvaddch(m.t_pos.y, m.t_pos.x, m.t_type);
         }
         //console.log(mlcount);
 
         let locount = 0;
         for (let l = lvl_obj; l != null ; l = l.l_next){
             locount++;
-            r.UI.submsg(`l y:${l.o_pos.y} x:${l.o_pos.x} f:${l.o_flags}`);
-            r.UI.mvaddch(l.o_pos.y, l.o_pos.x, "$");
+            r.UI.submsg(`${l.o_type} y:${l.o_pos.y} x:${l.o_pos.x} _l`);
+            r.UI.mvaddch(l.o_pos.y, l.o_pos.x, l.o_type);
         } 
         //console.log(locount);
 

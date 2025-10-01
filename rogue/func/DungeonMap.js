@@ -124,11 +124,11 @@ function DungeonMap(r){
         //for (tp = mlist; tp != NULL; tp = next(tp))
         //free_list(tp->t_pack);
         //free_list(mlist);
-        mlist = [];
+        //mlist = [];
         /*
         * Throw away stuff left on the previous level (if anything)
         */
-        r.free_list(r.dungeon.lvl_obj);
+        r.dungeon.lvl_obj = r.free_list(r.dungeon.lvl_obj);
         this.roomf.do_rooms();				/* Draw rooms */
         this.passf.do_passages();			/* Draw passages */
         no_food++;
@@ -153,6 +153,7 @@ function DungeonMap(r){
                 do
                 {
                     this.roomf.find_floor(null, stairs, false, false);
+                    stairs = this.roomf.get_findfloor_result();
                 } while (this.chat(stairs.y, stairs.x) != d.FLOOR);
                 sp = this.flat(stairs.y, stairs.x);
                 sp &= ~d.F_REAL;
@@ -163,15 +164,17 @@ function DungeonMap(r){
         * Place the staircase down.
         */
         this.roomf.find_floor(null, stairs, false, false);
+        stairs = this.roomf.get_findfloor_result();
         places[stairs.y][stairs.x].p_ch = d.STAIRS;
         //this.chat(stairs.y, stairs.x) = d.STAIRS;
         seenstairs = false;
 
-        for (tp = mlist; Boolean(tp); tp = tp.l_next)
-            if (Boolean(tp.t_pos))
-                tp.t_room = this.roomin(tp.t_pos);
+        for (tp = mlist; tp != null; tp = tp.l_next)
+            //if (Boolean(tp.t_pos))
+            tp.t_room = this.roomin(tp.t_pos);
 
         this.roomf.find_floor(null, hero, false, false);
+        hero = this.roomf.get_findfloor_result();
         r.player.enter_room(hero); //hero = {x:0, y:0};
         r.UI.mvaddch(hero.y, hero.x, d.PLAYER);
         if (on(player, d.SEEMONST))
@@ -242,6 +245,7 @@ function DungeonMap(r){
             * Put it somewhere
             */
             this.roomf.find_floor(null, obj.o_pos, false, false);
+            obj.o_pos = this.roomf.get_findfloor_result();
             places[obj.o_pos.y][obj.o_pos.x].p_ch = obj.o_type;
         }
         /*
@@ -262,6 +266,7 @@ function DungeonMap(r){
             * Put it somewhere
             */
             this.roomf.find_floor(null, obj.o_pos, false, false);
+            obj.o_pos = this.roomf.get_findfloor_result();
             places[obj.o_pos.y][obj.o_pos.x].p_ch = d.AMULET;
         }
         r.dungeon.lvl_obj = lvl_obj;
@@ -326,13 +331,13 @@ function DungeonMap(r){
         rp = rooms[this.rnd_room()];
         spots = (rp.r_max.y - 2) * (rp.r_max.x - 2) - d.MINTREAS;
         if (spots > (d.MAXTREAS - d.MINTREAS))
-        spots = (d.MAXTREAS - d.MINTREAS);
+            spots = (d.MAXTREAS - d.MINTREAS);
         num_monst = nm = r.rnd(spots) + d.MINTREAS;
         while (nm--)
         {
            this.roomf.find_floor(rp, mp, 2 * d.MAXTRIES, false);
             tp = r.item.new_thing();
-            tp.o_pos = mp;
+            tp.o_pos = this.roomf.get_findfloor_result();//mp;
             lvl_obj = r.attach(lvl_obj, tp);
             //chat(mp.y, mp.x) = tp.o_type;
             places[mp.y][mp.x].p_ch = tp.o_type; 
@@ -353,9 +358,9 @@ function DungeonMap(r){
             if (this.roomf.find_floor(rp, mp, d.MAXTRIES, true))
             {
                 tp = r.item.new_item();
-                r.monster.new_monster(tp, r.monster.randmonster(false), mp);
+                tp = r.monster.new_monster(tp, r.monster.randmonster(false), this.roomf.get_findfloor_result());//mp);
                 tp.t_flags |= d.ISMEAN;	/* no sloughers in THIS room */
-                r.monster.give_pack(tp);
+                tp = r.monster.give_pack(tp);
             }
         }
         level--;

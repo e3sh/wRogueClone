@@ -39,13 +39,16 @@ function packf(r){
 		let op, lp;
 		//bool from_floor;
 		//let from_floor;
+		let debugstr = "";
 
 		from_floor = false;
 		if (obj == null)
 		{
 			obj = r.dungeon.find_obj(hero.y, hero.x);
-			if (obj == null)
+			if (obj == null){
+				r.UI.comment(".ap_0");
 				return;
+			}
 			from_floor = true;
 		}
 
@@ -67,16 +70,18 @@ function packf(r){
 		{
 			player.t_pack = obj;
 			obj.o_packch = this.pack_char();
-			console.log(obj.o_packch);
+			//console.log(obj.o_packch);
 			inpack++;
+
+			debugstr += "packnull";
 		}
 		else
 		{
 			lp = null;
-			for (let op = pack; op = null; op = op.l_next)
+			for (let op = pack; op != null; op = op.l_next)
 			{
 				if (op.o_type != obj.o_type)
-				lp = op;
+					lp = op;
 				else
 				{
 					while (op.o_type == obj.o_type && op.o_which != obj.o_which)
@@ -91,8 +96,10 @@ function packf(r){
 					{
 						if (ISMULT(op.o_type))
 						{
-							if (!this.pack_room(from_floor, obj))
+							if (!this.pack_room(from_floor, obj)){
+								r.UI.comment(".ap_1");
 								return;
+							}
 							op.o_count++;
 							r.discard(obj);
 							obj = op;
@@ -109,7 +116,7 @@ function packf(r){
 								if (op.l_next == null)
 									break;
 								else
-								op = op.l_next;
+									op = op.l_next;
 							}
 							if (op.o_type == obj.o_type
 								&& op.o_which == obj.o_which
@@ -117,7 +124,10 @@ function packf(r){
 							{
 								op.o_count += obj.o_count;
 								inpack--;
-								if (!this.pack_room(from_floor, obj)) return;
+								if (!this.pack_room(from_floor, obj)){
+									r.UI.comment(".ap_2");
+									return;
+								} 
 								r.discard(obj);
 								obj = op;
 								lp = null;
@@ -125,6 +135,8 @@ function packf(r){
 						}
 						else
 							lp = op;
+
+						debugstr += "noting";
 					}
 					break;
 				}
@@ -139,10 +151,11 @@ function packf(r){
 					obj.o_packch = this.pack_char();
 					obj.l_next = lp.l_next;
 					obj.l_prev = lp;
-					if (lp.l_next == null)
-						lp.l_next.lprev = obj;
+					if (lp.l_next != null)
+						lp.l_next.l_prev = obj;
 					lp.l_next = obj;
 				}
+				debugstr += "lpon";
 			}
 		}
 		obj.o_flags |= d.ISFOUND;
@@ -162,19 +175,24 @@ function packf(r){
 		*/
 		if (!silent)
 		{
+			let ms = "";
 			if (!terse)
-				r.UI.addmsg("you now have ");
-			r.UI.msg(`${r.item.inv_name(obj, !terse)}`);// ${obj.o_packch}`);
+				ms = "you now have ";//r.UI.addmsg("you now have ");
+			r.UI.msg(`${ms}${r.item.inv_name(obj, !terse)} (${obj.o_packch}`);
 		}
+
+		r.UI.comment(".add_pack" + debugstr);
 	}
 
 	/*
 	* pack_room:
 	*	See if there's room in the pack.  If not, print out an
 	*	appropriate message
+	* パックに空きがあるかをチェックします。
 	*/
 	this.pack_room = function(from_floor, obj)//THING *obj)
 	{
+		//console.log("ff" + from_floor);
 		let player = r.player.player;
 		let hero = player.t_pos;
 		let proom = player.t_room;
@@ -195,7 +213,7 @@ function packf(r){
 
 		if (from_floor)
 		{
-			console.log("get item from_floor")
+			//console.log("get item from_floor")
 			r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
 			r.UI.mvaddch(hero.y, hero.x, this.floor_ch());
 
@@ -283,7 +301,7 @@ function packf(r){
 			//msg_esc = true;
 			inv_temp += r.item.things.inv_name(list, false);
 			r.UI.submsg(inv_temp);
-			console.log(inv_temp);	
+			//console.log(inv_temp);	
 			//if (add_line(inv_temp, inv_name(list, false)) == d.ESCAPE)
 			//{
 			//	msg_esc = false;
@@ -322,8 +340,8 @@ function packf(r){
 			return;
 
 		obj = r.dungeon.find_obj(hero.y, hero.x);
-		if (move_on)
-			move_msg(obj);
+		if (this.move_on)
+			this.move_msg(obj);
 		else
 		switch (ch)
 		{
@@ -355,9 +373,10 @@ function packf(r){
 	*/
 	this.move_msg = function(obj)//THING *obj)
 	{
+		let ms = ""
 		if (!terse)
-			r.UI.addmsg("you ");
-		r.UI.msg(`moved onto ${inv_name(obj, TRUE)}`);
+			ms = "you ";//r.UI.addmsg("you ");
+		r.UI.msg(`${ms}moved onto ${r.item.things.inv_name(obj, true)}`);
 	}
 
 	/*
@@ -385,7 +404,7 @@ function packf(r){
 			for (obj = pack; obj != null; obj = next(obj))
 				if (mch == obj.o_packch)
 				{
-					msg("%c) %s", mch, inv_name(obj, false));
+					msg("%c) %s", mch, r.item.things.inv_name(obj, false));
 					return;
 				}
 			msg("'%s' not in pack", unctrl(mch));

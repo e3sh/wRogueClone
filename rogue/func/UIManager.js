@@ -378,7 +378,7 @@ function UIManager(r, g){
 
             if (r.after)
             {
-                r.UI.comment(`[${pr} ${oldc}`);// ${r.after?"m":"s"}]`);
+                //r.UI.comment(`[${pr} ${oldc}`);// ${r.after?"m":"s"}]`);
                 switch (pr)
                 {
                     case d.DOOR:
@@ -430,7 +430,7 @@ function UIManager(r, g){
 
         let s = " ";
 		for (let i in ki){s += `${ki[i]},`}
-            this.comment("command"+s);
+            this.comment(`command${s}[${pr} ${oldc}]`);
     }
 
     /*
