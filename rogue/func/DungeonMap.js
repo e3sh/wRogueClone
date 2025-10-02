@@ -125,6 +125,7 @@ function DungeonMap(r){
         //free_list(tp->t_pack);
         //free_list(mlist);
         //mlist = [];
+        this.mlist = r.free_list(this.mlist);
         /*
         * Throw away stuff left on the previous level (if anything)
         */
@@ -218,7 +219,7 @@ function DungeonMap(r){
 
         const amulet = r.player.amulet;
         
-        let obj; //THING 
+        //let obj; //THING 
         /*
         * Once you have found the amulet, the only way to get new stuff is
         * go down into the dungeon.
@@ -239,7 +240,7 @@ function DungeonMap(r){
             /*
             * Pick a new object and link it in the list
             */
-            obj = r.item.new_thing(); //things.c
+            const obj = r.item.new_thing(); //things.c
             lvl_obj = r.attach(lvl_obj, obj);
             /*
             * Put it somewhere
@@ -254,7 +255,7 @@ function DungeonMap(r){
         */
         if (level >= d.AMULETLEVEL && !amulet)
         {
-            obj = r.item.new_item();
+            const obj = r.item.new_item();
             lvl_obj = r.attach(lvl_obj, obj);
             obj.o_hplus = 0;
             obj.o_dplus = 0;
@@ -323,7 +324,7 @@ function DungeonMap(r){
         //const MAXTRIES = 10; /* max number of tries to put down a monster */
 
         let nm;
-        let tp; //THING *tp;
+        //let tp; //THING *tp;
         let rp; //struct room *rp;
         let spots, num_monst;
         let mp = {}; //static coord mp;
@@ -336,7 +337,7 @@ function DungeonMap(r){
         while (nm--)
         {
            this.roomf.find_floor(rp, mp, 2 * d.MAXTRIES, false);
-            tp = r.item.new_thing();
+            const tp = r.item.new_thing();
             tp.o_pos = this.roomf.get_findfloor_result();//mp;
             lvl_obj = r.attach(lvl_obj, tp);
             //chat(mp.y, mp.x) = tp.o_type;
@@ -357,10 +358,10 @@ function DungeonMap(r){
             spots = 0;
             if (this.roomf.find_floor(rp, mp, d.MAXTRIES, true))
             {
-                tp = r.item.new_item();
-                tp = r.monster.new_monster(tp, r.monster.randmonster(false), this.roomf.get_findfloor_result());//mp);
+                const tp = r.item.new_item();
+                r.monster.new_monster(tp, r.monster.randmonster(false), this.roomf.get_findfloor_result());//mp);
                 tp.t_flags |= d.ISMEAN;	/* no sloughers in THIS room */
-                tp = r.monster.give_pack(tp);
+                r.monster.give_pack(tp);
             }
         }
         level--;

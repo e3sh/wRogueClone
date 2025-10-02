@@ -12,6 +12,7 @@ function rooms_f(r, dg){
 	const level = dg.level;
 	const places = dg.places;
 	const max_level = dg.max_level;
+	const lvl_obj = dg.lvl_obj;
 
 	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
@@ -32,7 +33,7 @@ function rooms_f(r, dg){
 	this.do_rooms = function()
 	{
 		let rp; //struct room *rp;
-		let tp; //THING *tp;
+		//let tp; //THING *tp;
 		let left_out;
 		let top	= {}; //static coord top;
 		let bsze = {}; //coord bsze;				/* maximum room size */
@@ -118,27 +119,30 @@ function rooms_f(r, dg){
 			*/
 			if (r.rnd(2) == 0 && (!r.player.amulet || level >= max_level))
 			{
-				let gold;
-
-				gold = r.new_item();
+				//let gold;
+				const gold = r.new_item();
 				gold.o_goldval = rp[i].r_goldval = d.GOLDCALC;
 				this.find_floor(rp[i], rp[i].r_gold, false, false);
-				gold.o_pos = this.get_findfloor_result();//rp[i].r_gold;
+				rp[i].r_gold = this.get_findfloor_result();//rp[i].r_gold;
+				gold.o_pos = this.get_findfloor_result();
+
 				//chat(rp[i].r_gold.y, rp[i].r_gold.x) = d.GOLD;
+				//places[rp[i].r_gold.y][rp[i].r_gold.x].p_ch = d.GOLD; 
+				places[gold.o_pos.y][gold.o_pos.x].p_ch = d.GOLD; 
 				gold.o_flags = d.ISMANY;
 				gold.o_group = d.GOLDGRP;
 				gold.o_type = d.GOLD;
-				dg.lvl_obj = r.attach(dg.lvl_obj, gold);
+				r.attach(lvl_obj, gold);console.log(lvl_obj);
 			}
 			/*
 			* Put the monster in
 			*/
 			if (r.rnd(100) < (rp[i].r_goldval > 0 ? 80 : 25))
 			{
-				tp = r.new_item();
+				const tp = r.new_item();
 				this.find_floor(rp[i], mp, false, true);
-				tp = r.monster.new_monster(tp, r.monster.randmonster(false), this.get_findfloor_result());//mp);
-				tp = r.monster.give_pack(tp);
+				r.monster.new_monster(tp, r.monster.randmonster(false), this.get_findfloor_result());//mp);
+				r.monster.give_pack(tp);
 			}
 		}
 	}

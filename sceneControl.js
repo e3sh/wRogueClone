@@ -46,8 +46,12 @@ class sceneControl extends GameTask {
 
 			if (stf){
 				if (keyon < g.time()){
-					if (io.input.keylist.length != 0){
-						g.rogue.loopstep(g);
+					const keys = io.input.keylist;  
+					if (keys.length > 0){
+						const fl = (keys.includes("ControlLeft") || keys.includes("ControlRight") || 
+							keys.includes("ShiftLeft") || keys.includes("ShiftRight") || 
+							keys.includes("CapsLock"));
+						if (keys.length > (fl?1:0)) g.rogue.loopstep(g);
 						keyon = g.time() + keywait; 
 					}
 				}

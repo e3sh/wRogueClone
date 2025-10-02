@@ -482,15 +482,17 @@ function packf(r){
 	this.money = function(value)
 	{
 		let proom = r.player.player.t_room;
+		let hero = r.player.player.t_pos;
 
 		r.player.purse += value;
 		r.UI.mvaddch(hero.y, hero.x, floor_ch());
 		r.dungeon.places[hero.y][hero.x].p_ch = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
 		if (value > 0)
 		{
+			let ms = ""
 			if (!terse)
-				r.UI.addmsg("you found ");
-			r.UI.msg(`${value} gold pieces`);
+				ms = "you found ";
+			r.UI.msg(`${ms}${value} gold pieces`);
 		}
 	}
 

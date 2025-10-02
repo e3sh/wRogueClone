@@ -87,6 +87,11 @@ function GameManager(g){
     let scoreboard = null;	/* File descriptor for score file */
     let wizard = false;			/* true if allows wizard commands */
 
+
+    let thingTable = [];    /* motionObject master Talbe item/monster(thing struct) */
+    
+    this.mobs = thingTable;
+
     this.wizard = wizard;
     this.playing = playing;
 
@@ -212,6 +217,7 @@ function GameManager(g){
             item.l_next.l_prev = item.l_prev;
         item.l_next = null;
         item.l_prev = null;
+        //this.discard(item);
         
         return list;
     }
@@ -241,12 +247,12 @@ function GameManager(g){
     */
     this.free_list = function(ptr)
     {
-        let item;
         while (ptr != null)
         {
-            item = ptr;
+            const item = ptr;
             ptr = item.l_next;
-            item = null;
+            this.discard(item);
+            //item = null;
         }
         return ptr;
     }
@@ -256,11 +262,26 @@ function GameManager(g){
     */
     this.discard = function(item)
     {
-        item = null;
+        let table = []; 
+        for (let i in this.mobs){
+            if (this.mobs[i] != item){
+                if (this.mobs[i].enable)
+                    table.push(this.mobs[i]);
+            }
+        }
+        if (this.mobs.length == table.length){
+            this.UI.comment(`discard:nop id:${item.id} ${item.enable}`);
+            item.enable = false;
+        }else{
+            this.UI.comment(`discard: id${item.id} now:${table.length}`);
+        }
+        //console.log(table);
+        this.mobs = table;
     }
     /*
     * new_item: Get a new item with a specified size
     * 新しいアイテムを確保します。
+    * (thingゲームオブジェクトをリストに追加)
     */
     this.new_item = function()
     {
@@ -268,6 +289,10 @@ function GameManager(g){
         item = new t.thing();
         item.l_next = null;
         item.l_prev = null;
+        item.id = this.mobs.length;
+
+        this.mobs.push(item);
+
         return item;
     }
 }

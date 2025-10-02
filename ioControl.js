@@ -16,6 +16,7 @@ class ioControl extends GameTask {
 			[80,  5,"std"	,["_" ," "], 8,16,	0,400],	//1:msg
 			[32, 26,"small"	,["_" ," "], 6, 8,640, 16], //2:debug, comment
 			[32, 26,"small"	,["_" ," "], 6, 8,640,240], //3:
+			[32, 50,"small"	,["_" ," "], 6, 8,  0,  0], //4:
 		]
 
 		let cnsl = [];

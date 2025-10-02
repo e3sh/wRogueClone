@@ -337,23 +337,7 @@ function UIManager(r, g){
                 last_pick = null;
             }
 
-            ki = this.readchar();
-            oldc = pr;
-            if (ki.includes("Numpad4")) pr = r.player.do_move( 0,-1);
-            if (ki.includes("Numpad2")) pr = r.player.do_move( 1, 0);
-            if (ki.includes("Numpad8")) pr = r.player.do_move(-1, 0);
-            if (ki.includes("Numpad6")) pr = r.player.do_move( 0, 1);
-            if (ki.includes("Numpad7")) pr = r.player.do_move(-1,-1);
-            if (ki.includes("Numpad9")) pr = r.player.do_move(-1, 1);
-            if (ki.includes("Numpad1")) pr = r.player.do_move( 1,-1);
-            if (ki.includes("Numpad3")) pr = r.player.do_move( 1, 1);
-
-            let opcmdf = false;
-            if (ki.includes("Numpad5")) {
-                pr = r.player.do_move( 0, 0);
-                opcmdf = true;
-            }
-            if (ki.includes("KeyI"))  {
+            const viewInventry = ()=>{
                 //r.after = false; inventory(pack, 0);
                 let st = r.player.get_invstat();
                 r.UI.clear(3);
@@ -362,19 +346,42 @@ function UIManager(r, g){
                 }
                 r.player.packf.inventory(player.t_pack, 0);
             }
-            if (ki.includes("KeyD")) ;//drop();
-            if (ki.includes("KeyR")) ;//read_scroll();
-            if (ki.includes("KeyE")) ;//eat();
-            if (ki.includes("KeyW")) ;//wear();
-            if (ki.includes("KeyT")) ;//take_off();
-            if (ki.includes("KeyP")) ;//ring_on();
-            if (ki.includes("KeyR")) ;//ring_off();
-            if (ki.includes("KeyS")) ;//search();
-            if (ki.includes("KeyM")) {
-                r.after = false;
-                r.player.packf.move_on = !(r.player.packf.move_on);
-                r.UI.comment(`mv_on[${r.player.packf.move_on}]`);// ${r.after?"m":"s"}]`);
-            }//search();
+
+
+            ki = this.readchar();
+            oldc = pr;
+            let opcmdf = false; //operation command flag
+            if (!ki.includes("ControlLeft")){            
+
+                if (ki.includes("Numpad4")) pr = r.player.do_move( 0,-1);
+                if (ki.includes("Numpad2")) pr = r.player.do_move( 1, 0);
+                if (ki.includes("Numpad8")) pr = r.player.do_move(-1, 0);
+                if (ki.includes("Numpad6")) pr = r.player.do_move( 0, 1);
+                if (ki.includes("Numpad7")) pr = r.player.do_move(-1,-1);
+                if (ki.includes("Numpad9")) pr = r.player.do_move(-1, 1);
+                if (ki.includes("Numpad1")) pr = r.player.do_move( 1,-1);
+                if (ki.includes("Numpad3")) pr = r.player.do_move( 1, 1);
+                if (ki.includes("Numpad5")) {
+                    pr = r.player.do_move( 0, 0);
+                    opcmdf = true;
+                }
+                if (ki.includes("KeyI")) viewInventry();
+                if (ki.includes("KeyD")) ;//drop();
+                if (ki.includes("KeyR")) ;//read_scroll();
+                if (ki.includes("KeyE")) ;//eat();
+                if (ki.includes("KeyW")) ;//wear();
+                if (ki.includes("KeyT")) ;//take_off();
+                if (ki.includes("KeyP")) ;//ring_on();
+                if (ki.includes("KeyR")) ;//ring_off();
+                if (ki.includes("KeyS")) ;//search();
+                if (ki.includes("KeyM")) {
+                    r.after = false;
+                    r.player.packf.move_on = !(r.player.packf.move_on);
+                    r.UI.comment(`mv_on[${r.player.packf.move_on}]`);// ${r.after?"m":"s"}]`);
+                }//search();
+            } else {
+                r.UI.msg("itemUse+");
+            }
 
             if (r.after)
             {
@@ -403,6 +410,7 @@ function UIManager(r, g){
                     case d.STICK:  
                     case d.AMULET:
                         r.player.packf.pick_up(pr);
+                        viewInventry();
                         //r.UI.msg(`GET ITEM:${pr}/mode${r.player.packf.move_on}`); 
                         break;  
                 }

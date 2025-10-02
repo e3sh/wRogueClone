@@ -564,10 +564,10 @@ function MonsterManager(r){
     *	Create a new wandering monster and aim it at the player
     */
     this.wanderer = function(){
-        let tp; //THING *tp;
+        //let tp; //THING *tp;
         let cp; //static coord cp;
 
-        tp = new_item();
+        const tp = new_item();
         do
         {
             r.dungeon.roomf.find_floor(NULL, cp, FALSE, TRUE);  // struct room *) NULL
@@ -596,11 +596,12 @@ function MonsterManager(r){
     */
     this.give_pack = function(tp){
 
-        if (r.dungeon.level >= r.dungeon.max_level && r.rnd(100) < monsters[tp.t_type-'A'].m_carry)
-	        tp.t_pack = r.attach(tp.t_pack, new_thing());
+        if (r.dungeon.level >= r.dungeon.max_level 
+            && r.rnd(100) < monsters[Number(tp.t_type.charCodeAt(0))-Number('A'.charCodeAt(0))].m_carry)
+	            tp.t_pack = r.attach(tp.t_pack, r.item.new_thing());
 
-        return tp;
         r.UI.comment(".give_pack");
+        return tp;
     }
 
 }

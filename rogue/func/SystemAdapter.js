@@ -41,6 +41,8 @@ function debug(r, g){
     const d = r.define;
     const t = r.types;
 
+    let sw = false;
+
     this.checkListsCount = function()
     {
         const mlist   = r.dungeon.mlist;  
@@ -49,7 +51,7 @@ function debug(r, g){
         let mlcount = 0;
         for (let m = mlist; m != null ; m = m.l_next) {
             mlcount++;
-            r.UI.submsg(`${m.t_type} y:${m.t_pos.y} x:${m.t_pos.x} _m`);
+            r.UI.submsg(`${m.t_type} y:${m.t_pos.y} x:${m.t_pos.x} _m${m.id}${m.enable?"e":"d"} `);
             r.UI.mvaddch(m.t_pos.y, m.t_pos.x, m.t_type);
         }
         //console.log(mlcount);
@@ -57,12 +59,29 @@ function debug(r, g){
         let locount = 0;
         for (let l = lvl_obj; l != null ; l = l.l_next){
             locount++;
-            r.UI.submsg(`${l.o_type} y:${l.o_pos.y} x:${l.o_pos.x} _l`);
+            r.UI.submsg(`${l.o_type} y:${l.o_pos.y} x:${l.o_pos.x} _l${l.id}${l.enable?"e":"d"}`);
             r.UI.mvaddch(l.o_pos.y, l.o_pos.x, l.o_type);
         } 
         //console.log(locount);
+        g.console[4].clear();
+        for (let i in r.mobs){
+            const mc = r.mobs[i];
+            const state_e = mc.enable?"o":"-";
+            const st_tt   = (mc.t_type != null)?mc.t_type:"";
+            const st_ot   = (mc.o_type != null)?mc.o_type:"";
+            const st_opx  = (Boolean(mc.o_pos.x))?mc.o_pos.x:"";
+            const st_opy  = (Boolean(mc.o_pos.y))?mc.o_pos.y:"";
+            const st_tpx  = (Boolean(mc.t_pos.x))?mc.t_pos.x:"";
+            const st_tpy  = (Boolean(mc.t_pos.y))?mc.t_pos.y:"";
+
+            let st_pc   = (mc.o_packch != null)?`(${mc.o_packch})`:`[${st_opx}${st_tpx},${st_opy}${st_tpy}]`; 
+
+            if (sw) g.console[4].mvprintw(`${i} ${mc.id} ${state_e} ${st_tt}${st_ot} ${st_pc}`, 0, i);
+            //    st += ((r.mobs[i].enable)?String.fromCharCode(Number("A".charCodeAt(0))+Number(i)):"_");
+        }
 
         r.UI.submsg(`mlist:${mlcount} lvl_obj:${locount}`);
+        sw = !sw;
     }
 
     //debug

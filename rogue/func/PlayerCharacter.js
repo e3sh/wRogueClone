@@ -101,13 +101,15 @@ function PlayerCharacter(r){
             if (this.packf.pack_used[i])
                 wst += String.fromCharCode(Number("a".charCodeAt(0)) + Number(i));//str.push(`pack${i}:${this.packf.pack_used[i]}`);
         }
-        str.push(`pack:${wst}`);
 
+        str.push(`mobs:${r.mobs.length}`);
+        //str.push(`pack:${wst}`);
         str.push(`cur_armor ${cur_armor.o_arm}`);
         str.push(`cur_weapon ${cur_weapon.o_damage}`);
         str.push(`cur_ring_R ${cur_ring[0].o_which}`);
         str.push(`cur_ring_L ${cur_ring[1].o_which}`);
         str.push(`food_left ${food_left}`);
+        str.push("");
         //str.push(`inpack ${inpack}`);
         //str.push(`amulet ${amulet}`);
 
@@ -788,12 +790,12 @@ function PlayerCharacter(r){
             }
             else
             {
-            arrow = new_item();
-            init_weapon(arrow, ARROW);
-            arrow.o_count = 1;
-            arrow.o_pos = hero;
-            fall(arrow, false);
-            msg("an arrow shoots past you");
+                arrow = new_item();
+                init_weapon(arrow, ARROW);
+                arrow.o_count = 1;
+                arrow.o_pos = hero;
+                fall(arrow, false);
+                msg("an arrow shoots past you");
             }
             break;
         case T_TELEP:

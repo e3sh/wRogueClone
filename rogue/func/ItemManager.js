@@ -229,13 +229,10 @@ function ItemManager(r){
     /*
     * new_item
     *	Get a new item with a specified size
+    * alias: GmaeManager.new_item()
     */
     this.new_item = function(){
-        let item;
-        item = new t.thing();
-        item.l_next = null;
-        item.l_prev = null;
-        return item;
+        return r.new_item();
     }
     /*
     * init_weapon:
@@ -277,10 +274,10 @@ function ItemManager(r){
     //THING *
     this.new_thing = function()
     {
-        let cur; //THING
+        //let cur; //THING
         let wr;
 
-        cur = this.new_item();
+        const cur = this.new_item();
         cur.o_hplus = 0;
         cur.o_dplus = 0;
         cur.o_damage = "0x0";

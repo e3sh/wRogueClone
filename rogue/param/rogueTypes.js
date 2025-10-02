@@ -113,6 +113,9 @@ function rogueTypes(){
         this._t = _t;
         this._o = _o;
 
+        this.enable = true;
+        this.id = -1;
+
         /*
             typedef union thing THING;
         */
