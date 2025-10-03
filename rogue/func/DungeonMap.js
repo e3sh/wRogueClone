@@ -170,9 +170,12 @@ function DungeonMap(r){
         //this.chat(stairs.y, stairs.x) = d.STAIRS;
         seenstairs = false;
 
-        for (tp = mlist; tp != null; tp = tp.l_next)
-            //if (Boolean(tp.t_pos))
+        let mlstr = "";
+        for (tp = this.mlist; tp != null; tp = tp.l_next){
             tp.t_room = this.roomin(tp.t_pos);
+            mlstr += ".";
+        }
+        console.log(`nl:${mlstr}`);
 
         this.roomf.find_floor(null, hero, false, false);
         hero = this.roomf.get_findfloor_result();
@@ -218,6 +221,7 @@ function DungeonMap(r){
     this.put_things = function(){
 
         const amulet = r.player.amulet;
+        let lvl_obj = r.dungeon.lvl_obj;
         
         //let obj; //THING 
         /*

@@ -19,6 +19,7 @@ const w = [
     r + "dungeon/rooms.js",
     r + "dungeon/passages.js",
     r + "MonsterManager.js",
+    r + "monster/fight.js",
     r + "ItemManager.js",
     r + "item/rings.js",
     r + "item/things.js",

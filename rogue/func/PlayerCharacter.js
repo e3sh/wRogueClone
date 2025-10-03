@@ -104,16 +104,23 @@ function PlayerCharacter(r){
 
         str.push(`mobs:${r.mobs.length}`);
         //str.push(`pack:${wst}`);
-        str.push(`cur_armor ${cur_armor.o_arm}`);
-        str.push(`cur_weapon ${cur_weapon.o_damage}`);
-        str.push(`cur_ring_R ${cur_ring[0].o_which}`);
-        str.push(`cur_ring_L ${cur_ring[1].o_which}`);
+        str.push(`cur_armor ${cur_armor.o_text} ${cur_armor.o_arm} (${cur_armor.o_packch})`);
+        str.push(`cur_weapon ${cur_weapon.o_text} ${cur_weapon.o_damage} (${cur_weapon.o_packch})`);
+        str.push(`cur_ring_R ${cur_ring[0].o_text} ${cur_ring[0].o_which} (${cur_ring[0].o_packch})`);
+        str.push(`cur_ring_L ${cur_ring[1].o_text} ${cur_ring[1].o_which} (${cur_ring[1].o_packch})`);
         str.push(`food_left ${food_left}`);
         str.push("");
         //str.push(`inpack ${inpack}`);
         //str.push(`amulet ${amulet}`);
 
         return str;
+    }
+
+    this.equip_state_check = function(ch){
+        return ((ch == cur_weapon.o_packch)||
+            (ch == cur_armor.o_packch)||
+            (ch == cur_ring[0].o_packch)||
+            (ch == cur_ring[1].o_packch));
     }
 
     this.get_status = function(){
@@ -132,6 +139,9 @@ function PlayerCharacter(r){
             death: to_death //
         }
     }
+
+    this.get_purse =()=>{ return purse;}
+    this.set_purse =(value)=>{ purse = value;}
 
     //プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。
     this.init_player = function(){
@@ -324,7 +334,7 @@ function PlayerCharacter(r){
         for (tp = r.dungeon.mlist; tp != null; tp = tp.l_next)
         {
             r.UI.move(tp.t_pos.y, tp.t_pos.x);
-            if (see_monst(tp))
+            if (r.monster.see_monst(tp))
             {
                 if (tp.t_type == 'X' && tp.t_disguise != 'X')
                     r.UI.addch(rnd_thing());
@@ -404,6 +414,10 @@ function PlayerCharacter(r){
     //bool
     //see_monst(THING *mp)
     this.see_monst = function(mp){
+
+        console.log("see_monst p")
+        
+
         let y, x;
 
         if (on(player, d.ISBLIND))
@@ -720,7 +734,7 @@ function PlayerCharacter(r){
         for (y = rp.r_pos.y; y < rp.r_pos.y + rp.r_max.y; y++)
             for (x = rp.r_pos.x; x < rp.r_pos.x + rp.r_max.x; x++)
             if (isupper(r.dungeon.winat(y, x)))
-                wake_monster(y, x);
+                {r.monster.wake_monster(y, x);};
         r.UI.comment("door_open");
 
     }
@@ -934,4 +948,58 @@ function PlayerCharacter(r){
         return ch;
     }
 
+    // deamons 
+    /*
+    * unconfuse:
+    *	Release the poor player from his confusion
+    */
+    this.unconfuse = function()
+    {
+        player.t_flags &= ~d.ISHUH;
+        r.UI.msg(`you feel less ${choose_str("trippy", "confused")} now`);
+    }
+
+    /*
+    * unsee:
+    *	Turn off the ability to see invisible
+    */
+    //void
+    function unsee()
+    {
+        let th; //register THING *th;
+
+        for (th = mlist; th != NULL; th = next(th))
+        if (on(th, ISINVIS) && see_monst(th))
+            mvaddch(th.t_pos.y, th.t_pos.x, th.t_oldch);
+        player.t_flags &= ~CANSEE;
+    }
+
+    /*
+    * sight:
+    *	He gets his sight back
+    */
+    //void
+    function sight()
+    {
+        if (on(player, ISBLIND))
+        {
+            extinguish(sight);
+            player.t_flags &= ~ISBLIND;
+            if (!(proom.r_flags & ISGONE))
+                enter_room(hero);
+            msg(choose_str("far out!  Everything is all cosmic again",
+                    "the veil of darkness lifts"));
+        }
+    }
+
+    /*
+    * nohaste:
+    *	End the hasting
+    */
+    //void
+    function nohaste()
+    {
+        player.t_flags &= ~ISHASTE;
+        msg("you feel yourself slowing down");
+    }
 }

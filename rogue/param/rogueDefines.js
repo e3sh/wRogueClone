@@ -286,10 +286,17 @@ function rogueDefines(){
 
         //daemon
         EMPTY: 0,
-        DAEMON: -1
+        DAEMON: -1,
 
         //RN      : (((seed = seed*11109+13849) >> 16) & 0xffff)
         //#define CTRL(c)		(c & 037)
+
+        //thing Location
+        //L_FREE : 0,
+        //L_MLIST: 1,
+        //L_LEVEL: 2,
+        //L_PACK : 3,
+
     }
     return d;
 }

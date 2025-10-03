@@ -115,40 +115,41 @@ function rogueTypes(){
 
         this.enable = true;
         this.id = -1;
+        this.location = 0;
 
         /*
             typedef union thing THING;
         */
-        this.l_next = _t._l_next    
-        this.l_prev = _t._l_prev
-        this.t_pos  = _t._t_pos       
-        this.t_turn = _t._t_turn
-        this.t_type = _t._t_type
-        this.t_disguise = _t._t_disguise
-        this.t_oldch =	_t._t_oldch
-        this.t_dest  =	_t._t_dest
-        this.t_flags =	_t._t_flags
-        this.t_stats =	_t._t_stats
-        this.t_pack  =	_t._t_pack
-        this.t_room  =	_t._t_room
-        this.t_reserved = _t._t_reserved
-        this.o_type    = _o._o_type
-        this.o_pos     = _o._o_pos
-        this.o_text    = _o._o_text
-        this.o_launch  = _o._o_launch
-        this.o_packch  = _o._o_packch
-        this.o_damage  = _o._o_damage
-        this.o_hurldmg = _o._o_hurldmg
-        this.o_count   = _o._o_count
-        this.o_which   = _o._o_which
-        this.o_hplus   = _o._o_hplus
-        this.o_dplus   = _o._o_dplus
-        this.o_arm     = _o._o_arm
+        this.l_next = _t._l_next;    
+        this.l_prev = _t._l_prev;
+        this.t_pos  = _t._t_pos  ;     
+        this.t_turn = _t._t_turn;
+        this.t_type = _t._t_type;
+        this.t_disguise = _t._t_disguise;
+        this.t_oldch =	_t._t_oldch;
+        this.t_dest  =	_t._t_dest;
+        this.t_flags =	_t._t_flags;
+        this.t_stats =	_t._t_stats;
+        this.t_pack  =	_t._t_pack;
+        this.t_room  =	_t._t_room;
+        this.t_reserved = _t._t_reserved;
+        this.o_type    = _o._o_type;
+        this.o_pos     = _o._o_pos;
+        this.o_text    = _o._o_text;
+        this.o_launch  = _o._o_launch;
+        this.o_packch  = _o._o_packch;
+        this.o_damage  = _o._o_damage;
+        this.o_hurldmg = _o._o_hurldmg;
+        this.o_count   = _o._o_count;
+        this.o_which   = _o._o_which;
+        this.o_hplus   = _o._o_hplus;
+        this.o_dplus   = _o._o_dplus;
+        this.o_arm     = _o._o_arm;
         this.o_charges = this.o_arm
         this.o_goldval = this.o_arm
-        this.o_flags   = _o._o_flags
-        this.o_group   = _o._o_group
-        this.o_label   = _o._o_label
+        this.o_flags   = _o._o_flags;
+        this.o_group   = _o._o_group;
+        this.o_label   = _o._o_label;
     }
 
     /*

@@ -108,6 +108,10 @@ function UIManager(r, g){
         }
         return res;
     }
+    this.mvinch =(y, x)=>{
+        this.move(y, x);
+        return this.inch();
+    }
 
     this.clear   = function(num){ if (isNaN(num)) num=0; g.console[num].clear();     }
     
@@ -529,27 +533,29 @@ function UIManager(r, g){
                     continue;
             }
 
-            if ((tp = pp.p_monst) == null )
+            tp = pp.p_monst;
+            if (tp == null )
                 ch = this.trip_ch(y, x, ch);
             else
-            if (on(player, d.SEEMONST) && on(tp, d.ISINVIS))
-            {
-                if (door_stop && !firstmove)
-                    running = false ;
-                continue;
-            }
-            else
-            {
-                if (wakeup)
-                    wake_monster(y, x);
-                if (see_monst(tp))
+                if (on(player, d.SEEMONST) && on(tp, d.ISINVIS))
                 {
-                    if (on(player, d.ISHALU))
-                        ch = rnd(26) + 'A';
-                    else
-                        ch = tp.t_disguise;
+                    if (door_stop && !firstmove)
+                        running = false ;
+                    continue;
                 }
-            }
+                else
+                {
+                    console.log("d ms ");
+                    if (wakeup)
+                        r.monster.wake_monster(y, x);
+                    if (r.monster.see_monst(tp))
+                    {
+                        if (on(player, d.ISHALU))
+                            ch = "t";//rnd(26) + 'A';
+                        else
+                            ch = tp.t_disguise;
+                    }
+                }
             if (on(player, d.ISBLIND) && (y != hero.y || x != hero.x))
                 continue;
 
@@ -560,6 +566,7 @@ function UIManager(r, g){
 
             if (tp != null || ch != r.UI.inch())
                 r.UI.addch(ch);
+            //if (tp != null) r.UI.addch(ch);
 
             if (door_stop && !firstmove && running)
             {

@@ -483,9 +483,11 @@ function packf(r){
 	{
 		let proom = r.player.player.t_room;
 		let hero = r.player.player.t_pos;
+		let purse = r.player.get_purse();
+		//console.log(value + " " + purse);
 
-		r.player.purse += value;
-		r.UI.mvaddch(hero.y, hero.x, floor_ch());
+		purse += value;
+		r.UI.mvaddch(hero.y, hero.x, this.floor_ch());
 		r.dungeon.places[hero.y][hero.x].p_ch = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
 		if (value > 0)
 		{
@@ -494,6 +496,7 @@ function packf(r){
 				ms = "you found ";
 			r.UI.msg(`${ms}${value} gold pieces`);
 		}
+		r.player.set_purse(purse);
 	}
 
 	/*

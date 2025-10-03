@@ -66,17 +66,27 @@ function debug(r, g){
         g.console[4].clear();
         for (let i in r.mobs){
             const mc = r.mobs[i];
-            const state_e = mc.enable?"o":"-";
-            const st_tt   = (mc.t_type != null)?mc.t_type:"";
-            const st_ot   = (mc.o_type != null)?mc.o_type:"";
+            const state_i = (i != mc.id)?"!":"-";
+            const state_e = mc.enable   ?"o":"-";
+            const st_tt   = (mc.t_type != null) ?mc.t_type:"";
+            const st_ot   = (mc.o_type != null) ?mc.o_type:"";
             const st_opx  = (Boolean(mc.o_pos.x))?mc.o_pos.x:"";
             const st_opy  = (Boolean(mc.o_pos.y))?mc.o_pos.y:"";
             const st_tpx  = (Boolean(mc.t_pos.x))?mc.t_pos.x:"";
             const st_tpy  = (Boolean(mc.t_pos.y))?mc.t_pos.y:"";
+            const st_eq   = (mc.o_packch != null)?(r.player.equip_state_check(mc.o_packch)?"*":""):"?";
 
-            let st_pc   = (mc.o_packch != null)?`(${mc.o_packch})`:`[${st_opx}${st_tpx},${st_opy}${st_tpy}]`; 
+            let st_pc   = (mc.o_packch != null)?`(${mc.o_packch})${st_eq}`:`[${st_opx}${st_tpx},${st_opy}${st_tpy}]`; 
 
-            if (sw) g.console[4].mvprintw(`${i} ${mc.id} ${state_e} ${st_tt}${st_ot} ${st_pc}`, 0, i);
+            let st_loc = "FREE";
+            if (mc.t_type != null)   st_loc = "MONS";
+            if (mc.o_type != null)   st_loc = "LVL ";
+            if (mc.o_packch != null) st_loc = "PACK";
+
+            if (sw) {
+                //g.screen[0].fill(0, 0, 32*6, 50*8, "Blue");   
+                g.console[4].mvprintw(`${state_i}${state_e} ${st_tt}${st_ot} ${st_loc}${st_pc} `, 0, i);
+            }
             //    st += ((r.mobs[i].enable)?String.fromCharCode(Number("A".charCodeAt(0))+Number(i)):"_");
         }
 

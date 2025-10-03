@@ -12,10 +12,13 @@ function rooms_f(r, dg){
 	const level = dg.level;
 	const places = dg.places;
 	const max_level = dg.max_level;
-	const lvl_obj = dg.lvl_obj;
+	//const lvl_obj = dg.lvl_obj;
+
 
 	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
-	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
+	const on = (thing,flag)=>{ return ((thing.t_flags & flag) != 0)};
+
+	const GOLDCALC =()=> { return Math.floor(Math.random() * (50 + 10 * level)) + 2};
 
 	let ffresult = {x:0, y:0};
 	this.get_findfloor_result =()=> {
@@ -32,6 +35,8 @@ function rooms_f(r, dg){
 	*/
 	this.do_rooms = function()
 	{
+		let lvl_obj = dg.lvl_obj;	
+
 		let rp; //struct room *rp;
 		//let tp; //THING *tp;
 		let left_out;
@@ -121,7 +126,7 @@ function rooms_f(r, dg){
 			{
 				//let gold;
 				const gold = r.new_item();
-				gold.o_goldval = rp[i].r_goldval = d.GOLDCALC;
+				gold.o_goldval = rp[i].r_goldval = GOLDCALC();
 				this.find_floor(rp[i], rp[i].r_gold, false, false);
 				rp[i].r_gold = this.get_findfloor_result();//rp[i].r_gold;
 				gold.o_pos = this.get_findfloor_result();
@@ -132,7 +137,7 @@ function rooms_f(r, dg){
 				gold.o_flags = d.ISMANY;
 				gold.o_group = d.GOLDGRP;
 				gold.o_type = d.GOLD;
-				r.attach(lvl_obj, gold);console.log(lvl_obj);
+				lvl_obj = r.attach(lvl_obj, gold);
 			}
 			/*
 			* Put the monster in
@@ -144,6 +149,7 @@ function rooms_f(r, dg){
 				r.monster.new_monster(tp, r.monster.randmonster(false), this.get_findfloor_result());//mp);
 				r.monster.give_pack(tp);
 			}
+			dg.lvl_obj = lvl_obj;	
 		}
 	}
 
@@ -412,20 +418,21 @@ function rooms_f(r, dg){
 				else
 				{
 					tp.t_oldch = ch;
-					if (!see_monst(tp))
-					if (on(player, d.SEEMONST))
-					{
-						//standout();
+					if (!r.monster.see_monst(tp))
+						if (on(player, d.SEEMONST))
+						{
+							//standout();
+							r.UI.addch(tp.t_disguise);
+							//standend();
+						}
+						else
+							r.UI.addch(ch);
+					else
 						r.UI.addch(tp.t_disguise);
-						//standend();
-					}
-					else
-						r.UI.addch(ch);
-					else
-					r.UI.addch(tp.t_disguise);
 				}
 			}
 		}
+		r.UI.comment("enter_room");
 	}
 
 	/*
@@ -485,5 +492,7 @@ function rooms_f(r, dg){
 			}
 		}
 		r.player.door_open(rp);
+
+		r.UI.comment("leave_room");
 	}
 }

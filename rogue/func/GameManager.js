@@ -266,12 +266,13 @@ function GameManager(g){
         for (let i in this.mobs){
             if (this.mobs[i] != item){
                 if (this.mobs[i].enable)
+                    this.mobs[i].id = i;
                     table.push(this.mobs[i]);
             }
         }
         if (this.mobs.length == table.length){
             this.UI.comment(`discard:nop id:${item.id} ${item.enable}`);
-            item.enable = false;
+            item.enable = false; //解放指定したアイテムをdisableにする（Mobsの配列要素から外れているはず）
         }else{
             this.UI.comment(`discard: id${item.id} now:${table.length}`);
         }

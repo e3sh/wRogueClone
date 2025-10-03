@@ -24,6 +24,8 @@ function MonsterManager(r){
     let mlist = r.dungeon.mlist;
     let vf_hit;
 
+    this.battle = new battle(r);
+
     /* 
     **関連する関数（提案されるメソッドの例）:**
     *   `randmonster()`, `new_monster()`, `wanderer()`, `give_pack()` (モンスター生成・初期化)。
@@ -40,6 +42,8 @@ function MonsterManager(r){
     */
     const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
     const next = (ptr)=>{ return ptr.l_next;}
+
+    const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
     /*
     * dist_cp:
     *	Call dist() with appropriate arguments for coord pointers
@@ -57,6 +61,16 @@ function MonsterManager(r){
         return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
     }
     /*
+    * spread:
+    *	Give a spread around a given number (+/- 20%)?
+    */
+    const spread = (nm)=>{
+        const twenty_percent = nm / 5; 
+        const random_range_total_width = twenty_percent * 2; // nm * 0.4
+
+        return nm + Math.floor(Math.random()*(random_range_total_width + 1) - twenty_percent);
+    };
+    /*
     * chase.c
     * runners:
     *	Make all the running monsters move.
@@ -64,22 +78,25 @@ function MonsterManager(r){
     this.runners = function(){
 
         const mlist = r.dungeon.mlist;
+        const hero = r.player.player.t_pos;
 
         let tp; //register THING *tp;
         let next; //THING *next;
         let wastarget;
         let orig_pos; //static coord orig_pos;
 
-        for (tp = mlist; tp != null; tp = tp.l_next)
+        for (tp = mlist; tp != null; tp = next)
         {
             /* remember this in case the monster's "next" is changed */
-            //next = tp.l_next;
+            next = tp.l_next;
             if (!on(tp, d.ISHELD) && on(tp, d.ISRUN))
             {
+                console.log("runner_loop")
+
                 orig_pos = tp.t_pos;
                 wastarget = on(tp, d.ISTARGET);
                 if (r.monster.move_monst(tp) == -1)
-                        continue;
+                    continue;
                 if (on(tp, d.ISFLY) && dist_cp(hero, tp.t_pos) >= 3)
                     r.monster.move_monst(tp);
                 if (wastarget && !ce(orig_pos, tp.t_pos))
@@ -226,8 +243,8 @@ function MonsterManager(r){
         }
         else
         {
-        if (th.t_type == 'F')
-            return(0);
+            if (th.t_type == 'F')
+                return(0);
         }
         r.dungeon.relocate(th, ch_ret);
         /*
@@ -246,26 +263,29 @@ function MonsterManager(r){
     {
         let oroom; //struct room *oroom;
 
-        if (!ce(new_loc, th.t_pos))
+        //ce(new_loc, th.t_pos))
+        if (!(new_loc.x == th.t_pos.x && new_loc.y == th.t_pos.y))
         {
             r.UI.mvaddch(th.t_pos.y, th.t_pos.x, th.t_oldch);
             th.t_room = r.dungeon.roomin(new_loc);
-            set_oldch(th, new_loc);
+            this.set_oldch(th, new_loc);
             oroom = th.t_room;
-            r.dungeon.moat(th.t_pos.y, th.t_pos.x) = null;
+            //r.dungeon.moat(th.t_pos.y, th.t_pos.x) = null;
+            r.dungeon.places[th.t_pos.y][th.t_pos.x].p_monst = null;
 
             if (oroom != th.t_room)
                 th.t_dest = r.dungeon.find_dest(th);
             th.t_pos = new_loc;
-            r.dungeon.moat(new_loc.y, new_loc.x) = th;
+            //r.dungeon.moat(new_loc.y, new_loc.x) = th;
+            r.dungeon.places[new_loc.y][new_loc.x] = th;
         }
         r.UI.move(new_loc.y, new_loc.x);
-        if (see_monst(th))
+        if (this.see_monst(th))
             r.UI.addch(th.t_disguise);
         else if (on(player, d.SEEMONST))
         {
             //standout();
-            addch(th.t_type);
+            r.UI.addch(th.t_type);
             //standend();
         }
     }
@@ -282,7 +302,7 @@ function MonsterManager(r){
         const hero = r.player.player.t_pos;
 
         if ((prob = monsters[Number(tp.t_type.charCodeAt(0)) - Number('A'.charCodeAt(0))].m_carry) <= 0 || tp.t_room == proom
-        || see_monst(tp))
+        || this.see_monst(tp))
             return hero;
         for (obj = r.dungeon.lvl_obj; obj != null; obj = next(obj))
         {
@@ -366,8 +386,8 @@ function MonsterManager(r){
                     tryp.y = y;
                 if (!diag_ok(er, tryp))
                     continue;
-                ch = winat(y, x);
-                if (step_ok(ch))
+                ch = r.dungeon.winat(y, x);
+                if (r.dungeon.step_ok(ch))
                 {
                     /*
                     * If it is a scroll, it might be a scare monster scroll
@@ -399,7 +419,7 @@ function MonsterManager(r){
                         ch_ret = tryp;
                         curdist = thisdist;
                     }
-                    else if (thisdist == curdist && rnd(++plcnt) == 0)
+                    else if (thisdist == curdist && r.rnd(++plcnt) == 0)
                     {
                         ch_ret = tryp;
                         curdist = thisdist;
@@ -418,18 +438,18 @@ function MonsterManager(r){
     {
         let sch;
 
-        if (ce(tp.t_pos, cp))
+        if ((tp.t_pos.x == cp.x && tp.t_pos.y == cp.y))
             return;
 
         sch = tp.t_oldch;
-        tp.t_oldch = String.fromCharCode( mvinch(cp.y,cp.x) );
+        tp.t_oldch = String.fromCharCode( r.UI.mvinch(cp.y,cp.x) );
         if (!on(player, d.ISBLIND))
         {
             if ((sch == d.FLOOR || tp.t_oldch == d.FLOOR) &&
             (tp.t_room.r_flags & d.ISDARK))
                 tp.t_oldch = ' ';
             else if (dist_cp(cp, hero) <= d.LAMPDIST && see_floor)
-            tp.t_oldch = chat(cp.y, cp.x);
+            tp.t_oldch = r.dungeon.chat(cp.y, cp.x);
         }
     }
 
@@ -439,20 +459,26 @@ function MonsterManager(r){
     */
     this.see_monst = function(mp)//(THING *mp)
     {
+        console.log("see_monst m")
+        return r.player.see_monst(mp);
+
+
+        const player = r.player.player;
         const hero = r.player.player.t_pos;
+        const proom = r.player.player.t_room;
 
         let y, x;
 
         if (on(player, d.ISBLIND))
-        return FALSE;
+            return false;
         if (on(mp, d.ISINVIS) && !on(player, d.CANSEE))
-        return false;
+            return false;
         y = mp.t_pos.y;
         x = mp.t_pos.x;
         if (dist(y, x, hero.y, hero.x) < d.LAMPDIST)
         {
         if (y != hero.y && x != hero.x &&
-            !step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
+            !r.player.step_ok(r.dungeon.chat(y, hero.x)) && !r.player.step_ok(r.dungeon.chat(hero.y, x)))
                 return false;
         return true;
         }
@@ -517,7 +543,7 @@ function MonsterManager(r){
         r.UI.move(cp.y, cp.x);//console.log(cp);
         tp.t_oldch = r.UI.inch();//CCHAR( inch() );
         tp.t_room = r.dungeon.roomin(cp); //console.log(cp);
-        r.dungeon.places[cp.y][cp.x].monst = tp;
+        r.dungeon.places[cp.y][cp.x].p_monst = tp;
         mp = monsters[Number(tp.t_type.charCodeAt()) - Number('A'.charCodeAt()) ]; //console.log(mp, tp);
         //console.log(tp, mp);
         tp.t_stats.s_lvl = mp.m_stats.s_lvl + lev_add;
@@ -566,7 +592,6 @@ function MonsterManager(r){
     this.wanderer = function(){
         //let tp; //THING *tp;
         let cp; //static coord cp;
-
         const tp = new_item();
         do
         {
@@ -589,6 +614,76 @@ function MonsterManager(r){
         r.UI.comment("wanderer");
 
     }
+
+    /*
+    * wake_monster:
+    *	What to do when the hero steps next to a monster
+    */
+    this.wake_monster = function(y, x){
+
+        const player = r.player.player;
+        const hero   = r.player.player.t_pos;
+        const proom  = r.player.player.t_room;
+
+        r.UI.comment("wake_monster");
+
+        let tp; //THING *tp;
+        let rp; //struct room *rp;
+        let ch, mname;
+
+        tp = r.dungeon.moat(y, x);
+        if (tp == null){
+            console.log("endwin();abort()");
+            return; 	 	 
+            //endwin(), abort(); 
+        }
+        ch = tp.t_type;
+        /*
+        * Every time he sees mean monster, it might start chasing him
+        */
+        if (!on(tp, d.ISRUN) && r.rnd(3) != 0 && on(tp, d.ISMEAN) && !on(tp, d.ISHELD)
+            && !r.player.iswearing(d.R_STEALTH) && !on(player, d.ISLEVIT))
+        {
+            tp.t_dest = hero;
+            tp.t_flags |= d.ISRUN;
+        }
+        if (ch == 'M' && !on(player, d.ISBLIND) && !on(player, d.ISHALU)
+            && !on(tp, d.ISFOUND) && !on(tp, d.ISCANC) && on(tp, d.ISRUN))
+        {
+            rp = proom;
+            if ((rp != null && !(rp.r_flags & d.ISDARK))
+                || dist(y, x, hero.y, hero.x) < d.LAMPDIST)
+            {
+                tp.t_flags |= d.ISFOUND;
+                if (!save(d.VS_MAGIC))
+                {
+                    if (on(player, d.ISHUH))
+                        r.deamon.lengthen(r.player.unconfuse, spread(d.HUHDURATION));
+                    else
+                        r.deamon.fuse(r.player.unconfuse, 0, spread(d.HUHDURATION), d.AFTER);
+                    player.t_flags |= d.ISHUH;
+                    mname = r.monster.battle.set_mname(tp);
+                    r.UI.msg(`${mname}${(mname != "it")?"'":""}s gaze has confused you`);
+                }
+            }
+        }
+        /*
+        * Let greedy ones guard gold
+        */
+        if (on(tp, d.ISGREED) && !on(tp, d.ISRUN))
+        {
+            tp.t_flags |= d.ISRUN;
+            if (proom.r_goldval)
+                tp.t_dest = proom.r_gold;
+            else
+                tp.t_dest = hero;
+        }
+
+        r.dungeon.places[y][x].p_monst = tp;
+
+        return tp;
+    }
+
     /*
     * give_pack:
     *	Give a pack to a monster if it deserves one
@@ -603,5 +698,35 @@ function MonsterManager(r){
         r.UI.comment(".give_pack");
         return tp;
     }
+    /*
+    * save_throw:
+    *	See if a creature save against something
+    */
+    //int
+    function save_throw(which, tp)//THING tp)
+    {
+        let need;
 
+        need = 14 + which - tp.t_stats.s_lvl / 2;
+        return (r.roll(1, 20) >= need);
+    }
+
+    /*
+    * save:
+    *	See if he saves against various nasty things
+    */
+    //int
+    function save(which)
+    {
+        //r.player.
+
+        if (which == d.VS_MAGIC)
+        {
+        if (ISRING(d.LEFT, d.R_PROTECT))
+            which -= cur_ring[LEFT].o_arm;
+        if (ISRING(d.RIGHT, d.R_PROTECT))
+            which -= cur_ring[d.RIGHT].o_arm;
+        }
+        return save_throw(which, player);
+    }
 }
