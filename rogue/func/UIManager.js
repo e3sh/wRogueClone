@@ -115,10 +115,17 @@ function UIManager(r, g){
 
     this.clear   = function(num){ if (isNaN(num)) num=0; g.console[num].clear();     }
     
-    this.msg    = function(text){      g.console[1].insertln(); g.console[1].printw(text); }
-    this.addmsg = this.msg;
-    this.endmsg = this.msg;
-    this.doadd  = this.msg;
+    this.texwork = "";
+    this.msg    = function(text){
+        text = this.texwork + text;
+        if (!Boolean(text)) return;
+        if (text.length >0){ g.console[1].insertln(); g.console[1].printw(text);
+        } 
+        this.texwork = "";
+    }
+    this.addmsg = function(text){ this.texwork += text;}
+    this.endmsg = function(){ this.msg("");};
+    this.doadd  = function(text){ this.texwork += text;}
     
     this.debug  = function(text){      this.comment(`d: ${text}`); }
     this.comment = function(text){     g.console[2].insertln(); g.console[2].printw(text); }
@@ -459,14 +466,8 @@ function UIManager(r, g){
         //const ce =(a,b)=>{((a).x == (b).x && (a).y == (b).y)}
 
         let player = r.player.player;
-        let pstats = player.t_stats
-        let pack   = player.t_pack
         let proom  = player.t_room
         let hero   = player.t_pos;
-        let maxhp  = player.t_states.s_maxhp;
-
-        let oldpos = r.oldpos;
-        let oldrp = r.oldrp;
 
         let x, y;
         let ch;
@@ -485,7 +486,7 @@ function UIManager(r, g){
 
         passcount = 0;
         rp = r.player.player.t_room; //proom;
-        if (Boolean(r.oldpos)&&Boolean(r.oldrp)){
+        if (r.oldpos != null && r.oldrp != null){
             if (!((r.oldpos.x == hero.x) && (r.oldpos.y == hero.y)))
             {
                 r.UI.erase_lamp(r.oldpos, r.oldrp);
@@ -507,125 +508,67 @@ function UIManager(r, g){
         pfl = pp.p_flags;
 
         for (y = sy; y <= ey; y++)
-        if (y > 0 && y < d.NUMLINES - 1) for (x = sx; x <= ex; x++)
-        {
-            if (x < 0 || x >= d.NUMCOLS)
-                continue;
-            if (!on(player, d.ISBLIND))
+        if (y > 0 && y < d.NUMLINES - 1)
+            for (x = sx; x <= ex; x++)
             {
-                if (y == hero.y && x == hero.x)
+                if (x < 0 || x >= d.NUMCOLS)
                     continue;
-            }
-
-            pp = r.dungeon.INDEX(y, x);
-            ch = pp.p_ch;
-            if (ch == ' ')		/* nothing need be done with a ' ' */
-                continue;
-            fp = pp.p_flags;
-            if (pch != d.DOOR && ch != d.DOOR)
-            if ((pfl & d.F_PASS) != (fp & d.F_PASS))
-                continue;
-            if (((fp & d.F_PASS) || ch == d.DOOR) && 
-            ((pfl & d.F_PASS) || pch == d.DOOR))
-            {
-                if (hero.x != x && hero.y != y &&
-                    !this.step_ok(r.dungeon.chat(y, hero.x)) && !this.step_ok(r.dungeon.chat(hero.y, x)))
-                    continue;
-            }
-
-            tp = pp.p_monst;
-            if (tp == null )
-                ch = this.trip_ch(y, x, ch);
-            else
-                if (on(player, d.SEEMONST) && on(tp, d.ISINVIS))
+                if (!on(player, d.ISBLIND))
                 {
-                    if (door_stop && !firstmove)
-                        running = false ;
-                    continue;
+                    if (y == hero.y && x == hero.x)
+                        continue;
                 }
+
+                pp = r.dungeon.INDEX(y, x);
+                ch = pp.p_ch;
+                if (ch == ' ')		/* nothing need be done with a ' ' */
+                    continue;
+                fp = pp.p_flags;
+                if (pch != d.DOOR && ch != d.DOOR)
+                    if ((pfl & d.F_PASS) != (fp & d.F_PASS))
+                        continue;
+                if (((fp & d.F_PASS) || ch == d.DOOR) && 
+                  ((pfl & d.F_PASS) || pch == d.DOOR))
+                {
+                    if (hero.x != x && hero.y != y &&
+                        !this.step_ok(r.dungeon.chat(y, hero.x)) && !this.step_ok(r.dungeon.chat(hero.y, x)))
+                        continue;
+                }
+
+                tp = pp.p_monst;
+                if (tp == null )
+                    ch = this.trip_ch(y, x, ch);
                 else
-                {
-                    console.log("d ms ");
-                    if (wakeup)
-                        r.monster.wake_monster(y, x);
-                    if (r.monster.see_monst(tp))
+                    if (on(player, d.SEEMONST) && on(tp, d.ISINVIS))
                     {
-                        if (on(player, d.ISHALU))
-                            ch = "t";//rnd(26) + 'A';
-                        else
-                            ch = tp.t_disguise;
+                        if (door_stop && !firstmove)
+                            running = false ;
+                        continue;
                     }
-                }
-            if (on(player, d.ISBLIND) && (y != hero.y || x != hero.x))
-                continue;
+                    else
+                    {
+                        //console.log("d ms ");
+                        if (wakeup)
+                            r.monster.wake_monster(y, x);
+                        if (r.player.see_monst(tp))
+                        {
+                            if (on(player, d.ISHALU))
+                                ch = String.fromCharCode(r.rnd(26) + Number('A'.charCodeAt(0)));
+                            else
+                                ch = tp.t_disguise;
+                        }
+                    }
+                if (on(player, d.ISBLIND) && (y != hero.y || x != hero.x))
+                    continue;
 
-            r.UI.move(y, x);
+                r.UI.move(y, x);
 
-            if ((proom.r_flags & d.ISDARK) && !see_floor && ch == d.FLOOR)
-                ch = ' ';
+                if ((proom.r_flags & d.ISDARK) && !see_floor && ch == d.FLOOR)
+                    ch = ' ';
 
-            if (tp != null || ch != r.UI.inch())
-                r.UI.addch(ch);
-            //if (tp != null) r.UI.addch(ch);
-
-            if (door_stop && !firstmove && running)
-            {
-                switch (runch)
-                {
-                    case 'h':
-                        if (x == ex)
-                            continue;
-                        break; 
-                    case 'j':
-                        if (y == sy)
-                            continue;
-                        break; 
-                    case 'k':
-                        if (y == ey)
-                            continue;
-                        break; 
-                    case 'l':
-                        if (x == sx)
-                            continue;
-                        break; 
-                    case 'y':
-                        if ((y + x) - sumhero >= 1)
-                            continue;
-                        break; 
-                    case 'u':
-                        if ((y - x) - diffhero >= 1)
-                            continue;
-                        break; 
-                    case 'n':
-                        if ((y + x) - sumhero <= -1)
-                            continue;
-                        break; 
-                    case 'b':
-                        if ((y - x) - diffhero <= -1)
-                            continue;
-                        break;
-                }
-                switch (ch)
-                {
-                    case d.DOOR:
-                        if (x == hero.x || y == hero.y)
-                            running = false  ;
-                        break;
-                    case d.PASSAGE:
-                        if (x == hero.x || y == hero.y)
-                            passcount++;
-                        break;
-                    case d.FLOOR:
-                    case '|':
-                    case '-':
-                    case ' ':
-                        break;
-                    default:
-                        running = false ;
-                        break;
-                }
+                if (tp != null || ch != r.UI.inch())
+                    r.UI.addch(ch);
             }
-        }
         if (door_stop && !firstmove && passcount > 1)
             running = false ;
         if (!running || !jump)
@@ -723,7 +666,7 @@ function UIManager(r, g){
                 return false;
             default:
                 //return (!isalpha(ch));
-                return (Boolean(ch.match(/[a-zA-Z]/)));
+                return (!Boolean(ch.match(/[a-zA-Z]/)));
         }
     }
 

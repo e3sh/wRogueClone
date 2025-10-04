@@ -131,6 +131,7 @@ function PlayerCharacter(r){
             pstat: pstats,  //
             mstat: max_stats,   //
             hungs: hungry_state,//
+            weap:cur_weapon,
             arm: cur_armor, //
             ring: cur_ring, //
             nocmd: no_command,  // (行動不能ターン数)
@@ -334,7 +335,7 @@ function PlayerCharacter(r){
         for (tp = r.dungeon.mlist; tp != null; tp = tp.l_next)
         {
             r.UI.move(tp.t_pos.y, tp.t_pos.x);
-            if (r.monster.see_monst(tp))
+            if (r.player.see_monst(tp))
             {
                 if (tp.t_type == 'X' && tp.t_disguise != 'X')
                     r.UI.addch(rnd_thing());
@@ -415,9 +416,9 @@ function PlayerCharacter(r){
     //see_monst(THING *mp)
     this.see_monst = function(mp){
 
-        console.log("see_monst p")
+        const dist = (y1, x1, y2, x2)=>{ return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)); }
+        //console.log("see_monst p")
         
-
         let y, x;
 
         if (on(player, d.ISBLIND))
@@ -428,9 +429,10 @@ function PlayerCharacter(r){
         x = mp.t_pos.x;
         if (dist(y, x, hero.y, hero.x) < d.LAMPDIST)
         {
+            //console.log(`${dist(y, x, hero.y, hero.x)} < ${d.LAMPDIST}`);
             if (y != hero.y && x != hero.x &&
                 !this.step_ok(r.dungeon.chat(y, hero.x)) && !this.step_ok(r.dungeon.chat(hero.y, x)))
-                return false;
+                ;//return false; 
             return true;
         }
         if (mp.t_room != player.t_room)
@@ -506,7 +508,6 @@ function PlayerCharacter(r){
             && !on(player, d.ISBLIND))
             {
                 let	b1, b2;
-
                 switch (runch)
                 {
                     case 'h':
@@ -672,8 +673,16 @@ function PlayerCharacter(r){
                 break;
             default:
                 r.running = false;
-                if (isupper(ch) || r.dungeon.moat(nh.y, nh.x))
-                    fight(nh, cur_weapon, false);
+                if (isupper(ch) || r.dungeon.moat(nh.y, nh.x)){
+                    //battle
+                    r.monster.battle.fight(nh, cur_weapon, false);
+
+                    r.running = false;
+                    r.after = false;
+
+                    nh.y -= dy;
+                    nh.x -= dx;
+                }
                 else
                 {
                     if (ch != d.STAIRS)

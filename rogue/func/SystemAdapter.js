@@ -66,7 +66,7 @@ function debug(r, g){
         g.console[4].clear();
         for (let i in r.mobs){
             const mc = r.mobs[i];
-            const state_i = (i != mc.id)?"!":"-";
+            const state_i = mc.id;// (i != mc.id)?"!":"-";
             const state_e = mc.enable   ?"o":"-";
             const st_tt   = (mc.t_type != null) ?mc.t_type:"";
             const st_ot   = (mc.o_type != null) ?mc.o_type:"";
@@ -78,18 +78,18 @@ function debug(r, g){
 
             let st_pc   = (mc.o_packch != null)?`(${mc.o_packch})${st_eq}`:`[${st_opx}${st_tpx},${st_opy}${st_tpy}]`; 
 
+            let st_parm = "";
             let st_loc = "FREE";
-            if (mc.t_type != null)   st_loc = "MONS";
+            if (mc.t_type != null) {st_loc = "MONS"; st_parm = mc.t_stats.s_hpt;}
             if (mc.o_type != null)   st_loc = "LVL ";
             if (mc.o_packch != null) st_loc = "PACK";
 
             if (sw) {
                 //g.screen[0].fill(0, 0, 32*6, 50*8, "Blue");   
-                g.console[4].mvprintw(`${state_i}${state_e} ${st_tt}${st_ot} ${st_loc}${st_pc} `, 0, i);
+                g.console[4].mvprintw(`${state_i}${state_e} ${st_tt}${st_ot} ${st_loc}${st_pc} ${st_parm} `, 0, i);
             }
             //    st += ((r.mobs[i].enable)?String.fromCharCode(Number("A".charCodeAt(0))+Number(i)):"_");
         }
-
         r.UI.submsg(`mlist:${mlcount} lvl_obj:${locount}`);
         sw = !sw;
     }
@@ -115,7 +115,10 @@ function debug(r, g){
             let ws = "";
             for (let j = 0; j< d.MAXCOLS; j++){
                 //if (places[i][j].p_flags != 0) ws+="?"; else 
-                ws += places[i][j].p_ch != " "?places[i][j].p_ch:"/";
+                let pl = places[i][j];
+                let ch = (pl.p_monst != null)?pl.p_monst.t_disguise: pl.p_ch;
+
+                ws += (ch != " ")?ch:"/";
             }
             vstr[i] = ws;
         }

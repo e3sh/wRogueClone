@@ -57,6 +57,7 @@ function GameManager(g){
     * `wizard` (ウィザードモードフラグ) など。
     */
     let lowtime = g.time();//(int) time(NULL);
+    let idcount = 0;
 
     let dnum = lowtime;// + f.md_getpid(); //ユーザーIDを取得します
     let seed = dnum;
@@ -266,7 +267,7 @@ function GameManager(g){
         for (let i in this.mobs){
             if (this.mobs[i] != item){
                 if (this.mobs[i].enable)
-                    this.mobs[i].id = i;
+                    //this.mobs[i].id = i;
                     table.push(this.mobs[i]);
             }
         }
@@ -290,10 +291,31 @@ function GameManager(g){
         item = new t.thing();
         item.l_next = null;
         item.l_prev = null;
-        item.id = this.mobs.length;
+        item.id = idcount++;// this.mobs.length;
 
         this.mobs.push(item);
 
         return item;
     }
+    /*
+    * rnd_thing:
+    *	Pick a random thing appropriate for this level
+    */
+    //char
+    this.rnd_thing = function()
+    {
+        let i; //int i;
+        //static char thing_list[] = {
+        const thing_list = [
+            d.POTION, d.SCROLL, d.RING, d.STICK, d.FOOD, 
+            d.WEAPON, d.ARMOR, d.STAIRS, d.GOLD, d.AMULET
+        ];
+
+        if (this.dungeon.level >= d.AMULETLEVEL)
+            i = this.rnd(thing_list.length + 1);
+        else
+            i = this.rnd(thing_list.length + 1);
+        return thing_list[i];
+    }
+
 }

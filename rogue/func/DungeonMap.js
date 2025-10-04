@@ -170,12 +170,12 @@ function DungeonMap(r){
         //this.chat(stairs.y, stairs.x) = d.STAIRS;
         seenstairs = false;
 
-        let mlstr = "";
+        //let mlstr = "";
         for (tp = this.mlist; tp != null; tp = tp.l_next){
             tp.t_room = this.roomin(tp.t_pos);
-            mlstr += ".";
+            //mlstr += ".";
         }
-        console.log(`nl:${mlstr}`);
+        //console.log(`nl:${mlstr}`);
 
         this.roomf.find_floor(null, hero, false, false);
         hero = this.roomf.get_findfloor_result();
@@ -210,7 +210,14 @@ function DungeonMap(r){
                 return obj;
         }
         //sprintf(prbuf, "Non-object %d,%d", y, x);
-        r.UI.msg(`]Non-object x:${x} y:${y}`);
+        r.UI.msg(`mobs searching...`);
+        for (let i in r.mobs)
+        {
+            obj = r.mobs[i];
+            if (obj.o_pos.y == y && obj.o_pos.x == x)
+                return obj;
+        }
+        r.UI.msg(`Non-object x:${x} y:${y}`);
         return null;
     }
     /*
@@ -234,6 +241,7 @@ function DungeonMap(r){
         * check for treasure rooms, and if so, put it in.
         */
         if (r.rnd(d.TREAS_ROOM) == 0)
+        //if (true)
             this.treas_room();
         /*
         * Do MAXOBJ attempts to put things on a level
@@ -327,11 +335,19 @@ function DungeonMap(r){
     this.treas_room = function(){
         //const MAXTRIES = 10; /* max number of tries to put down a monster */
 
+        let lvl_obj = r.dungeon.lvl_obj;
+
         let nm;
         //let tp; //THING *tp;
         let rp; //struct room *rp;
         let spots, num_monst;
         let mp = {}; //static coord mp;
+
+        //let cnt = 0;
+        //let wst = "";
+        //for (let tes = lvl_obj; tes != null; tes = tes.l_next)
+        //{wst += tes.o_type;cnt++;}
+        //console.log(`tres st:${wst} ${cnt}`);
 
         rp = rooms[this.rnd_room()];
         spots = (rp.r_max.y - 2) * (rp.r_max.x - 2) - d.MINTREAS;
@@ -345,8 +361,14 @@ function DungeonMap(r){
             tp.o_pos = this.roomf.get_findfloor_result();//mp;
             lvl_obj = r.attach(lvl_obj, tp);
             //chat(mp.y, mp.x) = tp.o_type;
-            places[mp.y][mp.x].p_ch = tp.o_type; 
+            this.places[mp.y][mp.x].p_ch = tp.o_type; 
         }
+
+        //cnt = 0;
+        //wst = "";
+        //for (let tes = lvl_obj; tes != null; tes = tes.l_next)
+        //{wst += tes.o_type;cnt++;}
+        //console.log(`tres en:${wst} ${cnt}`);
 
         /*
         * fill up room with monsters from the next level down
@@ -369,6 +391,8 @@ function DungeonMap(r){
             }
         }
         level--;
+
+        r.dungeon.lvl_obj = lvl_obj;
 
         r.UI.comment("treas_room");
     }

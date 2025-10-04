@@ -418,7 +418,8 @@ function rooms_f(r, dg){
 				else
 				{
 					tp.t_oldch = ch;
-					if (!r.monster.see_monst(tp))
+					r.UI.move(y, x);
+					if 	(!r.player.see_monst(tp))
 						if (on(player, d.SEEMONST))
 						{
 							//standout();
@@ -451,8 +452,8 @@ function rooms_f(r, dg){
 
 		rp = player.t_room;//proom;
 
-		if (rp.r_flags & d.SMAZE)
-		return;
+		if (rp.r_flags & d.ISMAZE)
+			return;
 
 		if (rp.r_flags & d.ISGONE)
 			floor = d.PASSAGE;
@@ -463,34 +464,34 @@ function rooms_f(r, dg){
 
 		player.t_room = dg.passages[dg.flat(cp.y, cp.x) & d.F_PNUM];
 		for (y = rp.r_pos.y; y < rp.r_max.y + rp.r_pos.y; y++)
-		for (x = rp.r_pos.x; x < rp.r_max.x + rp.r_pos.x; x++)
-		{
-			r.UI.move(y, x);
-			switch ( ch = r.UI.inch() )
+			for (x = rp.r_pos.x; x < rp.r_max.x + rp.r_pos.x; x++)
 			{
-			case d.FLOOR:
-				if (floor == ' ' && ch != ' ')
-					r.UI.addch(' ');
-				break;
-			default:
-				/*
-				* to check for monster, we have to strip out
-				* standout bit
-				*/
-				if (isupper(ch));//toascii(ch)))
+				r.UI.move(y, x);
+				switch ( ch = r.UI.inch() )
 				{
-					if (on(player, d.SEEMONST))
+				case d.FLOOR:
+					if (floor == ' ' && ch != ' ')
+						r.UI.addch(' ');
+					break;
+				default:
+					/*
+					* to check for monster, we have to strip out
+					* standout bit
+					*/
+					if (isupper(ch));//toascii(ch)))
 					{
-						//standout();
-						r.UI.addch(ch);
-						//standend();
-						break;
+						if (on(player, d.SEEMONST))
+						{
+							//standout();
+							r.UI.addch(ch);
+							//standend();
+							break;
+						}
+						pp = dg.INDEX(y,x);
+						r.UI.addch(pp.p_ch == d.DOOR ? d.DOOR : floor);
 					}
-					pp = dg.INDEX(y,x);
-					r.UI.addch(pp.p_ch == d.DOOR ? d.DOOR : floor);
 				}
 			}
-		}
 		r.player.door_open(rp);
 
 		r.UI.comment("leave_room");

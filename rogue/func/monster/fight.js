@@ -49,26 +49,37 @@ function battle(r){
 	const monsters =  r.globalValiable.monsters;
 
 	const terse = false; //
+	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
 	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
 
+	/*	Choose the first or second string depending on whether it the
+    *	player is tripping
+    */
+    //char *
+    function choose_str(ts, ns)
+    {
+        return (on(r.player.player, d.ISHALU) ? ts : ns);
+    }
 	/*
 	* fight:
 	*	The player attacks the monster.
 	*/
 	this.fight = function(mp, weap, thrown)//coord *mp, THING *weap, bool thrown)
 	{
+		const player = r.player.player;
+
 		let tp;	//register THING *tp;
-		let did_hit = TRUE;	//register bool did_hit = TRUE;
+		let did_hit = true;	//register bool did_hit = TRUE;
 		let mname, ch;	//register char *mname, ch;
 
 		/*
 		* Find the monster we want to fight
 		*/
 	//#ifdef MASTER
-		if ((tp = moat(mp.y, mp.x)) == NULL)
-		debug("Fight what @ %d,%d", mp.y, mp.x);
+		if ((tp = r.dungeon.moat(mp.y, mp.x)) == null)
+			r.UI.debug(`Fight what @ y:${mp.y},x:${mp.x}`);
 	//#else
-		tp = moat(mp.y, mp.x);
+		tp = r.dungeon.moat(mp.y, mp.x);
 	//#endif
 		/*
 		* Since we are fighting, things are not quiet so no healing takes
@@ -76,53 +87,53 @@ function battle(r){
 		*/
 		count = 0;
 		quiet = 0;
-		runto(mp);
+		r.monster.runto(mp);
 		/*
 		* Let him know it was really a xeroc (if it was one).
 		*/
 		ch = '\0';
-		if (tp.t_type == 'X' && tp.t_disguise != 'X' && !on(player, ISBLIND))
+		if (tp.t_type == 'X' && tp.t_disguise != 'X' && !on(player, d.ISBLIND))
 		{
 			tp.t_disguise = 'X';
 			if (on(player, ISHALU)) {
-				ch = (char)(rnd(26) + 'A');
-				mvaddch(tp.t_pos.y, tp.t_pos.x, ch);
+				ch = String.fromCharCode(r.rnd(26) + Number('A'.charCodeAt(0)));
+				r.UI.mvaddch(tp.t_pos.y, tp.t_pos.x, ch);
 			}
-			msg(choose_str("heavy!  That's a nasty critter!",
+			r.UI.msg(choose_str("heavy!  That's a nasty critter!",
 					"wait!  That's a xeroc!"));
 			if (!thrown)
-				return FALSE;
+				return false;
 		}
-		mname = set_mname(tp);
-		did_hit = FALSE;
-		has_hit = (terse && !to_death);
+		mname = this.set_mname(tp);
+		did_hit = false;
+		has_hit = (terse && !r.to_death);
 		if (roll_em(player, tp, weap, thrown))
 		{
-			did_hit = FALSE;
+			did_hit = false;
 			if (thrown)
 				thunk(weap, mname, terse);
 			else
-				hit(NULL, mname, terse);//(char *) NULL
-			if (on(player, CANHUH))
+				hit(null, mname, terse);//(char *) NULL
+			if (on(player, d.CANHUH))
 			{
-				did_hit = TRUE;
-				tp.t_flags |= ISHUH;
-				player.t_flags &= ~CANHUH;
-				endmsg();
-				has_hit = FALSE;
-				msg("your hands stop glowing %s", pick_color("red"));
+				did_hit = true;
+				tp.t_flags |= d.ISHUH;
+				player.t_flags &= ~d.CANHUH;
+				r.UI.endmsg();
+				has_hit = false;
+				r.UI.msg(`your hands stop glowing ${pick_color("red")}`);
 			}
 			if (tp.t_stats.s_hpt <= 0)
-				killed(tp, TRUE);
-			else if (did_hit && !on(player, ISBLIND))
-				msg("%s appears confused", mname);
-			did_hit = TRUE;
+				killed(tp, true);
+			else if (did_hit && !on(player, d.ISBLIND))
+				r.UI.msg(`${mname} appears confused`);
+			did_hit = true;
 		}
 		else
 		if (thrown)
 			bounce(weap, mname, terse);
 		else
-			miss(NULL, mname, terse); //(char *) NULL
+			miss(null, mname, terse); //(char *) NULL
 		return did_hit;
 	}
 
@@ -161,7 +172,7 @@ function battle(r){
 		{
 			if (has_hit)
 			addmsg(".  ");
-			hit(mname, NULL, FALSE); //(char *) NULL
+			hit(mname, null, false); //(char *) NULL
 		}
 		else
 			if (has_hit)
@@ -348,15 +359,17 @@ function battle(r){
 	//char *
 	this.set_mname = function(tp)//THING *tp)
 	{
+		const player = r.player.player;
+
 		let ch;	//int ch;
 		let st;
 		let mname;	//char *mname;
 		//static char tbuf[MAXSTR] = { 't', 'h', 'e', ' ' };
 		let tbuf = "the ";
 
-		if (!see_monst(tp) && !on(player, d.SEEMONST))
+		if (!r.player.see_monst(tp) && !on(player, d.SEEMONST))
 			return (terse ? "it" : "something");
-		else if (on(player, ISHALU))
+		else if (on(player, d.ISHALU))
 		{
 			r.UI.move(tp.t_pos.y, tp.t_pos.x);
 			st = r.UI.inch();
@@ -370,6 +383,7 @@ function battle(r){
 		else
 			mname = monsters[Number(tp.t_type.charCodeAt(0)) - Number('A'.charCodeAt(0))].m_name;
 		tbuf += mname;
+		//console.log(tbuf);
 		return tbuf;
 	}
 
@@ -380,7 +394,7 @@ function battle(r){
 	//int
 	function swing(at_lvl, op_arm, wplus)//int at_lvl, int op_arm, int wplus)
 	{
-		let res = rnd(20); //int res = rnd(20);
+		let res = r.rnd(20); //int res = rnd(20);
 		let need = (20 - at_lvl) - op_arm;//int need = (20 - at_lvl) - op_arm;
 
 		return (res + wplus >= need);
@@ -393,89 +407,104 @@ function battle(r){
 	//bool
 	function roll_em(thatt, thdef, weap, hurl)//THING *thatt, THING *thdef, THING *weap, bool hurl)
 	{
+		const ISRING = (h,r)=>  {cur_ring[h] != null && cur_ring[h].o_which == r} ;
+
+		const pst = r.player.get_status();
+
+		const cur_ring = pst.ring;
+		const cur_armor = pst.arm;
+		const cur_weapon = pst.weap;
+
+		const pstats = r.player.player.t_stats;
+		
 		let att, def;	//register struct stats *att, *def;
 		let cp;	//register char *cp;
 		let ndice, nsides, def_arm;	//register int ndice, nsides, def_arm;
-		let did_hit = FALSE;//register bool did_hit = FALSE;
+		let did_hit = false;//register bool did_hit = FALSE;
 		let hplus;	//register int hplus;
 		let dplus;	//register int dplus;
 		let damage;	//register int damage;
 
 		att = thatt.t_stats;
 		def = thdef.t_stats;
-		if (weap == NULL)
+		if (weap == null)
 		{
 			cp = att.s_dmg;
 			dplus = 0;
 			hplus = 0;
-			}
+		}
 		else
 		{
-			hplus = (weap == NULL ? 0 : weap.o_hplus);
-			dplus = (weap == NULL ? 0 : weap.o_dplus);
-		if (weap == cur_weapon)
-		{
-			if (ISRING(LEFT, R_ADDDAM))
-				dplus += cur_ring[LEFT].o_arm;
-			else if (ISRING(LEFT, R_ADDHIT))
-				hplus += cur_ring[LEFT].o_arm;
-			if (ISRING(RIGHT, R_ADDDAM))
-				dplus += cur_ring[RIGHT].o_arm;
-			else if (ISRING(RIGHT, R_ADDHIT))
-				hplus += cur_ring[RIGHT].o_arm;
-		}
-		cp = weap.o_damage;
-		if (hurl)
-		{
-			if ((weap.o_flags&ISMISL) && cur_weapon != NULL &&
-			cur_weapon.o_which == weap.o_launch)
+			hplus = (weap == null ? 0 : weap.o_hplus);
+			dplus = (weap == null ? 0 : weap.o_dplus);
+			if (weap == cur_weapon)
 			{
-				cp = weap.o_hurldmg;
-				hplus += cur_weapon.o_hplus;
-				dplus += cur_weapon.o_dplus;
+				if (ISRING(d.LEFT, d.R_ADDDAM))
+					dplus += cur_ring[d.LEFT].o_arm;
+				else if (ISRING(d.LEFT, d.R_ADDHIT))
+					hplus += cur_ring[d.LEFT].o_arm;
+				if (ISRING(d.RIGHT, d.R_ADDDAM))
+					dplus += cur_ring[d.RIGHT].o_arm;
+				else if (ISRING(d.RIGHT, d.R_ADDHIT))
+					hplus += cur_ring[d.RIGHT].o_arm;
 			}
-			else if (weap.o_launch < 0)
-				cp = weap.o_hurldmg;
-		}
+			cp = weap.o_damage;
+			if (hurl)
+			{
+				if ((weap.o_flags&d.ISMISL) && cur_weapon != null &&
+				cur_weapon.o_which == weap.o_launch)
+				{
+					cp = weap.o_hurldmg;
+					hplus += cur_weapon.o_hplus;
+					dplus += cur_weapon.o_dplus;
+				}
+				else if (weap.o_launch < 0)
+					cp = weap.o_hurldmg;
+			}
 		}
 		/*
 		* If the creature being attacked is not running (alseep or held)
 		* then the attacker gets a plus four bonus to hit.
 		*/
-		if (!on(thdef, ISRUN))
+		if (!on(thdef, d.ISRUN))
 		hplus += 4;
 		def_arm = def.s_arm;
 		if (def == pstats)
 		{
-			if (cur_armor != NULL)
+			if (cur_armor != null)
 				def_arm = cur_armor.o_arm;
-			if (ISRING(LEFT, R_PROTECT))
-				def_arm -= cur_ring[LEFT].o_arm;
-			if (ISRING(RIGHT, R_PROTECT))
-				def_arm -= cur_ring[RIGHT].o_arm;
+			if (ISRING(d.LEFT, d.R_PROTECT))
+				def_arm -= cur_ring[d.LEFT].o_arm;
+			if (ISRING(d.RIGHT, d.R_PROTECT))
+				def_arm -= cur_ring[d.RIGHT].o_arm;
 		}
-		while(cp != NULL && cp != '\0')
+
+		let rolldmg = cp;
+		//for (let i=0; i < cp.length; i++)
+		//while(cp != null && cp != '\0')
 		{
-			ndice = atoi(cp);
-			if ((cp = strchr(cp, 'x')) == NULL)
-				break;
-			nsides = atoi(++cp);
+			cp = rolldmg.substring(0,0);
+			ndice = Number(cp); //atoi(cp);
+			//if ((cp = strchr(cp, 'x')) == null)
+			//	break;
+			nsides = Number(rolldmg.substring(2,2));//atoi(++cp);
 			if (swing(att.s_lvl, def_arm, hplus + str_plus[att.s_str]))
 			{
 				let proll; //int proll;
 
-				proll = roll(ndice, nsides);
+				proll = r.roll(ndice, nsides);
 	//	#ifdef MASTER
 				if (ndice + nsides > 0 && proll <= 0)
-					debug("Damage for %dx%d came out %d, dplus = %d, add_dam = %d, def_arm = %d", ndice, nsides, proll, dplus, add_dam[att.s_str], def_arm);
+					console.log(
+					`Damage for ${ndice}x${nsides} came out ${proll}, dplus = ${dplus}, add_dam = ${add_dam[att.s_str]}, def_arm = ${def_arm}`);
 	//	#endif
 				damage = dplus + proll + add_dam[att.s_str];
-				def.s_hpt -= max(0, damage);
-				did_hit = TRUE;
+				def.s_hpt -= Math.max([0, damage]);
+				did_hit = true;
 			}
-			if ((cp = strchr(cp, '/')) == NULL)
-				break;
-			cp++;
+			//if ((cp = strchr(cp, '/')) == NULL)
+			//	break;
+			//cp++;
 		}
 		return did_hit;
 	}
@@ -489,13 +518,14 @@ function battle(r){
 	{
 		let tbuf;//static char tbuf[MAXSTR];
 
-		tbuf = '\0';
-		if (mname == 0)
+		tbuf = ' ';
+		if (mname == null)
 			tbuf = "you"; 
 		else
 			tbuf = mname;
 		if (upper)
-			tbuf // = (char) toupper(*tbuf);
+			;tbuf // = (char) toupper(*tbuf);
+		//console.log(tbuf);
 		return tbuf;
 	}
 
@@ -508,11 +538,11 @@ function battle(r){
 	{
 		if (to_death)
 			return;
-		if (weap.o_type == WEAPON)
-			addmsg("the %s hits ", weap_info[weap.o_which].oi_name);
+		if (weap.o_type == d.WEAPON)
+			addmsg(`the ${weap_info[weap.o_which].oi_name} hits ` );
 		else
 			addmsg("you hit ");
-		addmsg("%s", mname);
+		addmsg(`${mname}`);
 		if (!noend)
 			endmsg();
 	}
@@ -526,25 +556,25 @@ function battle(r){
 	{
 		let i;
 		let s;
-		h_names = []//extern char *h_names[];
+		//h_names = []//extern char *h_names[];
 
-		if (to_death)
+		if (r.to_death)
 			return;
-		addmsg(prname(er, TRUE));
+		r.UI.addmsg(`${prname(er, false)}`);
 		if (terse)
 			s = " hit";
 		else
 		{
-			i = rnd(4);
-			if (er != NULL)
+			i = r.rnd(4);
+			if (er != null)
 				i += 4;
 			s = h_names[i];
 		}
-		addmsg(s);
+		r.UI.addmsg(s);
 		if (!terse)
-			addmsg(prname(ee, FALSE));
+			r.UI.addmsg(` ${prname(ee, false)}`);
 		if (!noend)
-			endmsg();
+			r.UI.endmsg();
 	}
 
 	/*
@@ -555,22 +585,22 @@ function battle(r){
 	function miss(er, ee, noend)//char *er, char *ee, bool noend)
 	{
 		let i;
-		m_names = [];
+		//m_names = [];
 
-		if (to_death)
+		if (r.to_death)
 			return;
-		addmsg(prname(er, TRUE));
+		r.UI.addmsg(`${prname(er, false)}`);
 		if (terse)
 			i = 0;
 		else
-			i = rnd(4);
-		if (er != NULL)
+			i = r.rnd(4);
+		if (er != null)
 			i += 4;
-		addmsg(m_names[i]);
+		r.UI.addmsg(m_names[i]);
 		if (!terse)
-			addmsg(" %s", prname(ee, FALSE));
+			r.UI.addmsg(` ${prname(ee, false)}`);
 		if (!noend)
-			endmsg();
+			r.UI.endmsg();
 	}
 
 	/*
@@ -582,13 +612,13 @@ function battle(r){
 	{
 		if (to_death)
 			return;
-		if (weap.o_type == WEAPON)
-			addmsg("the %s misses ", weap_info[weap.o_which].oi_name);
+		if (weap.o_type == d.WEAPON)
+			r.UI.addmsg(`the ${weap_info[weap.o_which].oi_name} misses `);
 		else
-			addmsg("you missed ");
-		addmsg(mname);
+			r.UI.addmsg("you missed ");
+		r.UI.addmsg(mname);
 		if (!noend)
-			endmsg();
+			r.UI.endmsg();
 	}
 
 	/*
