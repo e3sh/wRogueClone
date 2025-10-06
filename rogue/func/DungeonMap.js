@@ -63,9 +63,11 @@ function DungeonMap(r){
 
     this.no_food = no_food;
 
-    this.roomf = new rooms_f(r, this);
-    this.passf = new passages_f(r, this);
+//    this.roomf = new rooms_f(r, this);
+//    this.passf = new passages_f(r, this);
 
+    this.get_level = function(){return level;}
+    this.set_level = function(number){level = number; this.level = level};
     /* 
     **関連する関数（提案されるメソッドの例）:**
     *   `new_level()`, `do_rooms()`, `do_passages()` (レベル生成)。
@@ -83,8 +85,27 @@ function DungeonMap(r){
     this.INDEX  = (y,x)=> {return (places[y][x]) };
     this.chat   = (y,x)=> {return (places[y][x].p_ch) }; //(y, x)座標のマップ文字
     this.flat   = (y,x)=> {return (places[y][x].p_flags)}; //(y, x)座標のフラグ
-    this.moat   = (y,x)=> {return (places[y][x].p_monst)}; //(y, x)座標のモンスターポインタ
-    this.winat  = (y,x)=> {return (this.moat(y,x) != null ? this.moat(y,x).t_disguise : this.chat(y,x))};
+    this.moat   = (y,x)=> {
+        let fl = false;
+        for (let i in r.mobs){
+            if (r.mobs[i].t_pos.x == x && r.mobs[i].t_pos.y == y){
+                fl = true;
+                break;
+            }
+        }
+        let tst = places[y][x].p_monst != null ? places[y][x].p_monst.t_disguise : this.chat(y,x);
+        if (!Boolean(tst)) console.log(`moat:x${x},y${y} ${fl} ${places[y][x].p_monst} ${tst}`);
+        //if (!Boolean((places[y][x].p_monst))) console.log("?");
+
+        return (places[y][x].p_monst)
+    }; //(y, x)座標のモンスターポインタ
+    this.winat  = (y,x)=> {
+        let tst = this.moat(y,x) != null ? this.moat(y,x).t_disguise : this.chat(y,x)
+
+        if (!Boolean(tst)) console.log(`winat:x${x},y${y} ${this.moat(y,x)} ${tst}`);
+
+        return (this.moat(y,x) != null ? this.moat(y,x).t_disguise : this.chat(y,x))
+    };
 
     const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
     const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
@@ -298,6 +319,7 @@ function DungeonMap(r){
         let rp; //register struct room *rp;
         let fp; //register char *fp;
 
+        //console.log(cp);
         fp = places[cp.y][cp.x].p_flags;
         if (fp & d.F_PASS)
             return passages[fp & d.F_PNUM];
@@ -404,6 +426,10 @@ function DungeonMap(r){
     */
     this.step_ok = function(ch)
     {
+        if (!Boolean(ch)) {
+            console.log(`stok${ch}`);
+            return false;
+        }
         switch (ch)
         {
         case ' ':
@@ -411,7 +437,7 @@ function DungeonMap(r){
         case '-':
             return false;
         default:
-            return (!( /^[a-zA-Z]+$/.test(ch) ));
+            return (!Boolean(ch.match(/[a-zA-Z]/)));
         }
     }
 
@@ -493,5 +519,8 @@ function DungeonMap(r){
         r.UI.msg("You can't.  You're floating off the ground!");
             return true;
     }
+
+    this.roomf = new rooms_f(r, this);
+    this.passf = new passages_f(r, this);
 
 }

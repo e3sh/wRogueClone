@@ -7,6 +7,7 @@ function thingsf(r){
 	const d = r.define;
     const t = r.types;
 
+	const terse = false;
 	/*
 	* vowelstr:
 	*      For printfs: if string starts with a vowel, return "n" for an
@@ -62,8 +63,8 @@ function thingsf(r){
 			let numbuf;
 
 			numbuf = (n1 < 0) ? `${n1}` : `+${n1}`;
-			if (type == WEAPON)
-				numbef += (n2 < 0) ? `,${n2}` : `,+${n2}`;
+			if (type == d.WEAPON)
+				numbuf += (n2 < 0) ? `,${n2}` : `,+${n2}`;
 
 			return numbuf;
 		}

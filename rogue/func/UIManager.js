@@ -91,6 +91,8 @@ function UIManager(r, g){
     const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
 
     //cursor move
+    //textConsole 0:main 1:msg 2:debug/comment 3:submsg(inventry) 
+    // (4):r.debug.checkListsCount (5):statisline 
     this.move    = function(y, x){     g.console[0].move(x, y);  }
     this.printw  = function(text){     g.console[0].printw(text); }
     this.mvaddch = function(y, x, ch){ g.console[0].mvprintw(ch, x, y); }
@@ -112,8 +114,8 @@ function UIManager(r, g){
         this.move(y, x);
         return this.inch();
     }
+    this.clear   = function(num){ if (isNaN(num)) num=0; g.console[num].clear(); }
 
-    this.clear   = function(num){ if (isNaN(num)) num=0; g.console[num].clear();     }
     
     this.texwork = "";
     this.msg    = function(text){
@@ -168,7 +170,7 @@ function UIManager(r, g){
 
         const level = stat.lvl;
         const purse = stat.pur;
-        const pstats = stat.pstat;
+        const pstats = r.player.get_pstat();//stat.pstat;
         const max_stats = stat.mstat;
         const cur_armor = stat.arm;
         const hungry_state = stat.hungs;
@@ -211,7 +213,7 @@ function UIManager(r, g){
         /*
         * Save current status
         */
-        s_lvl = level;
+        s_lvl = level
         s_pur = purse;
         s_hp = pstats.s_hpt;
         s_str = pstats.s_str;
@@ -228,11 +230,11 @@ function UIManager(r, g){
         }
         else
         {
-            this.move(d.STATLINE, 0);
-            this.printw(`Level: ${level}  Gold: ${purse}  Hp: ${pstats.s_hpt}(${max_hp})`+  
+            //this.move(d.STATLINE, 0);
+            g.console[5].mvprintw(`Level: ${level}  Gold: ${purse}  Hp: ${pstats.s_hpt}(${max_hp})`+  
                 `  Str: ${pstats.s_str}(${max_stats.s_str})  Arm: ${10 - s_arm}` +
                 `  Exp: ${pstats.s_lvl}/${pstats.s_exp}  ${state_name[hungry_state]}`
-            );
+                ,0,0);
         }
     }
 
@@ -340,12 +342,12 @@ function UIManager(r, g){
             count--;
             if (ch != 'a' && ch != d.ESCAPE && !(running || count || to_death))
             {
-                l_last_comm = last_comm;
-                l_last_dir = last_dir;
-                l_last_pick = last_pick;
-                last_comm = ch;
-                last_dir = '\0';
-                last_pick = null;
+                //l_last_comm = last_comm;
+                //l_last_dir = last_dir;
+                //l_last_pick = last_pick;
+                //last_comm = ch;
+                //last_dir = '\0';
+                //last_pick = null;
             }
 
             const viewInventry = ()=>{
@@ -362,7 +364,7 @@ function UIManager(r, g){
             ki = this.readchar();
             oldc = pr;
             let opcmdf = false; //operation command flag
-            if (!ki.includes("ControlLeft")){            
+            if (!ki.includes("Space")){            
 
                 if (ki.includes("Numpad4")) pr = r.player.do_move( 0,-1);
                 if (ki.includes("Numpad2")) pr = r.player.do_move( 1, 0);
@@ -376,6 +378,10 @@ function UIManager(r, g){
                     pr = r.player.do_move( 0, 0);
                     opcmdf = true;
                 }
+                
+
+
+
                 if (ki.includes("KeyI")) viewInventry();
                 if (ki.includes("KeyD")) ;//drop();
                 if (ki.includes("KeyR")) ;//read_scroll();
@@ -390,9 +396,31 @@ function UIManager(r, g){
                     r.player.packf.move_on = !(r.player.packf.move_on);
                     r.UI.comment(`mv_on[${r.player.packf.move_on}]`);// ${r.after?"m":"s"}]`);
                 }//search();
+                if (this.wait_for("KeyQ")) r.debug.mapcheckTest();
+                if (this.wait_for("KeyZ")) r.dungeon.show_map();
+                if (this.wait_for("ArrowDown")) r.debug.checkListsCount();
+
             } else {
-                r.UI.msg("itemUse+");
+                let inkeyst = "";
+                for (let i in ki){
+                    if (ki[i].includes("Key")){
+                        inkeyst = `useItem ${ki[i].substring(3).toLowerCase()}`;
+                        break;
+                    }
+                }
+                if (inkeyst != "") r.UI.msg(inkeyst);
             }
+            //set delta
+            for (let i in ki)
+                if (ki[i].includes("Numpad")){
+                    let cnum = Number(ki[i].substring(6));
+                    if (cnum >=1 && cnum <=9)    
+                    {
+                        //inkeyst = `direction: ${ki[i].substring(6).toLowerCase()}`;
+                        if (cnum !=5) delta = cnum;
+                        break;
+                    }
+                }
 
             if (r.after)
             {
@@ -441,15 +469,11 @@ function UIManager(r, g){
         else if (ISRING(d.RIGHT, d.R_TELEPORT) && r.rnd(50) == 0)
             teleport();
 
-        if (this.wait_for("KeyQ")) r.debug.mapcheckTest();
-        if (this.wait_for("KeyZ")) r.dungeon.show_map();
-        if (this.wait_for("ArrowDown")) r.debug.checkListsCount();
-
         this.look(true);
 
         let s = " ";
 		for (let i in ki){s += `${ki[i]},`}
-            this.comment(`command${s}[${pr} ${oldc}]`);
+            this.comment(`d:${delta} c:${s}[${pr} ${oldc}]`);
     }
 
     /*
@@ -464,6 +488,9 @@ function UIManager(r, g){
     this.look = function(wakeup)
     {
         //const ce =(a,b)=>{((a).x == (b).x && (a).y == (b).y)}
+
+        const step_ok = r.dungeon.step_ok;
+
 
         let player = r.player.player;
         let proom  = player.t_room
@@ -531,7 +558,7 @@ function UIManager(r, g){
                   ((pfl & d.F_PASS) || pch == d.DOOR))
                 {
                     if (hero.x != x && hero.y != y &&
-                        !this.step_ok(r.dungeon.chat(y, hero.x)) && !this.step_ok(r.dungeon.chat(hero.y, x)))
+                        !step_ok(r.dungeon.chat(y, hero.x)) && !step_ok(r.dungeon.chat(hero.y, x)))
                         continue;
                 }
 
@@ -566,8 +593,12 @@ function UIManager(r, g){
                 if ((proom.r_flags & d.ISDARK) && !see_floor && ch == d.FLOOR)
                     ch = ' ';
 
-                if (tp != null || ch != r.UI.inch())
-                    r.UI.addch(ch);
+                if (tp != null || ch != r.UI.inch()){
+                    if (Boolean(ch))
+                        r.UI.addch(ch);
+                    else
+                        console.log(`look:${ch}`);
+                }
             }
         if (door_stop && !firstmove && passcount > 1)
             running = false ;
@@ -652,23 +683,4 @@ function UIManager(r, g){
         else
             return true ;
     }
-    /*
-    * step_ok:
-    *	Returns true if it is ok to step on ch
-    */
-    this.step_ok = function(ch)
-    {
-        switch (ch)
-        {
-            case ' ':
-            case '|':
-            case '-':
-                return false;
-            default:
-                //return (!isalpha(ch));
-                return (!Boolean(ch.match(/[a-zA-Z]/)));
-        }
-    }
-
-
 }

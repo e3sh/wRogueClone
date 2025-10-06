@@ -48,9 +48,17 @@ function battle(r){
 
 	const monsters =  r.globalValiable.monsters;
 
+	let fight_flush = false;
+	let max_hit = 0;
+
 	const terse = false; //
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
 	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
+	const GOLDCALC =()=> { return Math.floor(Math.random() * (50 + 10 * level)) + 2};
+
+	const death =(en)=>{alert(`death ${en}`)};
+
+	//const ISRING = (h,r)=>  {cur_ring[h] != null && cur_ring[h].o_which == r} //指定した手に特定のリングを着用しているか
 
 	/*	Choose the first or second string depending on whether it the
     *	player is tripping
@@ -106,7 +114,7 @@ function battle(r){
 		}
 		mname = this.set_mname(tp);
 		did_hit = false;
-		has_hit = (terse && !r.to_death);
+		r.UI.has_hit = (terse && !r.to_death);
 		if (roll_em(player, tp, weap, thrown))
 		{
 			did_hit = false;
@@ -120,7 +128,7 @@ function battle(r){
 				tp.t_flags |= d.ISHUH;
 				player.t_flags &= ~d.CANHUH;
 				r.UI.endmsg();
-				has_hit = false;
+				r.UI.has_hit = false;
 				r.UI.msg(`your hands stop glowing ${pick_color("red")}`);
 			}
 			if (tp.t_stats.s_hpt <= 0)
@@ -144,51 +152,54 @@ function battle(r){
 	//int
 	this.attack = function(mp)//THING *mp)
 	{
+		const player = r.player.player;
+		const pstats = r.player.player.t_stats;
+
 		let mname;	//register char *mname;
 		let oldhp;	//register int oldhp;
 		/*
 		* Since this is an attack, stop running and any healing that was
 		* going on at the time.
 		*/
-		running = FALSE;
+		running = false;
 		count = 0;
 		quiet = 0;
-		if (to_death && !on(mp, ISTARGET))
+		if (r.player.to_death && !on(mp, d.ISTARGET))
 		{
-			to_death = FALSE;
-			kamikaze = FALSE;
+			r.player.to_death = false;
+			r.player.kamikaze = false;
 		}
-		if (mp.t_type == 'X' && mp.t_disguise != 'X' && !on(player, ISBLIND))
+		if (mp.t_type == 'X' && mp.t_disguise != 'X' && !on(player, d.ISBLIND))
 		{
 			mp.t_disguise = 'X';
-			if (on(player, ISHALU))
+			if (on(player, d.ISHALU))
 				mvaddch(mp.t_pos.y, mp.t_pos.x, rnd(26) + 'A');
 		}
-		mname = set_mname(mp);
+		mname = this.set_mname(mp);
 		oldhp = pstats.s_hpt;
-		if (roll_em(mp, player, NULL, FALSE))//(THING *) NULL
+		if (roll_em(mp, player, null, false))//(THING *) NULL
 		{
 		if (mp.t_type != 'I')
 		{
-			if (has_hit)
+			if (r.UI.has_hit)
 			addmsg(".  ");
 			hit(mname, null, false); //(char *) NULL
 		}
 		else
-			if (has_hit)
+			if (r.UI.has_hit)
 			endmsg();
-		has_hit = FALSE;
+		r.UI.has_hit = false;
 		if (pstats.s_hpt <= 0)
 			death(mp.t_type);	/* Bye bye life ... */
-		else if (!kamikaze)
+		else if (!r.player.kamikaze)
 		{
 			oldhp -= pstats.s_hpt;
 			if (oldhp > max_hit)
-			max_hit = oldhp;
+				max_hit = oldhp;
 			if (pstats.s_hpt <= max_hit)
-			to_death = FALSE;
+				to_death = false;
 		}
-		if (!on(mp, ISCANC))
+		if (!on(mp, d.ISCANC))
 			switch (mp.t_type)
 			{
 			case 'A':
@@ -201,7 +212,7 @@ function battle(r){
 				/*
 				* The ice monster freezes you
 				*/
-				player.t_flags &= ~ISRUN;
+				player.t_flags &= ~d.ISRUN;
 				if (!no_command)
 				{
 				addmsg("you are frozen");
@@ -210,16 +221,16 @@ function battle(r){
 				endmsg();
 				}
 				no_command += rnd(2) + 2;
-				if (no_command > BORE_LEVEL)
+				if (no_command > d.BORE_LEVEL)
 				death('h');
 				break; 
 			case 'R':
 				/*
 				* Rattlesnakes have poisonous bites
 				*/
-				if (!save(VS_POISON))
+				if (!save(d.VS_POISON))
 				{
-				if (!ISWEARING(R_SUSTSTR))
+				if (!ISWEARING(d.R_SUSTSTR))
 				{
 					chg_str(-1);
 					if (!terse)
@@ -274,7 +285,7 @@ function battle(r){
 				/*
 				* Venus Flytrap stops the poor guy from moving
 				*/
-				player.t_flags |= ISHELD;
+				player.t_flags |= d.ISHELD;
 				sprintf(monsters['F'-'A'].m_stats.s_dmg,"%dx1", ++vf_hit);
 				if (--pstats.s_hpt <= 0)
 				death('F');
@@ -288,12 +299,12 @@ function battle(r){
 
 				lastpurse = purse;
 				purse -= GOLDCALC;
-				if (!save(VS_MAGIC))
+				if (!save(d.VS_MAGIC))
 				purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
 				if (purse < 0)
 				purse = 0;
-				remove_mon(mp.t_pos, mp, FALSE);
-						mp=NULL;
+				remove_mon(mp.t_pos, mp, false);
+						mp=null;
 				if (purse != lastpurse)
 				msg("your purse feels lighter");
 			}
@@ -307,18 +318,18 @@ function battle(r){
 				* Nymph's steal a magic item, look through the pack
 				* and pick out one we like.
 				*/
-				steal = NULL;
-				for (nobj = 0, obj = pack; obj != NULL; obj = next(obj))
+				steal = null;
+				for (nobj = 0, obj = pack; obj != null; obj = next(obj))
 				if (obj != cur_armor && obj != cur_weapon
 					&& obj != cur_ring[LEFT] && obj != cur_ring[RIGHT]
 					&& is_magic(obj) && rnd(++nobj) == 0)
 					steal = obj;
-				if (steal != NULL)
+				if (steal != null)
 				{
-					remove_mon(mp.t_pos, moat(mp.t_pos.y, mp.t_pos.x), FALSE);
-								mp=NULL;
-					leave_pack(steal, FALSE, FALSE);
-					msg("she stole %s!", inv_name(steal, TRUE));
+					remove_mon(mp.t_pos, moat(mp.t_pos.y, mp.t_pos.x), false);
+								mp=null;
+					leave_pack(steal, false, false);
+					msg("she stole %s!", inv_name(steal, true));
 					discard(steal);
 				}
 			}
@@ -329,24 +340,24 @@ function battle(r){
 		}
 		else if (mp.t_type != 'I')
 		{
-		if (has_hit)
-		{
-			addmsg(".  ");
-			has_hit = FALSE;
+			if (r.UI.has_hit)
+			{
+				r.UI.addmsg(".  ");
+				r.UI.has_hit = false;
+			}
+			if (mp.t_type == 'F')
+			{
+				pstats.s_hpt -= vf_hit;
+				if (pstats.s_hpt <= 0)
+				death(mp.t_type);	/* Bye bye life ... */
+			}
+			miss(mname, null, false); //(char *) NULL
 		}
-		if (mp.t_type == 'F')
-		{
-			pstats.s_hpt -= vf_hit;
-			if (pstats.s_hpt <= 0)
-			death(mp.t_type);	/* Bye bye life ... */
-		}
-		miss(mname, NULL, FALSE); //(char *) NULL
-		}
-		if (fight_flush && !to_death)
-		flush_type();
+		if (fight_flush && !r.player.to_death)
+		//flush_type();
 		count = 0;
-		status();
-		if (mp == NULL)
+		r.UI.status();
+		if (mp == null)
 			return(-1);
 		else
 			return(0);
@@ -462,6 +473,7 @@ function battle(r){
 					cp = weap.o_hurldmg;
 			}
 		}
+		//console.log(`${cp}`);
 		/*
 		* If the creature being attacked is not running (alseep or held)
 		* then the attacker gets a plus four bonus to hit.
@@ -479,33 +491,33 @@ function battle(r){
 				def_arm -= cur_ring[d.RIGHT].o_arm;
 		}
 
-		let rolldmg = cp;
-		//for (let i=0; i < cp.length; i++)
-		//while(cp != null && cp != '\0')
-		{
-			cp = rolldmg.substring(0,0);
-			ndice = Number(cp); //atoi(cp);
-			//if ((cp = strchr(cp, 'x')) == null)
-			//	break;
-			nsides = Number(rolldmg.substring(2,2));//atoi(++cp);
+		let debugstr = "";
+		let rolldmg = cp.split("/");
+		for (let i in rolldmg){
+			let dice = rolldmg[i].split("x");
+			ndice = Number(dice[0]);
+			nsides = Number(dice[1]);
 			if (swing(att.s_lvl, def_arm, hplus + str_plus[att.s_str]))
 			{
 				let proll; //int proll;
-
 				proll = r.roll(ndice, nsides);
-	//	#ifdef MASTER
+				debugstr = `roll_em:"${ndice}x${nsides}":${proll}`;
+			//	#ifdef MASTER
 				if (ndice + nsides > 0 && proll <= 0)
 					console.log(
 					`Damage for ${ndice}x${nsides} came out ${proll}, dplus = ${dplus}, add_dam = ${add_dam[att.s_str]}, def_arm = ${def_arm}`);
-	//	#endif
+			//	#endif
 				damage = dplus + proll + add_dam[att.s_str];
-				def.s_hpt -= Math.max([0, damage]);
+				debugstr += ` ${damage}=ac${dplus}+d${proll}+aj${add_dam[att.s_str]}`;
+				def.s_hpt -= Math.max(0, damage);
+				//if (Math.max(0, damage) > 0)
+					r.UI.msg(`hp:${def.s_hpt} hit:${Math.max(0, damage)} ${debugstr}`);
+				//console.log(`hp:${def.s_hpt} hit:${Math.max(0, damage)} ${debugstr}`);
 				did_hit = true;
+			}else{
+				//console.log(`swing false:${att.s_lvl} ${def_arm} ${hplus + str_plus[att.s_str]}`);
 			}
-			//if ((cp = strchr(cp, '/')) == NULL)
-			//	break;
-			//cp++;
-		}
+		}		
 		return did_hit;
 	}
 
@@ -630,27 +642,28 @@ function battle(r){
 	{
 		let obj, nexti;	//register THING *obj, *nexti;
 
-		for (obj = tp.t_pack; obj != NULL; obj = nexti)
+		for (obj = tp.t_pack; obj != null; obj = nexti)
 		{
-			nexti = next(obj);
+			nexti = obj.l_next;//next(obj.l_next);
 			obj.o_pos = tp.t_pos;
-			detach(tp.t_pack, obj);
+			tp.t_pack = r.detach(tp.t_pack, obj);
 			if (waskill)
-				fall(obj, FALSE);
+				fall(obj, false);
 			else
-				discard(obj);
+				r.discard(obj);
 		}
-		moat(mp.y, mp.x) = NULL;
-		mvaddch(mp.y, mp.x, tp.t_oldch);
-		detach(mlist, tp);
-		if (on(tp, ISTARGET))
+		//moat(mp.y, mp.x) = NULL;
+		r.dungeon.places[mp.y][mp.x].p_monst = null;
+		r.UI.mvaddch(mp.y, mp.x, tp.t_oldch);
+		r.dungeon.mlist = r.detach(r.dungeon.mlist, tp);
+		if (on(tp, d.ISTARGET))
 		{
-			kamikaze = FALSE;
-			to_death = FALSE;
+			r.player.kamikaze = false;
+			r.player.to_death = false;
 			if (fight_flush)
 				flush_type();
 		}
-		discard(tp);
+		r.discard(tp);
 	}
 
 	/*
@@ -660,19 +673,23 @@ function battle(r){
 	//void
 	function killed(tp, pr)//THING *tp, bool pr)
 	{
+		const player = r.player.player;
+		const level = r.dungeon.level;
+		const max_level = r.dungeon.max_level;
+
 		let mname; //char *mname;
 
-		pstats.s_exp += tp.t_stats.s_exp;
-
+		//pstats.s_exp += tp.t_stats.s_exp;
+		player.t_stats.s_exp += tp.t_stats.s_exp;
 		/*
 		* If the monster was a venus flytrap, un-hold him
 		*/
 		switch (tp.t_type)
 		{
 			case 'F':
-				player.t_flags &= ~ISHELD;
+				player.t_flags &= ~d.ISHELD;
 				vf_hit = 0;
-				strcpy(monsters['F'-'A'].m_stats.s_dmg, "000x0");
+				monsters['F'.charCodeAt(0)-'A'.charCodeAt(0)].m_stats.s_dmg = "000x0";
 				break; 
 			case 'L':
 			{
@@ -680,41 +697,41 @@ function battle(r){
 
 				if (fallpos(tp.t_pos, tp.t_room.r_gold) && level >= max_level)
 				{
-				gold = new_item();
-				gold.o_type = GOLD;
-				gold.o_goldval = GOLDCALC;
-				if (save(VS_MAGIC))
-					gold.o_goldval += GOLDCALC + GOLDCALC
-							+ GOLDCALC + GOLDCALC;
-				attach(tp.t_pack, gold);
+					gold = r.new_item();
+					gold.o_type = d.GOLD;
+					gold.o_goldval = GOLDCALC();
+					if (save(d.VS_MAGIC))
+						gold.o_goldval += GOLDCALC() + GOLDCALC()
+								+ GOLDCALC() + GOLDCALC();
+					tp.t_pack = r.attach(tp.t_pack, gold);
 				}
 			}
 		}
 		/*
 		* Get rid of the monster.
 		*/
-		mname = set_mname(tp);
-		remove_mon(tp.t_pos, tp, TRUE);
+		mname = r.monster.battle.set_mname(tp);
+		remove_mon(tp.t_pos, tp, true);
 		if (pr)
 		{
-			if (has_hit)
+			if (r.UI.has_hit)
 			{
-				addmsg(".  Defeated ");
-				has_hit = FALSE;
+				r.UI.addmsg(".  Defeated ");
+				r.UI.has_hit = false;
 			}
 			else
 			{
 				if (!terse)
-				addmsg("you have ");
-				addmsg("defeated ");
+					r.UI.addmsg("you have ");
+				r.UI.addmsg("defeated ");
 			}
-			msg(mname);
+			r.UI.msg(mname);
 		}
 		/*
 		* Do adjustments if he went up a level
 		*/
-		check_level();
+		r.player.misc.check_level();
 		if (fight_flush)
-		flush_type();
+		;//flush_type();
 	}
 }

@@ -15,6 +15,7 @@ const w = [
     r + "GameManager.js",
     r + "PlayerCharacter.js",
     r + "player/pack.js",
+    r + "player/misc.js",
     r + "DungeonMap.js", 
     r + "dungeon/rooms.js",
     r + "dungeon/passages.js",

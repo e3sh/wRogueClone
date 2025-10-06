@@ -19,6 +19,7 @@ function rooms_f(r, dg){
 	const on = (thing,flag)=>{ return ((thing.t_flags & flag) != 0)};
 
 	const GOLDCALC =()=> { return Math.floor(Math.random() * (50 + 10 * level)) + 2};
+	const step_ok = dg.step_ok;
 
 	let ffresult = {x:0, y:0};
 	this.get_findfloor_result =()=> {
@@ -79,8 +80,8 @@ function rooms_f(r, dg){
 				*/
 				do
 				{
-					rp[i].r_pos.x = top.x + rnd(bsze.x - 2) + 1;
-					rp[i].r_pos.y = top.y + rnd(bsze.y - 2) + 1;
+					rp[i].r_pos.x = top.x + r.rnd(bsze.x - 2) + 1;
+					rp[i].r_pos.y = top.y + r.rnd(bsze.y - 2) + 1;
 					rp[i].r_max.x = - d.NUMCOLS;
 					rp[i].r_max.y = - d.NUMLINES;
 				} while(!(rp[i].r_pos.y > 0 && rp[i].r_pos.y < d.NUMLINES-1));
@@ -376,7 +377,7 @@ function rooms_f(r, dg){
             pp = r.dungeon.INDEX(cp.y, cp.x);
             if (monst)
             {
-                if (pp.p_monst == null && dg.step_ok(pp.p_ch)) //step_ok msg.
+                if (pp.p_monst == null && step_ok(pp.p_ch)) //step_ok msg.
                 return true;
             }
             else if (pp.p_ch == compchar)

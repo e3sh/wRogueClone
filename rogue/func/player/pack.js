@@ -9,6 +9,14 @@ function packf(r){
 	this.pack_used = pack_used;
 	let inpack = 0;				/* Number of things in pack */
 
+	let last_comm;  /* Last command typed */
+    let last_dir;   /* Last direction given */
+    let last_pick;  /* Last object picked in get_item() */
+    let l_last_comm;    /* Last last_comm */
+    let l_last_dir;     /* Last object picked in get_item() */
+    let l_last_pick;    /* Last last_pick */
+
+
 	let from_floor;
 
 	const d = r.define;
@@ -244,8 +252,8 @@ function packf(r){
 			{
 				nobj = new_item();
 				nobj = obj;
-				next(nobj) = null;
-				prev(nobj) = null;
+				nobj.l_next = null;
+				nobj.l_prev = null;
 				nobj.o_count = 1;
 			}
 		}
@@ -417,60 +425,63 @@ function packf(r){
 	*/
 	this.get_item = function(purpose, typechar)// *purpose, int type)
 	{
+		let player = r.player.player;
+		let pack = player.t_pack;
+
 		let obj;//THING *obj;
 		let ch;
 
 		if (pack == null)
-			msg("you aren't carrying anything");
+			r.UI.msg("you aren't carrying anything");
 		else if (again)
-		if (last_pick)
-			return last_pick;
-		else
-			msg("you ran out");
+			if (last_pick)
+				return last_pick;
+			else
+				r.UI.msg("you ran out");
 		else
 		{
-		for (;;)
-		{
-			if (!terse)
-				addmsg("which object do you want to ");
-			addmsg(purpose);
-			if (terse)
-				addmsg(" what");
-			msg("? (* for list): ");
-			ch = readchar();
-			mpos = 0;
-			/*
-			* Give the poor player a chance to abort the command
-			*/
-			if (ch == ESCAPE)
+			for (;;)
 			{
-				reset_last();
-				after = false;
-				msg("");
-				return null;
-			}
-			n_objs = 1;		/* normal case: person types one char */
-			if (ch == '*')
-			{
+				if (!terse)
+					r.UI.addmsg("which object do you want to ");
+				r.UI.addmsg(purpose);
+				if (terse)
+					r.UI.addmsg(" what");
+				r.UI.msg("? (* for list): ");
+				ch = readchar();
 				mpos = 0;
-				if (inventory(pack, type) == 0)
-			{
-				after = false;
-				return null;
-			}
-			continue;
-			}
-			for (obj = pack; obj != null; obj = next(obj))
-			if (obj.o_packch == ch)
-				break;
-			if (obj == null)
-			{
-				msg("'%s' is not a valid item",unctrl(ch));
+				/*
+				* Give the poor player a chance to abort the command
+				*/
+				if (ch == d.ESCAPE)
+				{
+					reset_last();
+					after = false;
+					r.UI.msg("");
+					return null;
+				}
+				n_objs = 1;		/* normal case: person types one char */
+				if (ch == '*')
+				{
+					mpos = 0;
+					if (inventory(pack, type) == 0)
+				{
+					after = false;
+					return null;
+				}
 				continue;
+				}
+				for (obj = pack; obj != null; obj = obj.l_next)
+					if (obj.o_packch == ch)
+						break;
+				if (obj == null)
+				{
+					r.UI.msg("'%s' is not a valid item",unctrl(ch));
+					continue;
+				}
+				else 
+					return obj;
 			}
-			else 
-				return obj;
-		}
 		}
 		return null;
 	}

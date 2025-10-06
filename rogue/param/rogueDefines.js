@@ -102,38 +102,38 @@ function rogueDefines(){
         * 部屋、オブジェクト、クリーチャー、レベルマップに関するフラグの定義です。
         */
         /* flags for rooms */
-        ISDARK  : parseInt("0000001",2),		/* room is dark */
-        ISGONE	: parseInt("0000002",2),		/* room is gone (a corridor) */
-        ISMAZE	: parseInt("0000004",2),		/* room is gone (a corridor) */
+        ISDARK  : parseInt("0000001",8),		/* room is dark */
+        ISGONE	: parseInt("0000002",8),		/* room is gone (a corridor) */
+        ISMAZE	: parseInt("0000004",8),		/* room is gone (a corridor) */
 
         /* flags for objects */
-        ISCURSED: parseInt("0000001",2),		/* object is cursed */
-        ISKNOW  : parseInt("0000002",2),		/* player knows details about the object */
-        ISMISL	: parseInt("0000004",2),		/* object is a missile type */
-        ISMANY	: parseInt("0000010",2),		/* object comes in groups */
+        ISCURSED: parseInt("0000001",8),		/* object is cursed */
+        ISKNOW  : parseInt("0000002",8),		/* player knows details about the object */
+        ISMISL	: parseInt("0000004",8),		/* object is a missile type */
+        ISMANY	: parseInt("0000010",8),		/* object comes in groups */
         /*	ISFOUND 0000020		...is used for both objects and creatures */
-        ISPROT	: parseInt("0000040",2),		/* armor is permanently protected */
+        ISPROT	: parseInt("0000040",8),		/* armor is permanently protected */
 
         /* flags for creatures */
-        CANHUH	: parseInt("0000001",2),		/* creature can confuse */
-        CANSEE	: parseInt("0000002",2),		/* creature can see invisible creatures */
-        ISBLIND	: parseInt("0000004",2),		/* creature is blind */
-        ISCANC	: parseInt("0000010",2),		/* creature has special qualities cancelled */
-        ISLEVIT	: parseInt("0000010",2),		/* hero is levitating */
-        ISFOUND	: parseInt("0000020",2),		/* creature has been seen (used for objects) */
-        ISGREED	: parseInt("0000040",2),		/* creature runs to protect gold */
-        ISHASTE	: parseInt("0000100",2),		/* creature has been hastened */
-        ISTARGET: parseInt("0000200",2),		/* creature is the target of an 'f' command */
-        ISHELD	: parseInt("0000400",2),		/* creature has been held */
-        ISHUH   : parseInt("0001000",2),		/* creature is confused */
-        ISINVIS	: parseInt("0002000",2),		/* creature is invisible */
-        ISMEAN	: parseInt("0004000",2),		/* creature can wake when player enters room */
-        ISHALU	: parseInt("0004000",2),		/* hero is on acid trip */
-        ISREGEN	: parseInt("0010000",2),		/* creature can regenerate */
-        ISRUN 	: parseInt("0020000",2),		/* creature is running at the player */
-        SEEMONST: parseInt("0040000",2),		/* hero can detect unseen monsters */
-        ISFLY	: parseInt("0040000",2),		/* creature can fly */
-        ISSLOW	: parseInt("0100000",2),		/* creature has been slowed */
+        CANHUH	: parseInt("0000001",8),		/* creature can confuse */
+        CANSEE	: parseInt("0000002",8),		/* creature can see invisible creatures */
+        ISBLIND	: parseInt("0000004",8),		/* creature is blind */
+        ISCANC	: parseInt("0000010",8),		/* creature has special qualities cancelled */
+        ISLEVIT	: parseInt("0000010",8),		/* hero is levitating */
+        ISFOUND	: parseInt("0000020",8),		/* creature has been seen (used for objects) */
+        ISGREED	: parseInt("0000040",8),		/* creature runs to protect gold */
+        ISHASTE	: parseInt("0000100",8),		/* creature has been hastened */
+        ISTARGET: parseInt("0000200",8),		/* creature is the target of an 'f' command */
+        ISHELD	: parseInt("0000400",8),		/* creature has been held */
+        ISHUH   : parseInt("0001000",8),		/* creature is confused */
+        ISINVIS	: parseInt("0002000",8),		/* creature is invisible */
+        ISMEAN	: parseInt("0004000",8),		/* creature can wake when player enters room */
+        ISHALU	: parseInt("0004000",8),		/* hero is on acid trip */
+        ISREGEN	: parseInt("0010000",8),		/* creature can regenerate */
+        ISRUN 	: parseInt("0020000",8),		/* creature is running at the player */
+        SEEMONST: parseInt("0040000",8),		/* hero can detect unseen monsters */
+        ISFLY	: parseInt("0040000",8),		/* creature can fly */
+        ISSLOW	: parseInt("0100000",8),		/* creature has been slowed */
 
         /*
         * Flags for level map

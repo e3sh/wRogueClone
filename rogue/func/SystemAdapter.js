@@ -80,7 +80,7 @@ function debug(r, g){
 
             let st_parm = "";
             let st_loc = "FREE";
-            if (mc.t_type != null) {st_loc = "MONS"; st_parm = mc.t_stats.s_hpt;}
+            if (mc.t_type != null) {st_loc = "MONS"; st_parm = `hp:${mc.t_stats.s_hpt} ${mc.t_dest.t_pos}`;}
             if (mc.o_type != null)   st_loc = "LVL ";
             if (mc.o_packch != null) st_loc = "PACK";
 

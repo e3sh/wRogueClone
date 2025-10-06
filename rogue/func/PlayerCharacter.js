@@ -26,12 +26,12 @@ function PlayerCharacter(r){
     *   `hero` (プレイヤーの座標), `proom` (プレイヤーがいる部屋) など。
     */
     let player = new t.thing(); //(プレイヤーオブジェクト)
-    player.t_states = new t.stats(d.INIT_STATS);//[0,0,0,0,0,0,0]);
+    player.t_stats = new t.stats(d.INIT_STATS);//[0,0,0,0,0,0,0]);
     let pstats = player.t_stats // (プレイヤーの統計情報) プレイヤーの統計情報 (Str, HPなど)
     let pack   = player.t_pack  // (プレイヤーインベントリ) プレイヤーのインベントリリスト
     let proom  = player.t_room // プレイヤーがいる部屋
     let hero   = player.t_pos; // (プレイヤー位置)
-    let maxhp  = player.t_states.s_maxhp; //プレイヤーの最大HP
+    let maxhp  = player.t_stats.s_maxhp; //プレイヤーの最大HP
 
     let max_stats  = new t.stats(d.INIT_STATS); 
 
@@ -44,6 +44,7 @@ function PlayerCharacter(r){
     let see_floor = true;	/* Show the lamp illuminated floor */
     let terse = false;		/* true if we should be short (メッセージ表示オプション)*/
     let to_death = false;	/* Fighting is to the death! (戦死フラグ)*/
+    let kamikaze = false;			/* to_death really to DEATH */
     let move_on = false;	/* Next move shouldn't pick up items */
     
     let amulet = false; /* He found the amulet */ 
@@ -65,13 +66,15 @@ function PlayerCharacter(r){
     const ISWEARING =(r)=>  {return (ISRING(d.LEFT, r) || ISRING(d.RIGHT, r))}
     const ISMULT = (type)=> {return (type == d.POTION || type == d.SCROLL || type == d.FOOD)}
 
-    this.packf = new packf(r);
-
     this.player = player;
     this.amulet = amulet;
     this.to_death = to_death;
+    this.kamikaze = kamikaze;
 
     this.isWearing = ISWEARING;
+
+    this.packf = new packf(r);
+    this.misc  = new miscf(r);
     /*
     **関連する関数（提案されるメソッドの例）:**
     *   `init_player()` (初期化)。
@@ -89,7 +92,17 @@ function PlayerCharacter(r){
     *   `checkLevelUp()`, `chgStr()`, `addHaste()`, `teleport()`, `saveThrow()` など。
     */
     const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
-    const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
+    const isupper =(ch)=> { 
+        if (Boolean(ch))    
+            return (ch === ch.toUpperCase() && ch !== ch.toLowerCase());
+        else
+        {
+            console.log(`isuppper:${ch}`);
+            return false;
+        } 
+    }
+
+    let step_ok;// = r.dungeon.step_ok;
 
     this.get_invstat = function(){
         let str = [];
@@ -101,6 +114,8 @@ function PlayerCharacter(r){
             if (this.packf.pack_used[i])
                 wst += String.fromCharCode(Number("a".charCodeAt(0)) + Number(i));//str.push(`pack${i}:${this.packf.pack_used[i]}`);
         }
+
+        str.push(`maxhp:${pstats.s_maxhp} exp:${pstats.s_exp} dmg:${pstats.s_dmg}`);
 
         str.push(`mobs:${r.mobs.length}`);
         //str.push(`pack:${wst}`);
@@ -125,7 +140,7 @@ function PlayerCharacter(r){
 
     this.get_status = function(){
         return {
-            lvl: level,     //
+            lvl: r.dungeon.get_level(),     //
             mhp: maxhp,     //
             pur: purse,     //(所持ゴールド)
             pstat: pstats,  //
@@ -144,8 +159,16 @@ function PlayerCharacter(r){
     this.get_purse =()=>{ return purse;}
     this.set_purse =(value)=>{ purse = value;}
 
+    this.get_maxhp =()=>{ return maxhp;}
+    this.set_maxhp =(value)=>{ maxhp = value;}
+
+    this.get_pstat = ()=>{ return player.t_stats;}
+    this.set_pstat = (stat)=>{player.t_stats = stat;}
+
     //プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。
     this.init_player = function(){
+        step_ok = r.dungeon.step_ok;
+
         let obj; //THING *obj;
 
         pstats = new t.stats(d.INIT_STATS);	/* The maximum for the player */
@@ -267,6 +290,7 @@ function PlayerCharacter(r){
     *	player is tripping
     */
     //char *
+    // -> PlayerManager, fight.js (function)
     function choose_str(ts, ns)
     {
         return (on(player, d.ISHALU) ? ts : ns);
@@ -373,6 +397,7 @@ function PlayerCharacter(r){
 			return d.PASSAGE;
 		return (this.show_floor() ? d.FLOOR : ' ');
 	}
+    
     /*
     * show_floor:
     *	Should we show the floor in her room at this time?
@@ -431,7 +456,7 @@ function PlayerCharacter(r){
         {
             //console.log(`${dist(y, x, hero.y, hero.x)} < ${d.LAMPDIST}`);
             if (y != hero.y && x != hero.x &&
-                !this.step_ok(r.dungeon.chat(y, hero.x)) && !this.step_ok(r.dungeon.chat(hero.y, x)))
+                !step_ok(r.dungeon.chat(y, hero.x)) && !step_ok(r.dungeon.chat(hero.y, x)))
                 ;//return false; 
             return true;
         }
@@ -450,28 +475,12 @@ function PlayerCharacter(r){
     {
         return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
     }
+    
     //this.do_move = function(y, x){
     //    hero.x += x;
     //    hero.y += y;
     //}
-    /*
-    * step_ok:
-    *	Returns true if it is ok to step on ch
-    */
-    this.step_ok = function(ch)
-    {
-        switch (ch)
-        {
-            case ' ':
-            case '|':
-            case '-':
-                return false;
-            default:
-                //return (!isalpha(ch));
-                return (Boolean(ch.match(/[a-zA-Z]/)));
-        }
-    }
-
+    
     let nh = {};//coord nh;
 
     //| **move.c** | `do_move()` | `no_move` (行動不能ターン数), `firstmove` (初動フラグ), `runch` (走行方向文字), `level` (現在の階層), `pstats` (プレイヤーの統計情報), `cur_armor` (装備中の防具) | |
@@ -742,8 +751,8 @@ function PlayerCharacter(r){
         if (!(rp.r_flags & d.ISGONE))
         for (y = rp.r_pos.y; y < rp.r_pos.y + rp.r_max.y; y++)
             for (x = rp.r_pos.x; x < rp.r_pos.x + rp.r_max.x; x++)
-            if (isupper(r.dungeon.winat(y, x)))
-                {r.monster.wake_monster(y, x);};
+                if (isupper(r.dungeon.winat(y, x)))
+                    {r.monster.wake_monster(y, x);};
         r.UI.comment("door_open");
 
     }
@@ -868,17 +877,17 @@ function PlayerCharacter(r){
         let obj; //THING *obj;
         let x, y;
         let ch;
-        let ret; //static coord ret;  /* what we will be returning */
+        let ret = {}; //static coord ret;  /* what we will be returning */
 
-        y = ret.y = who.t_pos.y + rnd(3) - 1;
-        x = ret.x = who.t_pos.x + rnd(3) - 1;
+        y = ret.y = who.t_pos.y + r.rnd(3) - 1;
+        x = ret.x = who.t_pos.x + r.rnd(3) - 1;
         /*
         * Now check to see if that's a legal move.  If not, don't move.
         * (I.e., bump into the wall or whatever)
         */
         if (y == who.t_pos.y && x == who.t_pos.x)
             return ret;
-        if (!diag_ok(who.t_pos, ret))
+        if (!this.diag_ok(who.t_pos, ret))
         {
             ret = who.t_pos;
             return ret;
@@ -886,16 +895,16 @@ function PlayerCharacter(r){
         else
         {
             ch = r.dungeon.winat(y, x);
-            if (!this.step_ok(ch)){
+            if (!step_ok(ch)){
                 ret = who.t_pos;
                 return ret;
             }
-            if (ch == SCROLL)
+            if (ch ==d.SCROLL)
             {
                 for (obj = r.dungeon.lvl_obj; obj != null; obj = obj.l_next)
                 if (y == obj.o_pos.y && x == obj.o_pos.x)
                     break;
-                if (obj != null && obj.o_which == S_SCARE){
+                if (obj != null && obj.o_which == d.S_SCARE){
                     ret = who.t_pos;
                     return ret;
                 }
@@ -940,7 +949,7 @@ function PlayerCharacter(r){
             return false;
         if (ep.x == sp.x || ep.y == sp.y)
             return true;
-        return (this.step_ok(r.dungeon.chat(ep.y, sp.x)) && this.step_ok(r.dungeon.chat(sp.y, ep.x)));
+        return (step_ok(r.dungeon.chat(ep.y, sp.x)) && step_ok(r.dungeon.chat(sp.y, ep.x)));
     }
     /*
     * floor_at:
@@ -1011,4 +1020,43 @@ function PlayerCharacter(r){
         player.t_flags &= ~ISHASTE;
         msg("you feel yourself slowing down");
     }
+
+	/*
+	* eat:
+	*	She wants to eat something, so let her try
+	*/
+	this.eat = function()
+	{
+		let obj; //THING *obj;
+
+		if ((obj = r.player.packf.get_item("eat", d.FOOD)) == null)
+			return;
+		if (obj.o_type != d.FOOD)
+		{
+			if (!terse)
+				r.UI.msg("ugh, you would get ill if you ate that");
+			else
+				r.UI.msg("that's Inedible!");
+			return;
+		}
+		if (food_left < 0)
+			food_left = 0;
+		if ((food_left += d.HUNGERTIME - 200 + r.rnd(400)) > d.STOMACHSIZE)
+			food_left = d.STOMACHSIZE;
+		hungry_state = 0;
+		if (obj == cur_weapon)
+			cur_weapon = null;
+		if (obj.o_which == 1)
+			r.UI.msg(`my, that was a yummy ${fruit}`);
+		else
+		if (r.rnd(100) > 70)
+		{
+			pstats.s_exp++;
+			r.UI.msg(`${choose_str("bummer", "yuk")}, this food tastes awful`);
+			r.player.misc.check_level();
+		}
+		else
+			r.UI.msg(`${choose_str("oh, wow", "yum")}, that tasted good`);
+		r.player.packf.leave_pack(obj, false, false);
+	}
 }

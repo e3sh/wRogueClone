@@ -24,6 +24,8 @@ function MonsterManager(r){
     let mlist = r.dungeon.mlist;
     let vf_hit;
 
+    let ch_ret;
+
     this.battle = new battle(r);
 
     /* 
@@ -43,13 +45,21 @@ function MonsterManager(r){
     const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
     const next = (ptr)=>{ return ptr.l_next;}
 
+    const ce = (a, b)=>{ return (a.x == b.x && a.y == b.y)};
     const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
+
+    const getChaseResult =()=>{ return { x:ch_ret.x, y:ch_ret.y}; }
+
     /*
     * dist_cp:
     *	Call dist() with appropriate arguments for coord pointers
     * coord *c1, coord *c2)
     */
-    const dist_cp =(c1,c2)=>{ return dist(c1.y, c1.x, c2.y, c2.x); }
+    const dist_cp =(c1,c2)=>{ 
+        if (!Boolean(c1)) console.log("warn: dc1");
+        if (!Boolean(c2)) console.log("warn: dc2");
+        return dist(c1.y, c1.x, c2.y, c2.x);
+     }
     /*
     * dist:
     *	Calculate the "distance" between to points.  Actually,
@@ -87,14 +97,16 @@ function MonsterManager(r){
         let wastarget;
         let orig_pos; //static coord orig_pos;
 
+        let cnt = 0;
         for (tp = mlist; tp != null; tp = next)
         {
             //console.log("runner_loop_in")
             /* remember this in case the monster's "next" is changed */
             next = tp.l_next;
             if (!on(tp, d.ISHELD) && on(tp, d.ISRUN))
+            //if (true)
             {
-                console.log("runner_loop")
+                //console.log("runner_loop")
 
                 orig_pos = tp.t_pos;
                 wastarget = on(tp, d.ISTARGET);
@@ -108,10 +120,12 @@ function MonsterManager(r){
                     r.player.to_death = false;
                 }
             }
+            cnt++;
         }
+        //console.log(`mlist${cnt}`);
         if (r.UI.has_hit)
         {
-            r.UI.endmsg();
+            //r.UI.endmsg(" ");
             r.UI.has_hit = false;
         }
         //r.UI.comment("d-runners");
@@ -130,7 +144,7 @@ function MonsterManager(r){
             if (this.do_chase(tp) == -1)
                 return(-1);
         tp.t_turn ^= true;
-        console.log("mm");
+        //console.log("move_monst");
         return(0);
     }
     /*
@@ -167,14 +181,20 @@ function MonsterManager(r){
         * our goal.
         */
         const over =()=>{
+            let oc = 0;
             if (rer != ree)
             {
-                for (cp = rer.r_exit; cp < rer.r_exit[rer.r_nexits]; cp++)
+                //for (cp = rer.r_exit; cp < rer.r_exit[rer.r_nexits]; cp++)
+                for (let i = 0; i<=rer.r_nexits; i++)
                 {
+                    oc++;
+                    cp = rer.r_exit[i];
                     curdist = dist_cp(th.t_dest, cp);
                     if (curdist < mindist)
                     {
                         cthis = cp;
+                        if (!Boolean(cthis) )console.log("warn: overf");
+
                         mindist = curdist;
                     }
                 }
@@ -187,7 +207,9 @@ function MonsterManager(r){
             }
             else
             {
+                oc += 10;
                 cthis = th.t_dest;
+                if (!Boolean(cthis) )console.log("warn: overt");
                 /*
                 * For dragons check and see if (a) the hero is on a straight
                 * line from it, and (b) that it is within shooting distance,
@@ -209,12 +231,12 @@ function MonsterManager(r){
                     if (r.player.to_death && !on(th, d.ISTARGET))
                     {
                         r.player.to_death = false;
-                        kamikaze = false;
+                        r.player.kamikaze = false;
                     }
                     return 0;
                 }
             }
-            console.log("over");
+            //console.log(`over${oc}`);
         }
         over();
         /*
@@ -222,12 +244,16 @@ function MonsterManager(r){
         * so we run to it.  If we hit it we either want to fight it
         * or stop running
         */
+        const ce = (a, b)=>{ return (a.x == b.x && a.y == b.y)};
+
+        //console.log(th);
+        if (!Boolean(cthis) )console.log("warn: cthis");
         if (!r.monster.chase(th, cthis))
         {
             if (ce(cthis, hero))
             {
-                console.log("attack?");
-                return r.attack(th);
+                //console.log("attack");
+                return r.monster.battle.attack(th);
             }
             else if (ce(cthis, th.t_dest))
             {
@@ -242,7 +268,7 @@ function MonsterManager(r){
                     break;
                 }
                 if (th.t_type != 'F')
-                stoprun = true;
+                    stoprun = true;
             }
         }
         else
@@ -250,7 +276,7 @@ function MonsterManager(r){
             if (th.t_type == 'F')
                 return 0;
         }
-        r.dungeon.relocate(th, ch_ret);
+        this.relocate(th, ch_ret);
         /*
         * And stop running if need be
         */
@@ -265,6 +291,7 @@ function MonsterManager(r){
     */
     this.relocate = function(th, new_loc) //(THING *th, coord *new_loc)
     {
+        const player = r.player.player;
         let oroom; //struct room *oroom;
 
         //ce(new_loc, th.t_pos))
@@ -281,7 +308,7 @@ function MonsterManager(r){
                 th.t_dest = r.dungeon.find_dest(th);
             th.t_pos = new_loc;
             //r.dungeon.moat(new_loc.y, new_loc.x) = th;
-            r.dungeon.places[new_loc.y][new_loc.x] = th;
+            r.dungeon.places[new_loc.y][new_loc.x].p_monst = th;
         }
         r.UI.move(new_loc.y, new_loc.x);
         if (r.player.see_monst(th))
@@ -317,8 +344,9 @@ function MonsterManager(r){
             for (tp = mlist; tp != null; tp = next(tp))
             if (tp.t_dest == obj.o_pos)
                 break;
+                if (!Boolean(obj.o_pos)) console.log("warn: wm");
             if (tp == null)
-            return obj.o_pos;
+                return obj.o_pos;
         }
         }
         return hero;
@@ -332,13 +360,17 @@ function MonsterManager(r){
     //bool
     this.chase = function(tp, ee) //(THING *tp, coord *ee)
     {
+        const step_ok = r.dungeon.step_ok;
+
+        const hero = r.player.player.t_pos;
+
         let obj; //register THING *obj;
         let x, y;
         let curdist, thisdist;
         let er = tp.t_pos; //register coord *er = &tp.t_pos;
         let ch;
         let plcnt = 1;
-        let tryp; //static coord tryp;
+        let tryp = {}; //static coord tryp;
 
         /*
         * If the thing is confused, let it move randomly. Invisible
@@ -351,7 +383,7 @@ function MonsterManager(r){
             /*
             * get a valid random move
             */
-            ch_ret = rndmove(tp);
+            ch_ret = r.player.rndmove(tp);
             curdist = dist_cp(ch_ret, ee);
             /*
             * Small chance that it will become un-confused 
@@ -370,6 +402,8 @@ function MonsterManager(r){
             * This will eventually hold where we move to get closer
             * If we can't find an empty spot, we stay where we are.
             */
+            //console.log(er);
+                      if (!Boolean(ee) )console.log("warn: ee");
             curdist = dist_cp(er, ee);
             ch_ret = er;
 
@@ -380,58 +414,67 @@ function MonsterManager(r){
             if (ex >= d.NUMCOLS)
                 ex = d.NUMCOLS - 1;
 
+            let roopcnt = 0; let setcnt = 0;
             for (x = er.x - 1; x <= ex; x++)
             {
                 if (x < 0)
-                continue;
-                    tryp.x = x;
+                    continue;
+                tryp.x = x;
                 for (y = er.y - 1; y <= ey; y++)
                 {
+                    roopcnt++;
+
                     tryp.y = y;
-                if (!r.player.diag_ok(er, tryp))
-                    continue;
-                ch = r.dungeon.winat(y, x);
-                if (r.dungeon.step_ok(ch))
-                {
-                    /*
-                    * If it is a scroll, it might be a scare monster scroll
-                    * so we need to look it up to see what type it is.
-                    */
-                    if (ch == d.SCROLL)
-                    {
-                    for (obj = r.dungeon.lvl_obj; obj != null; obj = next(obj))
-                    {
-                        if (y == obj.o_pos.y && x == obj.o_pos.x)
-                        break;
-                    }
-                    if (obj != null && obj.o_which == d.S_SCARE)
+                    if (!r.player.diag_ok(er, tryp))
                         continue;
-                    }
-                    /*
-                    * It can also be a Xeroc, which we shouldn't step on
-                    */
-                    if ((obj = r.dungeon.moat(y, x)) != null && obj.t_type == 'X')
-                        continue;
-                    /*
-                    * If we didn't find any scrolls at this place or it
-                    * wasn't a scare scroll, then this place counts
-                    */
-                    thisdist = dist(y, x, ee.y, ee.x);
-                    if (thisdist < curdist)
+                    ch = r.dungeon.winat(y, x);
+                    if (step_ok(ch))
                     {
-                        plcnt = 1;
-                        ch_ret = tryp;
-                        curdist = thisdist;
-                    }
-                    else if (thisdist == curdist && r.rnd(++plcnt) == 0)
-                    {
-                        ch_ret = tryp;
-                        curdist = thisdist;
+                        /*
+                        * If it is a scroll, it might be a scare monster scroll
+                        * so we need to look it up to see what type it is.
+                        */
+                        if (ch == d.SCROLL)
+                        {
+                            for (obj = r.dungeon.lvl_obj; obj != null; obj = next(obj))
+                            {
+                                if (y == obj.o_pos.y && x == obj.o_pos.x)
+                                break;
+                            }
+                            if (obj != null && obj.o_which == d.S_SCARE)
+                                continue;
+                        }
+                        /*
+                        * It can also be a Xeroc, which we shouldn't step on
+                        */
+                        if ((obj = r.dungeon.moat(y, x)) != null && obj.t_type == 'X')
+                            continue;
+                        /*
+                        * If we didn't find any scrolls at this place or it
+                        * wasn't a scare scroll, then this place counts
+                        */
+                        thisdist = dist(y, x, ee.y, ee.x);
+                        if (thisdist < curdist)
+                        {
+                            plcnt = 1;
+                            ch_ret = {x:tryp.x, y:tryp.y};
+
+                            curdist = thisdist;
+                            setcnt++;
+                        }
+                        else if (thisdist == curdist && r.rnd(++plcnt) == 0)
+                        {
+                            ch_ret = {x:tryp.x, y:tryp.y};
+                            curdist = thisdist;
+                            setcnt++;
+                        }
                     }
                 }
             }
+            //console.log(`chase${roopcnt} ${setcnt}`);
         }
-        }
+
+        ch_ret = getChaseResult();
         return (curdist != 0 && !ce(ch_ret, hero));
     }
     /*
@@ -440,6 +483,9 @@ function MonsterManager(r){
     */
     this.set_oldch = function(tp, cp)//(THING *tp, coord *cp)
     {
+        const player = r.player.player;
+        const hero = player.t_pos;
+
         let sch;
         const see_floor = true;
 
@@ -447,14 +493,15 @@ function MonsterManager(r){
             return;
 
         sch = tp.t_oldch;
-        tp.t_oldch = String.fromCharCode( r.UI.mvinch(cp.y,cp.x) );
+        tp.t_oldch = r.UI.mvinch(cp.y,cp.x);//String.fromCharCode( r.UI.mvinch(cp.y,cp.x) );
+        //console.log(tp.t_oldch);
         if (!on(player, d.ISBLIND))
         {
             if ((sch == d.FLOOR || tp.t_oldch == d.FLOOR) &&
             (tp.t_room.r_flags & d.ISDARK))
                 tp.t_oldch = ' ';
             else if (dist_cp(cp, hero) <= d.LAMPDIST && see_floor)
-            tp.t_oldch = r.dungeon.chat(cp.y, cp.x);
+                     tp.t_oldch = r.dungeon.chat(cp.y, cp.x);
         }
     }
 
@@ -530,9 +577,9 @@ function MonsterManager(r){
         tp.t_turn = true;
         tp.t_pack = null;
         if (r.player.isWearing(d.R_AGGR))
-            runto(cp);
+            this.runto(cp);
         if (type == 'X')
-            tp.t_disguise = rnd_thing();
+            tp.t_disguise = r.rnd_thing();
 
         r.UI.comment(".new_monster");
         return tp;
@@ -566,9 +613,11 @@ function MonsterManager(r){
         const tp = new_item();
         do
         {
-            r.dungeon.roomf.find_floor(NULL, cp, FALSE, TRUE);  // struct room *) NULL
+            r.dungeon.roomf.find_floor(null, cp, false, true);  // struct room *) NULL
         } while (roomin(r.dungeon.roomf.get_find_floor_result()) == proom);
-        tp = new_monster(tp, randmonster(TRUE), r.dungeon.roomf.get_find_floor_result());//cp);
+
+        tp = new_monster(tp, randmonster(true), r.dungeon.roomf.get_find_floor_result());//cp);
+
         if (on(player, d.SEEMONST))
         {
             //standout();
@@ -578,7 +627,7 @@ function MonsterManager(r){
                 r.UI.addch(String.fromCharCode(r.rnd(26) + 'A'.charCodeAt(0)));
             //standend();
         }
-        runto(tp.t_pos);
+        this.runto(tp.t_pos);
         if (wizard)
             r.UI.msg(`started a wandering ${monsters[Number(tp.t_type.charCodeAt(0))-Number('A'.charCodeAt(0))].m_name}`);
 
@@ -616,7 +665,7 @@ function MonsterManager(r){
              && !r.player.isWearing(d.R_STEALTH) && !on(player, d.ISLEVIT))
         //if (true)
         {
-            console.log("setrun");
+            //console.log("setrun");
             tp.t_dest = hero;
             tp.t_flags |= d.ISRUN; //| d.ISTARGET;
         }
@@ -648,6 +697,7 @@ function MonsterManager(r){
             tp.t_flags |= d.ISRUN;
             if (proom.r_goldval)
                 tp.t_dest = proom.r_gold;
+                if (!Boolean(tp.t_dest)) console.log("warn wm");
             else
                 tp.t_dest = hero;
         }
