@@ -167,7 +167,7 @@ function globalVariableInit(r){
                         /* restart of game */
 
     //WINDOW *hw = null;			/* used as a scratch window */
-
+    //str exp lvl arm hp dmg maxhp
     d.INIT_STATS = [ 16, 0, 1, 10, 12, "1x4", 12 ];
 
     v.max_stats = new t.stats(d.INIT_STATS);	/* The maximum for the player */

@@ -69,6 +69,7 @@ function GameManager(g){
     //int  noscore;				/* Was a wizard sometime */
     let playing = true;			/* true until he quits */
     let q_comm = false;			/* Are we executing a 'Q' command? */
+    let pause = false;
 
     let after;				/* true if we want after daemons */
     //bool again;				/* Repeating the last command */
@@ -82,8 +83,7 @@ function GameManager(g){
     let oldpos; /* Position before last look() call */
     let oldrp;  /* Roomin(&oldpos) */
 
-    let fruit =			/* Favorite fruit (好きな果物名)*/
-            [ 's', 'l', 'i', 'm', 'e', '-', 'm', 'o', 'l', 'd', '\0' ];    
+    let fruit =	"slime-mold";		/* Favorite fruit (好きな果物名)*/
 
     let scoreboard = null;	/* File descriptor for score file */
     let wizard = false;			/* true if allows wizard commands */
@@ -95,6 +95,7 @@ function GameManager(g){
 
     this.wizard = wizard;
     this.playing = playing;
+    this.pause;
 
     this.after = after;
     this.running = running;
@@ -104,6 +105,9 @@ function GameManager(g){
     this.oldrp = oldrp;
 
     this.passgo = passgo;
+
+    this.rips = new rips(this);
+    this.death = this.rips.death;
  
     /* 
     **関連する関数（提案されるメソッドの例）:**
@@ -199,7 +203,11 @@ function GameManager(g){
     //gameloop
     this.loopstep = function(g){
 
-        if (playing) this.UI.command();/* Command execution */
+        if (this.playing) {
+            this.UI.command();/* Command execution */
+        }else{
+            this.waitScene();
+        }
     }
 
     // Functions for dealing with linked lists of goodies
@@ -279,6 +287,8 @@ function GameManager(g){
         }
         //console.log(table);
         this.mobs = table;
+
+        this.debug.mobslist();
     }
     /*
     * new_item: Get a new item with a specified size
@@ -294,6 +304,8 @@ function GameManager(g){
         item.id = idcount++;// this.mobs.length;
 
         this.mobs.push(item);
+
+        this.debug.mobslist();
 
         return item;
     }
@@ -317,5 +329,16 @@ function GameManager(g){
             i = this.rnd(thing_list.length + 1);
         return thing_list[i];
     }
+    /*
+    * playing false:
+    * menu mode
+    */
+    this.waitScene = function(){
 
+        this.UI.pause("Push Space Key to next");
+
+        //if (this.UI.wait_for("Space")){
+        //    this.playing = true;
+        //}
+    }    
 }

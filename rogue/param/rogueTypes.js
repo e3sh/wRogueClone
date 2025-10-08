@@ -199,4 +199,18 @@ function rogueTypes(){
         this.exits.fill({x:0, y:0});
 	    this.used;
     }
+
+    /*
+    * Score file structure
+    */
+    this.SCORE = function(){
+        this.sc_uid;    //unsigned int sc_uid;
+        this.sc_score;  //int sc_score;
+        this.sc_flags;  //unsigned int sc_flags;
+        this.sc_monster;//unsigned short sc_monster;
+        this.sc_name    //char sc_name[MAXSTR];
+        this.sc_level;  //int sc_level;
+        this.sc_time;   //unsigned int sc_time;
+    };
+
 };

@@ -13,6 +13,7 @@ const w = [
     "sceneControl.js",
     // Rogue 
     r + "GameManager.js",
+    r + "manager/rip.js",
     r + "PlayerCharacter.js",
     r + "player/pack.js",
     r + "player/misc.js",

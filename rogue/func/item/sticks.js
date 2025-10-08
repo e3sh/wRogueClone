@@ -377,9 +377,9 @@ function sticks(r){
 					if ((pstats.s_hpt -= roll(6, 6)) <= 0)
 					{
 						if (start == hero)
-						death('b');
+						r.death('b');
 						else
-						death(moat(start.y, start.x).t_type);
+						r.death(moat(start.y, start.x).t_type);
 					}
 					used = true;
 					if (terse)

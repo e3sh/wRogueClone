@@ -493,7 +493,7 @@ function MonsterManager(r){
             return;
 
         sch = tp.t_oldch;
-        tp.t_oldch = r.UI.mvinch(cp.y,cp.x);//String.fromCharCode( r.UI.mvinch(cp.y,cp.x) );
+        tp.t_oldch = r.dungeon.chat(cp.y, cp.x);//r.UI.mvinch(cp.y,cp.x);//String.fromCharCode( r.UI.mvinch(cp.y,cp.x) );
         //console.log(tp.t_oldch);
         if (!on(player, d.ISBLIND))
         {

@@ -96,7 +96,9 @@ function UIManager(r, g){
     this.move    = function(y, x){     g.console[0].move(x, y);  }
     this.printw  = function(text){     g.console[0].printw(text); }
     this.mvaddch = function(y, x, ch){ g.console[0].mvprintw(ch, x, y); }
+    this.mvaddstr = this.mvaddch;
     this.addch   = function(ch){ g.console[0].printw(ch); }
+    this.addstr = this.addch;
     this.inch    = function(){
         let buff = g.console[0].buffer;
         let cx = g.console[0].cursor.x;
@@ -237,8 +239,19 @@ function UIManager(r, g){
                 ,0,0);
         }
     }
+    /*
+    * 
+    *
+    *
+    */
+    this.pause = function(text){
+        g.console[5].clear();
+        g.console[5].mvprintw(text 
+            ,23,0);
+    }
 
     /*
+    * command
     * 参照）
     * player (プレイヤーオブジェクト), has_hit (ヒットメッセージフラグ), running (走行中フラグ), 
     * door_stop (ドア通過時停止フラグ), purse (所持ゴールド), count (コマンド繰り返し回数), 
@@ -251,6 +264,19 @@ function UIManager(r, g){
 
     this.command = function()
     {
+        let ki = this.readchar();
+
+        if (r.pause) {
+
+            ki = this.readchar();
+            r.UI.pause("[Press return to continue]");
+            if (this.wait_for("Enter")||this.wait_for("NumpadEnter")){
+                r.pause = false;
+                r.start();
+            }
+            return;
+        } 
+
         let player = r.player.player;
         const stat = r.player.get_status();
         const purse = stat.pur;
@@ -263,7 +289,7 @@ function UIManager(r, g){
         let no_command = stat.nocmd;
         //let to_death = stat.death;
 
-        let ch ,ki;
+        let ch; //,ki;
         let ntimes = 1;			/* Number of player moves */
         let fp; //*fp
         let mp; //THING *mp;
@@ -360,8 +386,7 @@ function UIManager(r, g){
                 r.player.packf.inventory(player.t_pack, 0);
             }
 
-
-            ki = this.readchar();
+            //ki = this.readchar();
             oldc = pr;
             let opcmdf = false; //operation command flag
             if (!ki.includes("Space")){            
@@ -378,9 +403,6 @@ function UIManager(r, g){
                     pr = r.player.do_move( 0, 0);
                     opcmdf = true;
                 }
-                
-
-
 
                 if (ki.includes("KeyI")) viewInventry();
                 if (ki.includes("KeyD")) ;//drop();
@@ -397,6 +419,7 @@ function UIManager(r, g){
                     r.UI.comment(`mv_on[${r.player.packf.move_on}]`);// ${r.after?"m":"s"}]`);
                 }//search();
                 if (this.wait_for("KeyQ")) r.debug.mapcheckTest();
+                if (this.wait_for("KeyA")) r.debug.monsterViewTest();
                 if (this.wait_for("KeyZ")) r.dungeon.show_map();
                 if (this.wait_for("ArrowDown")) r.debug.checkListsCount();
 

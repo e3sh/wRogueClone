@@ -190,7 +190,7 @@ function battle(r){
 			endmsg();
 		r.UI.has_hit = false;
 		if (pstats.s_hpt <= 0)
-			death(mp.t_type);	/* Bye bye life ... */
+			r.death(mp.t_type);	/* Bye bye life ... */
 		else if (!r.player.kamikaze)
 		{
 			oldhp -= pstats.s_hpt;
@@ -222,7 +222,7 @@ function battle(r){
 				}
 				no_command += rnd(2) + 2;
 				if (no_command > d.BORE_LEVEL)
-				death('h');
+				r.death('h');
 				break; 
 			case 'R':
 				/*
@@ -260,7 +260,7 @@ function battle(r){
 					if (mp.t_type == 'W')
 					{
 						if (pstats.s_exp == 0)
-							death('W');		/* All levels gone */
+							r.death('W');		/* All levels gone */
 						if (--pstats.s_lvl == 0)
 						{
 							pstats.s_exp = 0;
@@ -277,7 +277,7 @@ function battle(r){
 					if (pstats.s_hpt <= 0)
 						pstats.s_hpt = 1;
 					if (max_hp <= 0)
-						death(mp.t_type);
+						r.death(mp.t_type);
 					msg("you suddenly feel weaker");
 				}
 				break; 
@@ -288,7 +288,7 @@ function battle(r){
 				player.t_flags |= d.ISHELD;
 				sprintf(monsters['F'-'A'].m_stats.s_dmg,"%dx1", ++vf_hit);
 				if (--pstats.s_hpt <= 0)
-				death('F');
+				r.death('F');
 			break; 
 			case 'L':
 			{
@@ -349,7 +349,7 @@ function battle(r){
 			{
 				pstats.s_hpt -= vf_hit;
 				if (pstats.s_hpt <= 0)
-				death(mp.t_type);	/* Bye bye life ... */
+				r.death(mp.t_type);	/* Bye bye life ... */
 			}
 			miss(mname, null, false); //(char *) NULL
 		}

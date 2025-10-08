@@ -52,6 +52,10 @@ class sceneControl extends GameTask {
 							keys.includes("ShiftLeft") || keys.includes("ShiftRight") || 
 							keys.includes("CapsLock") || keys.includes("Space"));
 						if (keys.length > (fl?1:0)) g.rogue.loopstep(g);
+						if (!g.rogue.playing){
+							if (keys.includes("Space"))
+								g.rogue.playing = true;
+						}
 						keyon = g.time() + keywait; 
 					}
 				}

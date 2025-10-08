@@ -62,6 +62,11 @@ function debug(r, g){
             r.UI.submsg(`${l.o_type} y:${l.o_pos.y} x:${l.o_pos.x} _l${l.id}${l.enable?"e":"d"}`);
             r.UI.mvaddch(l.o_pos.y, l.o_pos.x, l.o_type);
         } 
+        r.UI.submsg(`mlist:${mlcount} lvl_obj:${locount}`);
+    }
+
+    this.mobslist = function()
+    {
         //console.log(locount);
         g.console[4].clear();
         for (let i in r.mobs){
@@ -78,9 +83,9 @@ function debug(r, g){
 
             let st_pc   = (mc.o_packch != null)?`(${mc.o_packch})${st_eq}`:`[${st_opx}${st_tpx},${st_opy}${st_tpy}]`; 
 
-            let st_parm = "";
+            let st_parm = ""; let st_tloc = (Boolean(mc.t_dest.x))?`x:${mc.t_dest.x} y:${mc.t_dest.y}`:"-";
             let st_loc = "FREE";
-            if (mc.t_type != null) {st_loc = "MONS"; st_parm = `hp:${mc.t_stats.s_hpt} ${mc.t_dest.t_pos}`;}
+            if (mc.t_type != null) {st_loc = "MONS"; st_parm = `hp:${mc.t_stats.s_hpt} ${st_tloc}`;}
             if (mc.o_type != null)   st_loc = "LVL ";
             if (mc.o_packch != null) st_loc = "PACK";
 
@@ -90,8 +95,7 @@ function debug(r, g){
             }
             //    st += ((r.mobs[i].enable)?String.fromCharCode(Number("A".charCodeAt(0))+Number(i)):"_");
         }
-        r.UI.submsg(`mlist:${mlcount} lvl_obj:${locount}`);
-        sw = !sw;
+        sw = true;//!sw
     }
 
     //debug
@@ -123,5 +127,16 @@ function debug(r, g){
             vstr[i] = ws;
         }
         return vstr;
+    }
+
+    //debug
+    this.monsterViewTest = function()
+    {
+        for (let i in r.mobs){
+            const mc = r.mobs[i];
+            if (mc.t_type != null) {
+                r.UI.mvaddch(mc.t_pos.y, mc.t_pos.x, mc.t_type);
+            }
+        }
     }
 }

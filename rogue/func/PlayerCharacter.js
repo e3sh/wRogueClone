@@ -244,7 +244,7 @@ function PlayerCharacter(r){
         if (food_left <= 0)
         {
             if (food_left-- < -d.STARVETIME)
-                alert("death('s')");
+                r.death('s');
             /*
             * the hero is fainting
             */
@@ -815,7 +815,7 @@ function PlayerCharacter(r){
             if (pstats.s_hpt <= 0)
             {
                 msg("an arrow killed you");
-                death('a');
+                r.death('a');
             }
             else
                 msg("oh no! An arrow shot you");
@@ -847,7 +847,7 @@ function PlayerCharacter(r){
             if (pstats.s_hpt <= 0)
             {
                 msg("a poisoned dart killed you");
-                death('d');
+                r.death('d');
             }
             if (!ISWEARING(R_SUSTSTR) && !save(VS_POISON))
                 chg_str(-1);

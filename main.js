@@ -8,7 +8,8 @@ function main() {
 	//Game Asset Setup
     const p = "pict/";
     game.asset.imageLoad("ASCII", p + "pdcfont.png");
-    game.asset.imageLoad("MINIF", p + "k12x8_jisx0201c.png");
+    game.asset.imageLoad("SMALL", p + "k12x8_jisx0201c.png");
+    game.asset.imageLoad("MINIF", p + "font4x6.png");
 
 	const spfd = SpriteFontData();
 	for (let i in spfd) {
@@ -47,9 +48,18 @@ function SpriteFontData() {
             s2.push(ptn);
         }
     }
+    //4_6_font
+    let ss = [];
+    for (let i = 0; i < 6; i++) {
+        for (j = 0; j <16; j++) {
+            ptn = { x:  4 * j, y: 6 * i, w:  4, h: 6 }
+            ss.push(ptn);
+        }
+    }
     //↑↑
     return [
         { name: "std"   , id: "ASCII", pattern: sp },
-        { name: "small" , id: "MINIF", pattern: s2 }
+        { name: "small" , id: "SMALL", pattern: s2 },
+        { name: "mini"  , id: "MINIF", pattern: ss },
     ]
 }
