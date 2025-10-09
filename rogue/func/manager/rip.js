@@ -239,6 +239,8 @@ function rips(r){
 		score(purse, r.player.amulet ? 3 : 0, monst);
 		r.UI.pause("[Press return to continue]");
 		r.pause = true;
+
+		r.player.reset_inventry();
 	}
 
 	/*
@@ -394,8 +396,8 @@ function rips(r){
 			//for (hp = nlist; hp.h_ch; hp++)
 				if (nlist[i].ch == monst)
 				{
-					sp = hp.desc;
-					article = h_print;
+					sp = nlist[i].desc;
+					article = nlist[i].print;
 					break;
 				}
 		}

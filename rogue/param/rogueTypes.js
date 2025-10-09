@@ -56,13 +56,24 @@ function rogueTypes(){
     * Structure describing a fighting being
     */
     this.stats = function(ary){
-        this.s_str = ary[0];			/* Strength */
-        this.s_exp = ary[1];			/* Experience */
-        this.s_lvl = ary[2];			/* level of mastery */
-        this.s_arm = ary[3];			/* Armor class */
-        this.s_hpt = ary[4];			/* Hit points */
-        this.s_dmg = ary[5];			//string? /* String describing damage done */
-        this.s_maxhp = Boolean(ary[6])?ary[6]:ary[4];	/* Max hit points */
+        this.s_str;		/* Strength */
+        this.s_exp;		/* Experience */
+        this.s_lvl;		/* level of mastery */
+        this.s_arm;		/* Armor class */
+        this.s_hpt;		/* Hit points */
+        this.s_dmg;		//string? /* String describing damage done */
+        this.s_maxhp;	/* Max hit points */
+
+        this.init =(ary)=>{
+            this.s_str = ary[0];			/* Strength */
+            this.s_exp = ary[1];			/* Experience */
+            this.s_lvl = ary[2];			/* level of mastery */
+            this.s_arm = ary[3];			/* Armor class */
+            this.s_hpt = ary[4];			/* Hit points */
+            this.s_dmg = ary[5];			//string? /* String describing damage done */
+            this.s_maxhp = Boolean(ary[6])?ary[6]:ary[4];	/* Max hit points */
+        }
+        this.init(ary);
     };
     let stats = this.stats;
 

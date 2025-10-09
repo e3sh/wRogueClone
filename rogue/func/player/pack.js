@@ -28,6 +28,14 @@ function packf(r){
 
 	const ISMULT = (type)=> {return (type == d.POTION || type == d.SCROLL || type == d.FOOD)}
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
+
+	this.reset = ()=>{
+		for (let i = 0; i <26; i++) pack_used[i] = false;
+		this.pack_used = pack_used;
+
+		inpack = 0;
+ 	}
+
 	/*
 	* add_pack:
 	*	Pick up an object and add it to the pack.  If the argument is

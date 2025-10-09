@@ -165,13 +165,34 @@ function PlayerCharacter(r){
     this.get_pstat = ()=>{ return player.t_stats;}
     this.set_pstat = (stat)=>{player.t_stats = stat;}
 
+    this.reset_inventry = function(){
+        this.player.pack = r.free_list(this.player.pack);
+
+        this.packf.reset();
+        this.set_purse(0);
+    }
+
     //プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。
     this.init_player = function(){
         step_ok = r.dungeon.step_ok;
 
         let obj; //THING *obj;
 
-        pstats = new t.stats(d.INIT_STATS);	/* The maximum for the player */
+        player = new t.thing(); 
+        player.t_stats = new t.stats(d.INIT_STATS);
+        pstats = player.t_stats; 
+        pack   = player.t_pack;
+        proom  = player.t_room;
+        hero   = player.t_pos; 
+        maxhp  = player.t_stats.s_maxhp;
+
+        this.player = player;
+
+        //player = new t.thing();
+        //this.player = player;
+        //pstats 
+        player.t_stats.init(d.INIT_STATS);	/* The maximum for the player */
+
         food_left = d.HUNGERTIME;
         /*
         * Give him some food
@@ -231,7 +252,6 @@ function PlayerCharacter(r){
         obj.o_type = d.FOOD;
         obj.o_count = 1;
         this.packf.add_pack(obj, true);
-
 
         r.UI.comment("init_player");
     }

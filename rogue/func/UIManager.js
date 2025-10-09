@@ -272,7 +272,7 @@ function UIManager(r, g){
             r.UI.pause("[Press return to continue]");
             if (this.wait_for("Enter")||this.wait_for("NumpadEnter")){
                 r.pause = false;
-                r.start();
+                r.restart();
             }
             return;
         } 

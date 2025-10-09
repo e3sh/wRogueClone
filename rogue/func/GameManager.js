@@ -126,6 +126,22 @@ function GameManager(g){
     * `leaveGame()`, `fatalError()`, `endProgram()` など。
     */
     // roguemain
+    /* check for legal startup ゲーム開始時の実行環境チェックを行います。 */
+    const init_check =()=>{
+        //leavepack;
+        thingTable = [];
+        this.mobs = thingTable;
+        /*
+        console.log(thingTable.length)
+        for (let i in thingTable){
+            let wt = thingTable[i];
+            thingTable = this.discard(wt);
+            console.log(i);
+        }
+        //this.mobs = thingTable;
+        /* dummy */
+    }
+
     this.start = function(){
 
         g.console[1].printw(`Hello ${this.UI.whoami} , just a moment while I dig the dungeon...`);
@@ -154,10 +170,20 @@ function GameManager(g){
 
         this.playit(g); //ゲームのメインループです。オプションの解析とcommand()の呼び出しを行います。
     }
-    /* check for legal startup ゲーム開始時の実行環境チェックを行います。 */
-    function init_check(){
-        /* dummy */
+
+    this.restart = function(){
+
+        g.console[1].printw(`Hello ${this.UI.whoami} , restart /just a moment while I dig the dungeon...`);
+
+        init_check();
+        this.player.init_player();			/* Set up initial player stats プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。*/
+        this.dungeon.new_level();			/* Draw current level new_level.c*/
+
+        this.UI.status();
+
+        this.playit(g); //ゲームのメインループです。オプションの解析とcommand()の呼び出しを行います。
     }
+
     /*
     * playit:
     *	The main loop of the program.  Loop until the game is over,
@@ -173,9 +199,20 @@ function GameManager(g){
         oldrp = this.dungeon.roomin(hero);
 
         g.console[1].insertln();
-        g.console[1].printw(`func playit execute. text rnd:${this.rnd(10)}.`);
+        g.console[1].printw(`func playit execute. text rnd:${this.rnd(10)}.${this.mobs.length}`);
 
+
+        //viewInventry
+        let st = this.player.get_invstat();
+        this.UI.clear(3);
+        for (let i in st){
+            this.UI.submsg(st[i]);
+        }
+        this.player.packf.inventory(this.player.t_pack, 0);
+        
+    
         this.UI.comment("play_it");
+    
         playing = true;
     }
     /*
