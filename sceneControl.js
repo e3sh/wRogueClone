@@ -56,7 +56,9 @@ class sceneControl extends GameTask {
 							if (keys.includes("Space"))
 								g.rogue.playing = true;
 						}
-						keyon = g.time() + keywait; 
+						keyon = g.time() + keywait;
+						//if (fl) keyon += keywait*2;
+ 
 					}
 				}
 			}

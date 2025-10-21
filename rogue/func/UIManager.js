@@ -117,7 +117,6 @@ function UIManager(r, g){
         return this.inch();
     }
     this.clear   = function(num){ if (isNaN(num)) num=0; g.console[num].clear(); }
-
     
     this.texwork = "";
     this.msg    = function(text){
@@ -405,33 +404,86 @@ function UIManager(r, g){
                 }
 
                 if (ki.includes("KeyI")) viewInventry();
-                if (ki.includes("KeyD")) ;//drop();
-                if (ki.includes("KeyR")) ;//read_scroll();
-                if (ki.includes("KeyE")) ;//eat();
-                if (ki.includes("KeyW")) ;//wear();
-                if (ki.includes("KeyT")) ;//take_off();
-                if (ki.includes("KeyP")) ;//ring_on();
-                if (ki.includes("KeyR")) ;//ring_off();
-                if (ki.includes("KeyS")) ;//search();
-                if (ki.includes("KeyM")) {
+                if (ki.includes("KeyD")) ;//drop(); //on mode
+                if (ki.includes("KeyR")) ;//read_scroll(); //auto_select
+                if (ki.includes("KeyE")) ;//eat(); //auto_select
+                if (ki.includes("KeyW")) ;//wear(); //auto_select
+                if (ki.includes("KeyT")) ;//take_off(); //auto_select
+                if (ki.includes("KeyP")) ;//ring_on(); //auto_select
+                if (ki.includes("KeyR")) ;//ring_off(); //auto_select
+                if (ki.includes("KeyL")) ;//ring// select position L /
+                if (ki.includes("KeyS")) ;//search(); //no operation
+                if (ki.includes("KeyM")) { //get item on/off
                     r.after = false;
                     r.player.packf.move_on = !(r.player.packf.move_on);
                     r.UI.comment(`mv_on[${r.player.packf.move_on}]`);// ${r.after?"m":"s"}]`);
                 }//search();
-                if (this.wait_for("KeyQ")) r.debug.mapcheckTest();
-                if (this.wait_for("KeyA")) r.debug.monsterViewTest();
-                if (this.wait_for("KeyZ")) r.dungeon.show_map();
-                if (this.wait_for("ArrowDown")) r.debug.checkListsCount();
+                //use potion function is quaff() (potions)
+                if (this.wait_for("KeyQ")) r.debug.mapcheckTest(); //debug command
+                if (this.wait_for("KeyA")) r.debug.monsterViewTest(); //debug command
+                if (this.wait_for("KeyZ")) r.dungeon.show_map(); //debug command
+                if (this.wait_for("ArrowDown")) r.debug.checkListsCount(); //debug command
 
             } else {
                 let inkeyst = "";
                 for (let i in ki){
                     if (ki[i].includes("Key")){
-                        inkeyst = `useItem ${ki[i].substring(3).toLowerCase()}`;
+                        inkeyst = ki[i].substring(3).toLowerCase();
                         break;
                     }
                 }
-                if (inkeyst != "") r.UI.msg(inkeyst);
+                if (inkeyst != "") {
+                    //let cnum = inkeyst.charCodeAt(0);
+                    let ws = "";
+                    let useitem = r.player.packf.picky_inven(inkeyst);
+                    if (useitem != null){
+                        ws = `Item type "${useitem.o_type}"`;
+                        r.after = false;
+
+                        switch(useitem.o_type)
+                        {
+                            case ":"://FOOD
+                                ws = "food";
+                                r.player.eat(useitem);
+                                break;
+                            case ")"://WEAPON
+                                ws = "weapon";
+                                if (r.player.equip_state_check(inkeyst)) ws += "*";
+                                break;
+                            case "]"://ARMOR
+                                ws = "armor";
+                                if (r.player.equip_state_check(inkeyst)) ws += "*";
+                                break;                            
+                            case "="://RING
+                                ws = "ring";
+                                if (r.player.equip_state_check(inkeyst)) ws += "*";
+                                break;                            
+                            case "/"://STICK
+                                ws = "stick/wand";
+                                break;                            
+                            case "!"://POTION
+                                ws = "potion";
+                                break;                            
+                            case "?"://SCROLL
+                                ws = "scroll";
+                                break;                            
+                            default:
+                                ws = "etc";
+                        }
+                    }
+                    r.UI.msg(`use Item ${inkeyst}) ${ws}`);//(${cnum})` );
+                    viewInventry();
+                }
+                //selectしたキーのalphabetのitemがあるか？
+                //itemがあった場合はitemの種類を判定
+                //Foodだった場合はeat()を呼ぶ
+                //ringだった場合は？どうするか装備する指をどのように指定するべきか
+                //weaponだった場合は持ち替え
+                //armorだった場合は装備変更
+                //potion/scroll/staff/wand...thing.o_type DEFINE SYMBOL
+                // command:
+                // identify weild ware discoverd
+
             }
             //set delta
             for (let i in ki)

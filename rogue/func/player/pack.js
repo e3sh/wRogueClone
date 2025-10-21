@@ -28,6 +28,7 @@ function packf(r){
 
 	const ISMULT = (type)=> {return (type == d.POTION || type == d.SCROLL || type == d.FOOD)}
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
+	const next = (ptr)=>{ return ptr.l_next;}
 
 	this.reset = ()=>{
 		for (let i = 0; i <26; i++) pack_used[i] = false;
@@ -267,9 +268,14 @@ function packf(r){
 		}
 		else
 		{
+			let player = r.player.player;
+			//let hero = player.t_pos;
+			//let proom = player.t_room;
+			//let pack = player.t_pack;
+
 			last_pick = null;
 			this.pack_used[Number(obj.o_packch.charCodeAt(0) - 'a'.charCodeAt(0))] = false;
-			pack = r.detach(pack, obj);
+			player.t_pack = r.detach(player.t_pack, obj);
 		}
 		return nobj;
 	}
@@ -399,31 +405,38 @@ function packf(r){
 	* picky_inven:
 	*	Allow player to inventory a single item
 	*/
-	this.picky_inven = function()
+	this.picky_inven = function(mch)
 	{
-		let obj;//THING *obj;
-		let mch;
+		let pack = r.player.player.t_pack;
 
-		if (pack == null)
-			msg("you aren't carrying anything");
-		else if (next(pack) == null)
-			msg("a) %s", inv_name(pack, false));
+		let obj;//THING *obj;
+		//let mch;
+
+		if (pack == null) {
+			r.UI.msg("you aren't carrying anything");
+			return null;
+		}
+		else if (next(pack) == null){
+			r.UI.msg(`a) ${inv_name(pack, false)}`);
+			return pack;
+		}
 		else
 		{
-			msg(terse ? "item: " : "which item do you wish to inventory: ");
+			//msg(terse ? "item: " : "which item do you wish to inventory: ");
 			mpos = 0;
-			if ((mch = readchar()) == ESCAPE)
-			{
-				msg("");
-				return;
-			}
+			//if ((mch = readchar()) == ESCAPE)
+			//{
+			//	msg("");
+			//	return;
+			//}
 			for (obj = pack; obj != null; obj = next(obj))
 				if (mch == obj.o_packch)
 				{
-					msg("%c) %s", mch, r.item.things.inv_name(obj, false));
-					return;
+					r.UI.msg(`${mch}) ${r.item.things.inv_name(obj, false)}`);
+					return obj;
 				}
-			msg("'%s' not in pack", unctrl(mch));
+			r.UI.msg(`'${mch}' not in pack`);
+			return null;
 		}
 	}
 
@@ -473,11 +486,11 @@ function packf(r){
 				{
 					mpos = 0;
 					if (inventory(pack, type) == 0)
-				{
-					after = false;
-					return null;
-				}
-				continue;
+					{
+						after = false;
+						return null;
+					}
+					continue;
 				}
 				for (obj = pack; obj != null; obj = obj.l_next)
 					if (obj.o_packch == ch)

@@ -1002,14 +1002,14 @@ function PlayerCharacter(r){
     *	Turn off the ability to see invisible
     */
     //void
-    function unsee()
+    this.unsee = function()
     {
         let th; //register THING *th;
 
-        for (th = mlist; th != NULL; th = next(th))
-        if (on(th, ISINVIS) && see_monst(th))
-            mvaddch(th.t_pos.y, th.t_pos.x, th.t_oldch);
-        player.t_flags &= ~CANSEE;
+        for (th = mlist; th != null; th = th.l_next)
+        if (on(th, d.ISINVIS) && this.see_monst(th))
+            r.UI.mvaddch(th.t_pos.y, th.t_pos.x, th.t_oldch);
+        player.t_flags &= ~d.CANSEE;
     }
 
     /*
@@ -1017,15 +1017,15 @@ function PlayerCharacter(r){
     *	He gets his sight back
     */
     //void
-    function sight()
+    this.sight = function()
     {
-        if (on(player, ISBLIND))
+        if (on(player, d.ISBLIND))
         {
-            extinguish(sight);
-            player.t_flags &= ~ISBLIND;
-            if (!(proom.r_flags & ISGONE))
-                enter_room(hero);
-            msg(choose_str("far out!  Everything is all cosmic again",
+            r.daemon.extinguish(this.sight);
+            player.t_flags &= ~d.ISBLIND;
+            if (!(proom.r_flags & d.ISGONE))
+                this.enter_room(hero);
+            r.UI.msg(choose_str("far out!  Everything is all cosmic again",
                     "the veil of darkness lifts"));
         }
     }
@@ -1038,19 +1038,20 @@ function PlayerCharacter(r){
     function nohaste()
     {
         player.t_flags &= ~ISHASTE;
-        msg("you feel yourself slowing down");
+        r.UI.msg("you feel yourself slowing down");
     }
 
 	/*
 	* eat:
 	*	She wants to eat something, so let her try
 	*/
-	this.eat = function()
+	this.eat = function(obj) //
 	{
-		let obj; //THING *obj;
+		const fruit = "slime-mold";
+		//let obj; //THING *obj;
 
-		if ((obj = r.player.packf.get_item("eat", d.FOOD)) == null)
-			return;
+		//if ((obj = r.player.packf.get_item("eat", d.FOOD)) == null)
+			//return;
 		if (obj.o_type != d.FOOD)
 		{
 			if (!terse)
@@ -1079,4 +1080,67 @@ function PlayerCharacter(r){
 			r.UI.msg(`${choose_str("oh, wow", "yum")}, that tasted good`);
 		r.player.packf.leave_pack(obj, false, false);
 	}
+
+    /*
+    * come_down:
+    *	Take the hero down off her acid trip.
+    */
+    //void
+    this.come_down = function()
+    {
+        let tp;	//register THING *tp;
+        let seemonst;	//register bool seemonst;
+
+        if (!on(player, d.ISHALU))
+            return;
+
+        r.daemon.kill_daemon(this.visuals);
+        player.t_flags &= ~d.ISHALU;
+
+        if (on(player, d.ISBLIND))
+            return;
+
+        /*
+        * undo the things
+        */
+        for (tp = lvl_obj; tp != null; tp = tp.l_next )
+        if (this.cansee(tp.o_pos.y, tp.o_pos.x))
+            r.UI.mvaddch(tp.o_pos.y, tp.o_pos.x, tp.o_type);
+
+        /*
+        * undo the monsters
+        */
+        seemonst = on(player, d.SEEMONST);
+        for (tp = mlist; tp != null; tp = tp.l_next)
+        {
+        r.UI.move(tp.t_pos.y, tp.t_pos.x);
+        if (this.cansee(tp.t_pos.y, tp.t_pos.x))
+            if (!on(tp, ISINVIS) || on(player, CANSEE))
+                r.UI.addch(tp.t_disguise);
+            else
+                r.UI.addch(chat(tp.t_pos.y, tp.t_pos.x));
+        else if (seemonst)
+        {
+            //standout();
+            r.UI.addch(tp.t_type);
+            //standend();
+        }
+        }
+        r.UI.msg("Everything looks SO boring now.");
+    }
+
+    /*
+    * land:
+    *	Land from a levitation potion
+    */
+    //void
+    this.land = function()
+    {
+        player.t_flags &= ~d.ISLEVIT;
+        r.UI.msg(choose_str("bummer!  You've hit the ground",
+            "you float gently to the ground"));
+    }
+
+
+
 }
