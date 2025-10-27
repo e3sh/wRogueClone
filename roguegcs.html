@@ -10,6 +10,7 @@
         function page_start(){
             document.getElementById("layer0").style.display = "";
             document.getElementById("btn").style.display = "none";
+            document.getElementById("memo").style.display = "none";
             main();
         }
         </script>
@@ -25,6 +26,20 @@
     <canvas id="layer0" oncontextmenu="return false;">
     layer-0
     </canvas>
+    <div id="memo">
+        <b>RogueClone</b><br>javascript porting project(study)<hr>
+        <ul>操作
+        <li>　移動（各方向：  テンキー[1][2][3][4][6][7][8][9]</li>
+        <li>　実行操作（階段）：  テンキー[5]</li>
+        <li>　インベントリ表示：  [I]</li>
+        <li>　アイテム使用/装備： [Space]+[（インベントリのアルファベット）]</li>
+        　　(eatのみ実装)/todo:(未実装) wear/take_off/ring_on/ring_off/read_scroll/quaff</li>
+        <li>　全画面表示：    [Home]</li>
+        <li>　DEBUG:  [Q]mapdataview/[Z]clearmapview/[↓]thingscheck</li>
+        <li></li>
+        </ul>
+        <hr>        
+    </div>
     <input type="button" id="btn" value="GAME START" onclick="page_start()">
 </body>
 </html>

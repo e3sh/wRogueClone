@@ -172,6 +172,16 @@ function PlayerCharacter(r){
         this.set_purse(0);
     }
 
+    this.get_cur_weapon =()=>{ return cur_weapon;}
+    this.set_cur_weapon =(th)=>{ cur_weapon = th;}
+
+    this.get_cur_armor =()=>{ return cur_armor;}
+    this.set_cur_armor =(th)=>{ cur_armor = th;}
+
+    this.get_cur_ring =(number)=>{return cur_ring[number];}
+    this.set_cur_ring =(number, th)=>{ cur_ring[number] = th;}
+
+
     //プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。
     this.init_player = function(){
         step_ok = r.dungeon.step_ok;

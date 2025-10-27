@@ -232,6 +232,7 @@ function UIManager(r, g){
         else
         {
             //this.move(d.STATLINE, 0);
+            g.console[5].clear();
             g.console[5].mvprintw(`Level: ${level}  Gold: ${purse}  Hp: ${pstats.s_hpt}(${max_hp})`+  
                 `  Str: ${pstats.s_str}(${max_stats.s_str})  Arm: ${10 - s_arm}` +
                 `  Exp: ${pstats.s_lvl}/${pstats.s_exp}  ${state_name[hungry_state]}`
@@ -443,32 +444,39 @@ function UIManager(r, g){
                         switch(useitem.o_type)
                         {
                             case ":"://FOOD
-                                ws = "food";
+                                ws = "food .eat()";
                                 r.player.eat(useitem);
                                 break;
                             case ")"://WEAPON
                                 ws = "weapon";
                                 if (r.player.equip_state_check(inkeyst)) ws += "*";
+                                // wear()/ takeoff()
                                 break;
                             case "]"://ARMOR
                                 ws = "armor";
                                 if (r.player.equip_state_check(inkeyst)) ws += "*";
+                                // wear()/ takeoff()
                                 break;                            
                             case "="://RING
                                 ws = "ring";
                                 if (r.player.equip_state_check(inkeyst)) ws += "*";
+                                //ring_on()/ ring_off()
                                 break;                            
                             case "/"://STICK
                                 ws = "stick/wand";
+                                //?
                                 break;                            
                             case "!"://POTION
-                                ws = "potion";
+                                ws = "potion .quaff()";
+                                r.item.potions.quaff(useitem);
                                 break;                            
                             case "?"://SCROLL
                                 ws = "scroll";
+                                //read_scroll()
                                 break;                            
                             default:
                                 ws = "etc";
+                                //no operation
                         }
                     }
                     r.UI.msg(`use Item ${inkeyst}) ${ws}`);//(${cnum})` );
