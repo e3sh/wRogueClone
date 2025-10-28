@@ -60,7 +60,7 @@ function sticks(r){
 			*/
 			ws_info[d.WS_LIGHT].oi_know = true;
 			if (proom.r_flags & d.ISGONE)
-				msg("the corridor glows and then fades");
+				r.UI.msg("the corridor glows and then fades");
 			else
 			{
 				proom.r_flags &= ~d.ISDARK;
@@ -374,7 +374,7 @@ function sticks(r){
 					changed = !changed;
 					if (!save(d.VS_MAGIC))
 					{
-					if ((pstats.s_hpt -= roll(6, 6)) <= 0)
+					if ((pstats.s_hpt -= r.roll(6, 6)) <= 0)
 					{
 						if (start == hero)
 						r.death('b');

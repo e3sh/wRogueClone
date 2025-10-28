@@ -38,6 +38,9 @@ function GameManager(g){
     this.system =  new SystemAdapter(this)
     this.debug  =  new debug(this, g);
 
+    //this.player.packf = new packf(this);
+    //this.player.misc =  new miscf(this);
+
     /*
     **カプセル化するグローバル変数（例）:**
     *   `dnum`, `seed` (乱数シード)。

@@ -6,6 +6,13 @@ function miscf(r){
     const d = r.define;
     const t = r.types;
 
+	//let player = r.player.player;
+
+	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
+	const ISRING = (h, th)=>  {
+		return (r.player.get_cur_ring(h) != null && r.player.get_cur_ring(h).o_which == th);
+	} 
+
 	/*
 	* check_level:
 	*	Check to see if the guy has gone up a level.
@@ -67,20 +74,26 @@ function miscf(r){
 	*/
 
 	//void
-	function chg_str(amt)
+	this.chg_str = function(amt)
 	{
+		let pstats = r.player.get_pstat();//r.player.player.t_stats;
+		let max_stats = r.player.get_max_stats();
+
 		let comp;//auto str_t comp;
 
 		if (amt == 0)
 			return;
 		add_str(pstats.s_str, amt);
 		comp = pstats.s_str;
-		if (ISRING(LEFT, R_ADDSTR))
-			add_str(comp, -cur_ring[LEFT].o_arm);
-		if (ISRING(RIGHT, R_ADDSTR))
-			add_str(comp, -cur_ring[RIGHT].o_arm);
-		if (comp > max_stats.s_str)
+		if (ISRING(d.LEFT, d.R_ADDSTR))
+			add_str(comp, -cur_ring[d.LEFT].o_arm);
+		if (ISRING(d.RIGHT, d.R_ADDSTR))
+			add_str(comp, -cur_ring[d.RIGHT].o_arm);
+		if (comp > max_stats.s_str){
 			max_stats.s_str = comp;
+			r.player.set_max_stats(max_stats);
+		}
+		r.player.set_pstat(pstats);		
 	}
 
 	/*
@@ -101,23 +114,26 @@ function miscf(r){
 	*	Add a haste to the player
 	*/
 	//bool
-	function add_haste(potion)
+	this.add_haste = function(potion)
 	{
-		if (on(player, ISHASTE))
+		let player = r.player.player;
+
+		if (on(player, d.ISHASTE))
 		{
-			no_command += rnd(8);
-			player.t_flags &= ~(ISRUN|ISHASTE);
-			extinguish(nohaste);
-			msg("you faint from exhaustion");
-			return FALSE;
+			no_command += r.rnd(8);
+			player.t_flags &= ~(d.ISRUN|d.ISHASTE);
+			r.daemon.extinguish(nohaste);
+			r.UI.msg("you faint from exhaustion");
+			return false;
 		}
 		else
 		{
-		player.t_flags |= ISHASTE;
-		if (potion)
-			fuse(nohaste, 0, rnd(4)+4, AFTER);
-		return TRUE;
+			player.t_flags |= d.ISHASTE;
+			if (potion)
+				r.daemon.fuse(r.player.nohaste, 0, r.rnd(4)+4, d.AFTER);
+			return true;
 		}
+
 	}
 
 	/*
@@ -265,26 +281,27 @@ function miscf(r){
 	*/
 
 	//void
-	function call_it(info)//struct obj_info *info)
+	this.call_it = function(info)//struct obj_info *info)
 	{
 		if (info.oi_know)
 		{
-		if (info.oi_guess)
-		{
-			free(info.oi_guess);
-			info.oi_guess = NULL;
-		}
+			if (info.oi_guess)
+			{
+				//free(info.oi_guess);
+				info.oi_guess = null;
+			}
 		}
 		else if (!info.oi_guess)
 		{
-		msg(terse ? "call it: " : "what do you want to call it? ");
-		if (get_str(prbuf, stdscr) == NORM)
-		{
-			if (info.oi_guess != NULL)
-			free(info.oi_guess);
-			info.oi_guess = malloc(strlen(prbuf) + 1);
-			strcpy(info.oi_guess, prbuf);
-		}
+			//r.UI.msg(terse ? "call it: " : "what do you want to call it? ");
+
+			//if (get_str(prbuf, stdscr) == d.NORM)
+			//{
+				//if (info.oi_guess != null)
+				//free(info.oi_guess);
+				info.oi_guess = info.oi_name;//prbuf;
+				//strcpy(info.oi_guess, prbuf);
+			//}
 		}
 	}
 

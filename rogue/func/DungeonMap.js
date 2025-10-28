@@ -68,6 +68,10 @@ function DungeonMap(r){
 
     this.get_level = function(){return level;}
     this.set_level = function(number){level = number; this.level = level};
+
+    this.get_stairs =()=>{return stairs}
+    this.put_stairs =(pos)=>{stairs = pos}
+
     /* 
     **関連する関数（提案されるメソッドの例）:**
     *   `new_level()`, `do_rooms()`, `do_passages()` (レベル生成)。

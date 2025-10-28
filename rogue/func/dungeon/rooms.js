@@ -9,7 +9,7 @@ function rooms_f(r, dg){
 	const proom = r.player.player.t_room;
 	
 	const rooms = dg.rooms;
-	const level = dg.level;
+	//const level = dg.level;
 	const places = dg.places;
 	const max_level = dg.max_level;
 	//const lvl_obj = dg.lvl_obj;
@@ -18,7 +18,7 @@ function rooms_f(r, dg){
 	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
 	const on = (thing,flag)=>{ return ((thing.t_flags & flag) != 0)};
 
-	const GOLDCALC =()=> { return Math.floor(Math.random() * (50 + 10 * level)) + 2};
+	const GOLDCALC =()=> { return Math.floor(Math.random() * (50 + 10 * dg.level)) + 2};
 	const step_ok = dg.step_ok;
 
 	let ffresult = {x:0, y:0};
@@ -36,6 +36,7 @@ function rooms_f(r, dg){
 	*/
 	this.do_rooms = function()
 	{
+		const level = dg.get_level();
 		let lvl_obj = dg.lvl_obj;	
 
 		let rp; //struct room *rp;
@@ -224,11 +225,11 @@ function rooms_f(r, dg){
 
 	this.do_maze = function(rp) //(struct room *rp)
 	{
-		console.log("do_maze_start");
+		//console.log("do_maze_start");
 
 		let sp; //SPOT *sp;
 		let starty, startx;
-		let pos; //static coord pos;
+		let pos = {}; //static coord pos;
 
 		//for (sp = &maze[0][0]; sp <= &maze[NUMLINES / 3][NUMCOLS / 3]; sp++)
 		for (let i in maze){
@@ -246,10 +247,10 @@ function rooms_f(r, dg){
 		startx = Math.floor(r.rnd(rp.r_max.x) / 2) * 2;
 		pos.y = starty + Starty;
 		pos.x = startx + Startx;
-		putpass(pos); //passage
+		r.dungeon.passf.putpass(pos); //passage
 		this.dig(starty, startx);
 
-		console.log("do_maze_comp");
+		//console.log("do_maze_comp");
 	}
 
 	/*
@@ -260,7 +261,7 @@ function rooms_f(r, dg){
 	{
 		let cp; //coord *cp;
 		let cnt, newy, newx, nexty = 0, nextx = 0;
-		let pos; //static coord pos;
+		let pos = {}; //static coord pos;
 		let  del =[
 			{x:2, y:0}, {x:-2, y:0}, {x:0, y:2}, {x:0, y:-2}
 		];
@@ -276,7 +277,7 @@ function rooms_f(r, dg){
 				newx = x + cp.x;
 				if (newy < 0 || newy > Maxy || newx < 0 || newx > Maxx)
 					continue;
-				if (r.flat(newy + Starty, newx + Startx) & F_PASS)
+				if (dg.flat(newy + Starty, newx + Startx) & d.F_PASS)
 					continue;
 				if (r.rnd(++cnt) == 0)
 				{
@@ -304,10 +305,10 @@ function rooms_f(r, dg){
 				else
 					pos.y = nexty + Starty - 1;
 			}
-			putpass(pos);
+			r.dungeon.passf.putpass(pos);
 			pos.y = nexty + Starty;
 			pos.x = nextx + Startx;
-			putpass(pos);
+			r.dungeon.passf.putpass(pos);
 			this.dig(nexty, nextx);
 		}
 	}

@@ -117,12 +117,22 @@ function PlayerCharacter(r){
 
         str.push(`maxhp:${pstats.s_maxhp} exp:${pstats.s_exp} dmg:${pstats.s_dmg}`);
 
-        str.push(`mobs:${r.mobs.length}`);
+        //str.push(`mobs:${r.mobs.length}`);
         //str.push(`pack:${wst}`);
-        str.push(`cur_armor ${cur_armor.o_text} ${cur_armor.o_arm} (${cur_armor.o_packch})`);
-        str.push(`cur_weapon ${cur_weapon.o_text} ${cur_weapon.o_damage} (${cur_weapon.o_packch})`);
-        str.push(`cur_ring_R ${cur_ring[0].o_text} ${cur_ring[0].o_which} (${cur_ring[0].o_packch})`);
-        str.push(`cur_ring_L ${cur_ring[1].o_text} ${cur_ring[1].o_which} (${cur_ring[1].o_packch})`);
+        
+        const eqc =(c)=>{
+            return (c.o_packch == null)?"none":
+            `${r.item.things.inv_name(c, false)} ${(c.o_arm != null)?c.o_arm:c.o_damage} (${c.o_packch})`;
+        }
+        str.push(`armor: ${eqc(cur_armor)}`);
+        str.push(`weapon: ${eqc(cur_weapon)}`);
+        str.push(`ring_R: ${eqc(cur_ring[0])}`);
+        str.push(`ring_L: ${eqc(cur_ring[1])}`);
+
+        //str.push(`armor: ${r.item.things.inv_name(cur_armor, false)} ${cur_armor.o_arm} (${cur_armor.o_packch})`);
+        //str.push(`weapon: ${r.item.things.inv_name(cur_weapon, false)} ${cur_weapon.o_damage} (${cur_weapon.o_packch})`);
+        //str.push(`ring_R ${r.item.things.inv_name(cur_ring[0], false)} ${cur_ring[0].o_which} (${cur_ring[0].o_packch})`);
+        //str.push(`ring_L ${r.item.things.inv_name(cur_ring[1], false)} ${cur_ring[1].o_which} (${cur_ring[1].o_packch})`);
         str.push(`food_left ${food_left}`);
         str.push("");
         //str.push(`inpack ${inpack}`);
@@ -181,6 +191,14 @@ function PlayerCharacter(r){
     this.get_cur_ring =(number)=>{return cur_ring[number];}
     this.set_cur_ring =(number, th)=>{ cur_ring[number] = th;}
 
+    this.get_pstats  = ()=>{ return pstats;}
+    this.set_pstats  = (rs)=>{ pstats = rs;}
+
+    this.get_max_stats = ()=>{ return max_stats;}
+    this.set_max_stats = (rs)=>{max_stats = rs;}
+
+    //this.packf = new packf(r);
+    //this.misc  = new miscf(r);
 
     //プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。
     this.init_player = function(){
@@ -809,87 +827,88 @@ function PlayerCharacter(r){
         switch (tr)
         {
         case d.T_DOOR:
-            level++;
+            let level = r.dungeon.get_level();
+            r.dungeon.set_level(++level);
             r.dungeon.new_level();
             r.UI.msg("you fell into a trap!");
             break;
         case d.T_BEAR:
             no_move += d.BEARTIME;
-            msg("you are caught in a bear trap");
+            r.UI.msg("you are caught in a bear trap");
             break;
-        case T_MYST:
-            switch(rnd(11))
+        case d.T_MYST:
+            switch(r.rnd(11))
             {
-                case 0: msg("you are suddenly in a parallel dimension");    break;
-                case 1: msg("the light in here suddenly seems %s", rainbow[rnd(cNCOLORS)]);break;
-                case 2: msg("you feel a sting in the side of your neck");   break;
-                case 3: msg("multi-colored lines swirl around you, then fade"); break;
-                case 4: msg("a %s light flashes in your eyes", rainbow[rnd(cNCOLORS)]); break;
-                case 5: msg("a spike shoots past your ear!");   break;
-                case 6: msg("%s sparks dance across your armor", rainbow[rnd(cNCOLORS)]);break;
-                case 7: msg("you suddenly feel very thirsty");break;
-                case 8: msg("you feel time speed up suddenly");break;
-                case 9: msg("time now seems to be going slower");break;
-                case 10: msg("you pack turns %s!", rainbow[rnd(cNCOLORS)]);break;
+                case 0: r.UI.msg("you are suddenly in a parallel dimension");    break;
+                case 1: r.UI.msg("the light in here suddenly seems %s", rainbow[rnd(cNCOLORS)]);break;
+                case 2: r.UI.msg("you feel a sting in the side of your neck");   break;
+                case 3: r.UI.msg("multi-colored lines swirl around you, then fade"); break;
+                case 4: r.UI.msg("a %s light flashes in your eyes", rainbow[rnd(cNCOLORS)]); break;
+                case 5: r.UI.msg("a spike shoots past your ear!");   break;
+                case 6: r.UI.msg("%s sparks dance across your armor", rainbow[rnd(cNCOLORS)]);break;
+                case 7: r.UI.msg("you suddenly feel very thirsty");break;
+                case 8: r.UI.msg("you feel time speed up suddenly");break;
+                case 9: r.UI.msg("time now seems to be going slower");break;
+                case 10: r.UI.msg("you pack turns %s!", rainbow[rnd(cNCOLORS)]);break;
             }
             break;
-        case T_SLEEP:
-            no_command += SLEEPTIME;
-            player.t_flags &= ~ISRUN;
-            msg("a strange white mist envelops you and you fall asleep");
+        case d.T_SLEEP:
+            no_command += d.SLEEPTIME;
+            player.t_flags &= ~d.ISRUN;
+            r.UI.msg("a strange white mist envelops you and you fall asleep");
             break;
-        case T_ARROW:
+        case d.T_ARROW:
             if (swing(pstats.s_lvl - 1, pstats.s_arm, 1))
             {
-            pstats.s_hpt -= roll(1, 6);
+            pstats.s_hpt -= r.roll(1, 6);
             if (pstats.s_hpt <= 0)
             {
-                msg("an arrow killed you");
+                r.UI.msg("an arrow killed you");
                 r.death('a');
             }
             else
-                msg("oh no! An arrow shot you");
+                r.UI.msg("oh no! An arrow shot you");
             }
             else
             {
                 arrow = new_item();
-                init_weapon(arrow, ARROW);
+                init_weapon(arrow, d.ARROW);
                 arrow.o_count = 1;
                 arrow.o_pos = hero;
                 fall(arrow, false);
-                msg("an arrow shoots past you");
+                r.UI.msg("an arrow shoots past you");
             }
             break;
-        case T_TELEP:
+        case d.T_TELEP:
             /*
             * since the hero's leaving, look() won't put a TRAP
             * down for us, so we have to do it ourself
             */
             teleport();
-            mvaddch(tc.y, tc.x, TRAP);
+            mvaddch(tc.y, tc.x, d.TRAP);
             break;
-        case T_DART:
+        case d.T_DART:
             if (!swing(pstats.s_lvl+1, pstats.s_arm, 1))
-            msg("a small dart whizzes by your ear and vanishes");
+                r.UI.msg("a small dart whizzes by your ear and vanishes");
             else
             {
-            pstats.s_hpt -= roll(1, 4);
+            pstats.s_hpt -= r.roll(1, 4);
             if (pstats.s_hpt <= 0)
             {
-                msg("a poisoned dart killed you");
+                r.UI.msg("a poisoned dart killed you");
                 r.death('d');
             }
-            if (!ISWEARING(R_SUSTSTR) && !save(VS_POISON))
-                chg_str(-1);
-            msg("a small dart just hit you in the shoulder");
+            if (!ISWEARING(d.R_SUSTSTR) && !save(d.VS_POISON))
+                player.misc.chg_str(-1);
+            r.UI.msg("a small dart just hit you in the shoulder");
             }
             break;
-        case T_RUST:
-            msg("a gush of water hits you on the head");
+        case d.T_RUST:
+            r.UI.msg("a gush of water hits you on the head");
             rust_armor(cur_armor);
             break;
         }
-        flush_type();
+        //flush_type();
 
         r.UI.comment("be_trapped");
 
@@ -1045,9 +1064,9 @@ function PlayerCharacter(r){
     *	End the hasting
     */
     //void
-    function nohaste()
+    this.nohaste = function()
     {
-        player.t_flags &= ~ISHASTE;
+        player.t_flags &= ~d.ISHASTE;
         r.UI.msg("you feel yourself slowing down");
     }
 
@@ -1125,7 +1144,7 @@ function PlayerCharacter(r){
         {
         r.UI.move(tp.t_pos.y, tp.t_pos.x);
         if (this.cansee(tp.t_pos.y, tp.t_pos.x))
-            if (!on(tp, ISINVIS) || on(player, CANSEE))
+            if (!on(tp, d.ISINVIS) || on(player, d.CANSEE))
                 r.UI.addch(tp.t_disguise);
             else
                 r.UI.addch(chat(tp.t_pos.y, tp.t_pos.x));

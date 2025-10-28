@@ -16,7 +16,6 @@ function packf(r){
     let l_last_dir;     /* Last object picked in get_item() */
     let l_last_pick;    /* Last last_pick */
 
-
 	let from_floor;
 
 	const d = r.define;
@@ -36,6 +35,30 @@ function packf(r){
 
 		inpack = 0;
  	}
+
+	let pack_cursor = 0;
+	this.set_cur =(num)=>{ 
+		let puw = [];
+		for (let i = 0; i <26; i++) {
+			if (pack_used[i]) puw.push(i);
+			//puw.push(String.fromCharCode("a".charCodeAt(0)+i));	
+		} 
+		let pmax = puw.reduce((a, b) => Math.max(a,b), -Infinity);
+		let pmin = puw.reduce((a, b) => Math.min(a,b), Infinity);
+
+		if (num != 0){
+			do {
+				pack_cursor += Math.sign(num);
+				if (pack_cursor < pmin) {pack_cursor = pmax; break;}
+				if (pack_cursor > pmax) {pack_cursor = pmin; break;}
+			} while (!puw.includes(pack_cursor))
+		}
+	}
+	this.get_cur =()=>{
+		return String.fromCharCode("a".charCodeAt(0) + pack_cursor);
+	}
+
+	this.read_inpack =()=>{return inpack;}
 
 	/*
 	* add_pack:
@@ -319,7 +342,10 @@ function packf(r){
 				!(type == d.R_OR_S && (list.o_type == d.RING || list.o_type == d.STICK)))
 					continue;
 			n_objs++;
-			inv_temp = `${list.o_packch}) `;// ${}`"%c) %%s", list.o_packch);
+			let equip = r.player.equip_state_check(list.o_packch)?"E":" ";
+			let cur = (list.o_packch == this.get_cur())?"S":" ";
+
+			inv_temp = `${equip}${cur}${list.o_packch}) `;// ${}`"%c) %%s", list.o_packch);
 			//msg_esc = true;
 			inv_temp += r.item.things.inv_name(list, false);
 			r.UI.submsg(inv_temp);

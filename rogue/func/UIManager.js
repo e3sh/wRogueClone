@@ -69,6 +69,7 @@ function UIManager(r, g){
     let count = 0;				/* Number of times to repeat command  (コマンド繰り返し回数)*/
 
     this.has_hit = has_hit;
+
     /*
     **関連する関数（提案されるメソッドの例）:**
     *   `msg()`, `addmsg()`, `endmsg()`, `doadd()` (メッセージ表示)。
@@ -169,7 +170,7 @@ function UIManager(r, g){
 
         const stat = r.player.get_status();
 
-        const level = stat.lvl;
+        const level = r.dungeon.get_level();//stat.lvl;
         const purse = stat.pur;
         const pstats = r.player.get_pstat();//stat.pstat;
         const max_stats = stat.mstat;
@@ -383,13 +384,15 @@ function UIManager(r, g){
                 for (let i in st){
                     r.UI.submsg(st[i]);
                 }
+                r.UI.submsg(`inpack ${r.player.packf.read_inpack()} /cur:${r.player.packf.get_cur()}`);
                 r.player.packf.inventory(player.t_pack, 0);
             }
 
             //ki = this.readchar();
             oldc = pr;
             let opcmdf = false; //operation command flag
-            if (!ki.includes("Space")){            
+            //if (!ki.includes("Space")){            
+            if (!ki.includes("Numpad0")){            
 
                 if (ki.includes("Numpad4")) pr = r.player.do_move( 0,-1);
                 if (ki.includes("Numpad2")) pr = r.player.do_move( 1, 0);
@@ -401,8 +404,18 @@ function UIManager(r, g){
                 if (ki.includes("Numpad3")) pr = r.player.do_move( 1, 1);
                 if (ki.includes("Numpad5")) {
                     pr = r.player.do_move( 0, 0);
+                    search();
                     opcmdf = true;
                 }
+                if (ki.includes("NumpadAdd")||ki.includes("NumpadSubtract")){
+                    r.player.packf.set_cur(
+                        (ki.includes("NumpadAdd"))?-1:1
+                    );
+                    viewInventry();
+                }
+                //if (ki.includes("NumpadAdd")) r.player.packf.set_cur(1);//r.UI.msg("+");
+                //if (ki.includes("NumpadSubtract")) r.player.packf.set_cur(-1)//r.UI.msg("-");
+                //if (ki.includes("Numpad0")) r.UI.msg("Zero");
 
                 if (ki.includes("KeyI")) viewInventry();
                 if (ki.includes("KeyD")) ;//drop(); //on mode
@@ -426,13 +439,15 @@ function UIManager(r, g){
                 if (this.wait_for("ArrowDown")) r.debug.checkListsCount(); //debug command
 
             } else {
-                let inkeyst = "";
-                for (let i in ki){
-                    if (ki[i].includes("Key")){
-                        inkeyst = ki[i].substring(3).toLowerCase();
-                        break;
-                    }
-                }
+                //let inkeyst = "";
+                //for (let i in ki){
+                //    if (ki[i].includes("Key")){
+                //        inkeyst = ki[i].substring(3).toLowerCase();
+                //        break;
+                //    }
+                // }
+                let inkeyst = r.player.packf.get_cur();
+
                 if (inkeyst != "") {
                     //let cnum = inkeyst.charCodeAt(0);
                     let ws = "";
@@ -480,6 +495,7 @@ function UIManager(r, g){
                         }
                     }
                     r.UI.msg(`use Item ${inkeyst}) ${ws}`);//(${cnum})` );
+                    r.player.packf.set_cur(0);
                     viewInventry();
                 }
                 //selectしたキーのalphabetのitemがあるか？
@@ -556,7 +572,7 @@ function UIManager(r, g){
 
         let s = " ";
 		for (let i in ki){s += `${ki[i]},`}
-            this.comment(`d:${delta} c:${s}[${pr} ${oldc}]`);
+            this.comment(`dir:${delta} input:${s}`);//[${pr} ${oldc}]`);
     }
 
     /*
@@ -699,6 +715,7 @@ function UIManager(r, g){
     this.trip_ch = function(y, x, ch)
     {
         let player = r.player.player;
+        let stairs = r.dungeon.get_stairs();
 
         if (on(player, d.ISHALU) && after)
         switch (ch)
@@ -766,4 +783,79 @@ function UIManager(r, g){
         else
             return true ;
     }
+    /*
+    * search:
+    *	player gropes about him to find hidden things.
+    */
+    //void
+    function search()
+    {
+        let player = r.player.player;
+        let hero   = player.t_pos;
+
+        let y, x; //register int y, x;
+        let fp;	//register char *fp;
+        let ey, ex;	//register int ey, ex;
+        let probinc;	//int probinc;
+        let found;	//bool found;
+
+        const foundone =()=>{
+            found = d.TRUE;
+            fp |= d.F_REAL;
+            count = false;
+            running = false;
+        }
+
+        ey = hero.y + 1;
+        ex = hero.x + 1;
+        probinc = (on(player, d.ISHALU) ? 3 : 0);
+        probinc += (on(player, d.ISBLIND) ? 2 : 0);
+        found = false;
+        for (y = hero.y - 1; y <= ey; y++) 
+            for (x = hero.x - 1; x <= ex; x++)
+            {
+                if (y == hero.y && x == hero.x)
+                    continue;
+                fp = r.dungeon.flat(y, x);
+                if (!(fp & d.F_REAL))
+                    switch (r.dungeon.chat(y, x))
+                    {
+                    case '|':
+                    case '-':
+                        if (r.rnd(5 + probinc) != 0)
+                            break;
+                        r.dungeon.places[y][x].p_ch = d.DOOR;
+                        r.UI.msg("a secret door");
+                //foundone:
+                        found = d.TRUE;
+                        fp |= d.F_REAL;
+                        count = false;
+                        running = false;
+                        break;
+                    case d.FLOOR:
+                        if (r.rnd(2 + probinc) != 0)
+                            break;
+                        r.dungeon.places[y][x].p_ch = TRAP;
+                        if (!terse)
+                            r.UI.addmsg("you found ");
+                        if (on(player, d.ISHALU))
+                            r.UI.msg(tr_name[r.rnd(d.NTRAPS)]);
+                        else {
+                            r.UI.msg(tr_name[fp & d.F_TMASK]);
+                            fp |= d.F_SEEN;
+                        }
+                        foundone();
+                        break;
+                        case ' ':
+                            if (r.rnd(3 + probinc) != 0)
+                                break;
+                        r.dungeon.places[y][x].p_ch = d.PASSAGE;
+                        foundone();
+                    }
+                //r.UI.debug("search");
+            }
+        if (found)
+            this.look(false);
+    }
+
 }

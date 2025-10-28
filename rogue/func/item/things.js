@@ -35,6 +35,8 @@ function thingsf(r){
 	*/
 	this.inv_name = function(obj, drop)//THING *obj, bool drop)
 	{
+		if (!Boolean(obj)) return "none";
+
 		res = r.item.get_itemparam();
 
 		const p_colors	= res.P_COLOR;
@@ -75,6 +77,7 @@ function thingsf(r){
 		let which;
 
 		pb = "";
+
 		which = obj.o_which;
 		switch (obj.o_type)
 		{
@@ -140,8 +143,8 @@ function thingsf(r){
 				{
 					pb = `${num(a_class[which] - obj.o_arm, 0, d.ARMOR)} ${sp}`;
 					if (!terse)
-						pb = pb + "protection ";
-					pb = pb + `${10 - obj.o_arm}]`;
+						;//pb = pb + " protection ";
+					//pb = pb + `${10 - obj.o_arm}]`;
 				}
 				else
 					pb = pb + sp;
@@ -159,7 +162,7 @@ function thingsf(r){
 				break; 
 			default:
 				r.UI.debug(`Picked up something funny ${obj.o_type}`);
-				pb = `Something bizarre ${unctrl(obj.o_type)}`;
+				pb = "none";//`Something bizarre ${obj.o_type}`;
 	//#endif
 		}
 		let inv_describe = false;
@@ -223,38 +226,38 @@ function thingsf(r){
 	//bool
 	function dropcheck(obj)//THING *obj)
 	{
-		if (obj == NULL)
-		return TRUE;
+		if (obj == null)
+		return true;
 		if (obj != cur_armor && obj != cur_weapon
-		&& obj != cur_ring[LEFT] && obj != cur_ring[RIGHT])
-			return TRUE;
-		if (obj.o_flags & ISCURSED)
+		&& obj != cur_ring[d.LEFT] && obj != cur_ring[d.RIGHT])
+			return true;
+		if (obj.o_flags & d.ISCURSED)
 		{
 			msg("you can't.  It appears to be cursed");
-			return FALSE;
+			return false;
 		}
 		if (obj == cur_weapon)
-		cur_weapon = NULL;
+		cur_weapon = null;
 		else if (obj == cur_armor)
 		{
 			waste_time();
-			cur_armor = NULL;
+			cur_armor = null;
 		}
 		else
 		{
-			cur_ring[obj == cur_ring[LEFT] ? LEFT : RIGHT] = NULL;
+			cur_ring[obj == cur_ring[d.LEFT] ? d.LEFT : d.RIGHT] = null;
 			switch (obj.o_which)
 			{
-				case R_ADDSTR:
-				chg_str(-obj.o_arm);
-				break;
-				case R_SEEINVIS:
-				unsee();
-				extinguish(unsee);
-				break;
+				case d.R_ADDSTR:
+					player.misc.chg_str(-obj.o_arm);
+					break;
+				case d.R_SEEINVIS:
+					r.player.unsee();
+					r.daemon.extinguish(r.player.unsee);
+					break;
 			}
 		}
-		return TRUE;
+		return true;
 	}
 
 	/*

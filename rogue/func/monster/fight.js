@@ -103,7 +103,7 @@ function battle(r){
 		if (tp.t_type == 'X' && tp.t_disguise != 'X' && !on(player, d.ISBLIND))
 		{
 			tp.t_disguise = 'X';
-			if (on(player, ISHALU)) {
+			if (on(player, d.ISHALU)) {
 				ch = String.fromCharCode(r.rnd(26) + Number('A'.charCodeAt(0)));
 				r.UI.mvaddch(tp.t_pos.y, tp.t_pos.x, ch);
 			}
@@ -173,7 +173,7 @@ function battle(r){
 		{
 			mp.t_disguise = 'X';
 			if (on(player, d.ISHALU))
-				mvaddch(mp.t_pos.y, mp.t_pos.x, rnd(26) + 'A');
+				mvaddch(mp.t_pos.y, mp.t_pos.x, r.rnd(26) + 'A');
 		}
 		mname = this.set_mname(mp);
 		oldhp = pstats.s_hpt;
@@ -220,7 +220,7 @@ function battle(r){
 					addmsg(" by the %s", mname);
 				endmsg();
 				}
-				no_command += rnd(2) + 2;
+				no_command += r.rnd(2) + 2;
 				if (no_command > d.BORE_LEVEL)
 				r.death('h');
 				break; 
@@ -232,18 +232,18 @@ function battle(r){
 				{
 				if (!ISWEARING(d.R_SUSTSTR))
 				{
-					chg_str(-1);
+					player.misc.chg_str(-1);
 					if (!terse)
-					msg("you feel a bite in your leg and now feel weaker");
+					r.UI.msg("you feel a bite in your leg and now feel weaker");
 					else
-					msg("a bite has weakened you");
+					r.UI.msg("a bite has weakened you");
 				}
 				else if (!to_death)
 				{
 					if (!terse)
-					msg("a bite momentarily weakens you");
+					r.UI.msg("a bite momentarily weakens you");
 					else
-					msg("bite has no effect");
+					r.UI.msg("bite has no effect");
 				}
 				}
 				break; 
@@ -253,7 +253,7 @@ function battle(r){
 				* Wraiths might drain energy levels, and Vampires
 				* can steal max_hp
 				*/
-				if (rnd(100) < (mp.t_type == 'W' ? 15 : 30))
+				if (r.rnd(100) < (mp.t_type == 'W' ? 15 : 30))
 				{
 					let fewer;	//register int fewer;
 
@@ -268,17 +268,17 @@ function battle(r){
 						}
 						else
 							pstats.s_exp = e_levels[pstats.s_lvl-1]+1;
-						fewer = roll(1, 10);
+						fewer = r.roll(1, 10);
 					}
 					else
-						fewer = roll(1, 3);
+						fewer = r.roll(1, 3);
 					pstats.s_hpt -= fewer;
 					max_hp -= fewer;
 					if (pstats.s_hpt <= 0)
 						pstats.s_hpt = 1;
 					if (max_hp <= 0)
 						r.death(mp.t_type);
-					msg("you suddenly feel weaker");
+					r.UI.msg("you suddenly feel weaker");
 				}
 				break; 
 			case 'F':
@@ -286,7 +286,7 @@ function battle(r){
 				* Venus Flytrap stops the poor guy from moving
 				*/
 				player.t_flags |= d.ISHELD;
-				sprintf(monsters['F'-'A'].m_stats.s_dmg,"%dx1", ++vf_hit);
+				r.UI.msg(`${monsters['F'.charCodeAt(0)-'A'.charCodeAt(0)].m_stats.s_dmg} ${++vf_hit}x1`);
 				if (--pstats.s_hpt <= 0)
 				r.death('F');
 			break; 
@@ -306,7 +306,7 @@ function battle(r){
 				remove_mon(mp.t_pos, mp, false);
 						mp=null;
 				if (purse != lastpurse)
-				msg("your purse feels lighter");
+				r.UI.msg("your purse feels lighter");
 			}
 			break; 
 			case 'N':
@@ -322,15 +322,15 @@ function battle(r){
 				for (nobj = 0, obj = pack; obj != null; obj = next(obj))
 				if (obj != cur_armor && obj != cur_weapon
 					&& obj != cur_ring[LEFT] && obj != cur_ring[RIGHT]
-					&& is_magic(obj) && rnd(++nobj) == 0)
+					&& is_magic(obj) && r.rnd(++nobj) == 0)
 					steal = obj;
 				if (steal != null)
 				{
 					remove_mon(mp.t_pos, moat(mp.t_pos.y, mp.t_pos.x), false);
 								mp=null;
-					leave_pack(steal, false, false);
-					msg("she stole %s!", inv_name(steal, true));
-					discard(steal);
+					r.player.packf.leave_pack(steal, false, false);
+					r.UI.msg("she stole %s!", inv_name(steal, true));
+					r.discard(steal);
 				}
 			}
 			break;

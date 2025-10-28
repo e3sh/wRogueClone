@@ -34,7 +34,7 @@ function SpriteFontData() {
 
     //8_16_font
 	let sp = [];
-    for (let i = 1; i < 4; i++) {
+    for (let i = 0; i < 8; i++) {// normal 1 - 3(<4)
         for (j = 0; j <32; j++) {
             ptn = { x:  8 * j, y: 16 * i, w:  8, h: 16 }
             sp.push(ptn);
@@ -58,7 +58,7 @@ function SpriteFontData() {
     }
     //↑↑
     return [
-        { name: "std"   , id: "ASCII", pattern: sp },
+        { name: "std"   , id: "ASCII", pattern: sp, ucc: true },
         { name: "small" , id: "SMALL", pattern: s2 },
         { name: "mini"  , id: "MINIF", pattern: ss },
     ]

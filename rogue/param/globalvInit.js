@@ -65,8 +65,8 @@ function globalVariableInit(r){
     //char *ws_made[MAXSTICKS];		/* What sticks are made of */
     //char *ws_type[MAXSTICKS];		/* Is it a wand or a staff */
     //int  orig_dsusp;			/* Original dsusp char */
-    v.fruit =			/* Favorite fruit */
-            [ 's', 'l', 'i', 'm', 'e', '-', 'm', 'o', 'l', 'd', '\0' ];
+    v.fruit = "slime-mold";			/* Favorite fruit */
+            //[ 's', 'l', 'i', 'm', 'e', '-', 'm', 'o', 'l', 'd', '\0' ];
     //char home[MAXSTR] = { '\0' };		/* User's home directory */
     v.inv_t_name = [
         "Overwrite",

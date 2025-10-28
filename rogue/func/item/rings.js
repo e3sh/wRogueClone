@@ -61,7 +61,7 @@ function rings(r){
 		switch (obj.o_which)
 		{
 		case R_ADDSTR:
-			chg_str(obj.o_arm);
+			player.misc.chg_str(obj.o_arm);
 			break;
 		case R_SEEINVIS:
 			invis_on();

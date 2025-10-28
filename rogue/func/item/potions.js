@@ -9,18 +9,31 @@ function potions(r){
 	const pot_info = r.globalValiable.pot_info;
 
 	const player = r.player.player;
+	const fruit = r.globalValiable.fruit;
 
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
-	const ISRING = (h,r)=>  {
-		return (r.player.get_cur_ring(h) != null && r.player.get_cur_ring(h).o_which == r);
+	const ISRING = (h, wh)=>  {
+		return (r.player.get_cur_ring(h) != null && r.player.get_cur_ring(h).o_which == wh);
 	} 
+	/*
+	* add_str:
+	*	Perform the actual add, checking upper and lower bound limits
+	*/
+	const add_str =(sp, amt)=>
+	{
+		if ((sp += amt) < 3)
+			sp = 3;
+		else if (sp > 31)
+			sp = 31;
+		return sp;
+	}
 
 	let prbuf;
 
-	function PACT(flag, deamon, time, high, straight)
+	function PACT(flag, daemon, time, high, straight)
 	{
 		this.pa_flags = flag; 	//int pa_flags;
-		this.pa_daemon = deamon;	//void (*pa_daemon)();
+		this.pa_daemon = daemon;	//void (*pa_daemon)();
 		this.pa_time = time;	//int pa_time;
 		this.pa_high = high;//char *pa_high, *pa_straight;
 		this.pa_straight = straight;
@@ -63,7 +76,8 @@ function potions(r){
 		let discardit = false;
 		let show, trip;
 
-
+		let pstats = r.player.get_pstats();
+		let max_hp = pstats.s_maxhp;	
 
 		//obj = get_item("quaff", POTION);
 		/*
@@ -99,26 +113,26 @@ function potions(r){
 				r.UI.msg("you feel momentarily sick");
 			else
 			{
-				chg_str(-(r.rnd(3) + 1));
-				msg("you feel very sick now");
-				come_down();
+				r.player.misc.chg_str(-(r.rnd(3) + 1));
+				r.UI.msg("you feel very sick now");
+				r.player.come_down();
 			}
 			break; 
 		case d.P_HEALING:
 			pot_info[d.P_HEALING].oi_know = true;
-			if ((pstats.s_hpt += roll(pstats.s_lvl, 4)) > max_hp)
+			if ((pstats.s_hpt += r.roll(pstats.s_lvl, 4)) > max_hp)
 				pstats.s_hpt = ++max_hp;
-			sight();
+			r.player.sight();
 			r.UI.msg("you begin to feel better");
 			break; 
 		case d.P_STRENGTH:
 			pot_info[d.P_STRENGTH].oi_know = true;
-			chg_str(1);
+			r.player.misc.chg_str(1);
 			r.UI.msg("you feel stronger, now.  What bulging muscles!");
 			break; 
 		case d.P_MFIND:
 			player.t_flags |= d.SEEMONST;
-			r.deamon.fuse(turn_see, true, d.HUHDURATION, d.AFTER);
+			r.daemon.fuse(turn_see, true, d.HUHDURATION, d.AFTER);
 			if (!turn_see(false))
 				r.UI.msg("you have a %s feeling for a moment, then it passes",
 			choose_str("normal", "strange"));
@@ -127,29 +141,32 @@ function potions(r){
 			/*
 			* Potion of magic detection.  Show the potions and scrolls
 			*/
+			const lvl_obj = r.dungeon.lvl_obj;
+			const mlist = r.dungeon.mlist;
+
 			show = false;
 			if (lvl_obj != null)
 			{
-				wclear(hw);
-				for (tp = lvl_obj; tp != null; tp = next(tp))
+				//wclear(hw)
+				for (tp = lvl_obj; tp != null; tp = tp.l_next)
 				{
 					if (is_magic(tp))
 					{
 						show = true;
-						wmove(hw, tp.o_pos.y, tp.o_pos.x);
-						waddch(hw, d.MAGIC);
+						r.UI.move(hw, tp.o_pos.y, tp.o_pos.x);
+						r.UI.addch(hw, d.MAGIC);
 						pot_info[d.P_TFIND].oi_know = true;
 					}
 				}
-				for (mp = mlist; mp != null; mp = next(mp))
+				for (mp = mlist; mp != null; mp = mp.l_next)
 				{
-					for (tp = mp.t_pack; tp != null; tp = next(tp))
+					for (tp = mp.t_pack; tp != null; tp = tp.l_next)
 					{
 						if (is_magic(tp))
 						{
 							show = true;
-							wmove(hw, mp.t_pos.y, mp.t_pos.x);
-							waddch(hw, d.MAGIC);
+							r.UI.move(hw, mp.t_pos.y, mp.t_pos.x);
+							r.UI.addch(hw, d.MAGIC);
 						}
 					}
 				}
@@ -157,29 +174,28 @@ function potions(r){
 			if (show)
 			{
 				pot_info[d.P_TFIND].oi_know = true;
-				show_win("You sense the presence of magic on this level.--More--");
+				r.UI.msg("You sense the presence of magic on this level.");//--More--");
 			}
 			else
-				r.UI.msg("you have a %s feeling for a moment, then it passes",
-			choose_str("normal", "strange"));
+				r.UI.msg(`you have a ${choose_str("normal", "strange")} feeling for a moment, then it passes`);
 			break; 
 		case d.P_LSD:
 			if (!trip)
 			{
 				if (on(player, d.SEEMONST))
 					turn_see(false);
-				start_daemon(visuals, 0, d.BEFORE);
+				r.daemon.start_daemon(r.player.visuals(), 0, d.BEFORE);
 				seenstairs = seen_stairs();
 			}
 			do_pot(d.P_LSD, true);
 			break; 
 		case d.P_SEEINVIS:
-			sprintf(prbuf, "this potion tastes like %s juice", fruit);
-			show = on(player, CANSEE);
+			r.UI.msg(`this potion tastes like ${fruit} juice`);
+			show = on(player, d.CANSEE);
 			do_pot(d.P_SEEINVIS, false);
 			if (!show)
 				invis_on();
-			sight();
+			r.player.sight();
 			break; 
 		case d.P_RAISE:
 			pot_info[d.P_RAISE].oi_know = true;
@@ -188,23 +204,26 @@ function potions(r){
 			break; 
 		case d.P_XHEAL:
 			pot_info[d.P_XHEAL].oi_know = true;
-			if ((pstats.s_hpt += roll(pstats.s_lvl, 8)) > max_hp)
+			if ((pstats.s_hpt += r.roll(pstats.s_lvl, 8)) > max_hp)
 			{
 				if (pstats.s_hpt > max_hp + pstats.s_lvl + 1)
 					++max_hp;
 				pstats.s_hpt = ++max_hp;
 			}
-			sight();
-			come_down();
+			r.player.sight();
+			r.player.come_down();
 			r.UI.msg("you begin to feel much better");
 			break; 
 		case d.P_HASTE:
 			pot_info[d.P_HASTE].oi_know = true;
 			after = false;
-			if (add_haste(true))
+			if (r.player.misc.add_haste(true))
 			r.UI.msg("you feel yourself moving much faster");
 			break; 
 		case d.P_RESTORE:
+			let max_stats = r.player.get_max_stats();
+
+
 			if (ISRING(d.LEFT, d.R_ADDSTR))
 				add_str(pstats.s_str, -cur_ring[d.LEFT].o_arm);
 			if (ISRING(d.RIGHT, d.R_ADDSTR))
@@ -215,6 +234,8 @@ function potions(r){
 				add_str(pstats.s_str, cur_ring[d.LEFT].o_arm);
 			if (ISRING(d.RIGHT, d.R_ADDSTR))
 				add_str(pstats.s_str, cur_ring[d.RIGHT].o_arm);
+
+			r.player.set_pstats(pstats);
 			r.UI.msg("hey, this tastes great.  It make you feel warm all over");
 			break; 
 		case d.P_BLIND:
@@ -228,15 +249,17 @@ function potions(r){
 			r.UI.debug(`potion_type: ${obj.o_which}`);
 			return;
 		}
+		
+		r.player.set_pstats(pstats);
 		r.UI.status();
 		/*
 		* Throw the item away
 		*/
 
-		call_it(pot_info[obj.o_which]);
+		r.player.misc.call_it(pot_info[obj.o_which]);
 
 		if (discardit)
-			discard(obj);
+			r.discard(obj);
 		return;
 	}
 
@@ -289,27 +312,29 @@ function potions(r){
 		let mp;//THING *mp;
 		let can_see, add_new;
 
+		const mlist = r.dungeon.mlist;
+
 		add_new = false;
-		for (mp = mlist; mp != null; mp = next(mp))
+		for (mp = mlist; mp != null; mp = mp.l_next)
 		{
-			move(mp.t_pos.y, mp.t_pos.x);
-			can_see = see_monst(mp);
+			r.UI.move(mp.t_pos.y, mp.t_pos.x);
+			can_see = r.player.see_monst(mp);
 			if (turn_off)
 			{
 				if (!can_see)
-					addch(mp.t_oldch);
+					r.UI.addch(mp.t_oldch);
 			}
 			else
 			{
 				if (!can_see)
-					standout();
+					;//standout();
 				if (!on(player, d.ISHALU))
-					addch(mp.t_type);
+					r.UI.addch(mp.t_type);
 				else
-					addch(rnd(26) + 'A');
+					r.UI.addch(r.rnd(26) + 'A'.charCodeAt(0));
 				if (!can_see)
 				{
-					standend();
+					//standend();
 					add_new++;
 				}
 			}
@@ -329,19 +354,21 @@ function potions(r){
 	function seen_stairs()
 	{
 		let tp;//THING	*tp;
+		let hero = r.player.player.t_pos;
+		let stairs = r.dungeon.get_stairs();
 
-		move(stairs.y, stairs.x);
-		if (inch() == d.STAIRS)			/* it's on the map */
-		return true;
-		if (ce(hero, stairs))			/* It's under him */
-		return true;
+		r.UI.move(stairs.y, stairs.x);
+		if (r.UI.inch() == d.STAIRS)			/* it's on the map */
+			return true;
+		if (hero.x == stairs.x && hero.y == stairs.y)			/* It's under him */
+			return true;
 
 		/*
 		* if a monster is on the stairs, this gets hairy
 		*/
-		if ((tp = moat(stairs.y, stairs.x)) != null)
+		if ((tp = r.dungeon.moat(stairs.y, stairs.x)) != null)
 		{
-		if (see_monst(tp) && on(tp, d.ISRUN))	/* if it's visible and awake */
+		if (r.player.see_monst(tp) && on(tp, d.ISRUN))	/* if it's visible and awake */
 			return true;			/* it must have moved there */
 
 		if (on(player, d.SEEMONST)		/* if she can detect monster */
@@ -372,6 +399,17 @@ function potions(r){
 	//void
 	function do_pot(type, knowit)//int type, bool knowit)
 	{
+		/*
+		* spread:
+		*	Give a spread around a given number (+/- 20%)?
+		*/
+		const spread = (nm)=>{
+			const twenty_percent = nm / 5; 
+			const random_range_total_width = twenty_percent * 2; // nm * 0.4
+
+			return nm + Math.floor(Math.random()*(random_range_total_width + 1) - twenty_percent);
+		};
+
 		let pp;//PACT *pp;
 		let t;
 
@@ -382,11 +420,21 @@ function potions(r){
 		if (!on(player, pp.pa_flags))
 		{
 			player.t_flags |= pp.pa_flags;
-			fuse(pp.pa_daemon, 0, t, d.AFTER);
-			look(false);
+			r.daemon.fuse(pp.pa_daemon, 0, t, d.AFTER);
+			r.UI.look(false);
 		}
 		else
-			lengthen(pp.pa_daemon, t);
-		msg(choose_str(pp.pa_high, pp.pa_straight));
+			r.daemon.lengthen(pp.pa_daemon, t);
+		r.UI.msg(choose_str(pp.pa_high, pp.pa_straight));
+	}
+	/*
+	str str:
+	*	Choose the first or second string depending on whether it the
+	*	player is tripping
+	*/
+	//char *
+	function choose_str(ts, ns)//har *ts, char *ns)
+	{
+		return (on(player, d.ISHALU) ? ts : ns);
 	}
 }

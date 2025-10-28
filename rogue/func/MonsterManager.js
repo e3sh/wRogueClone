@@ -327,6 +327,8 @@ function MonsterManager(r){
     //coord *
     this.find_dest = function(tp)//(THING *tp)
     {
+        const proom = r.player.player.t_room;
+
         let obj; //register THING *obj;
         let prob;
 
