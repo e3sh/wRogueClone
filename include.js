@@ -27,6 +27,8 @@ const w = [
         r + "item/things.js",
         r + "item/sticks.js",
         r + "item/potions.js",
+        r + "item/weapons.js",
+        r + "item/armor.js",
     r + "UIManager.js",
     r + "DaemonScheduler.js",
     r + "SystemAdapter.js",

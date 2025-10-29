@@ -273,9 +273,9 @@ function potions(r){
 		switch (obj.o_type)
 		{
 		case d.ARMOR:
-			return (bool)((obj.o_flags&d.ISPROT) || obj.o_arm != a_class[obj.o_which]);
-		case WEAPON:
-			return (bool)(obj.o_hplus != 0 || obj.o_dplus != 0);
+			return ((obj.o_flags&d.ISPROT) || obj.o_arm != a_class[obj.o_which]);
+		case d.WEAPON:
+			return (obj.o_hplus != 0 || obj.o_dplus != 0);
 		case d.POTION:
 		case d.SCROLL:
 		case d.STICK:
@@ -297,9 +297,9 @@ function potions(r){
 		let mp;
 
 		player.t_flags |= d.CANSEE;
-		for (mp = mlist; mp != null; mp = next(mp))
-		if (on(mp, d.ISINVIS) && see_monst(mp) && !on(player, d.ISHALU))
-			mvaddch(mp.t_pos.y, mp.t_pos.x, mp.t_disguise);
+		for (mp = r.dungeon.mlist; mp != null; mp = mp.l_next)
+		if (on(mp, d.ISINVIS) && r.player.see_monst(mp) && !on(player, d.ISHALU))
+			r.UI.mvaddch(mp.t_pos.y, mp.t_pos.x, mp.t_disguise);
 	}
 
 	/*

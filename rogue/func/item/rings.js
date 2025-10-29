@@ -15,18 +15,18 @@ function rings(r){
 		let obj;	//THING *obj;
 		let ring;
 
-		obj = get_item("put on", RING);
+		obj = get_item("put on", d.RING);
 		/*
 		* Make certain that it is somethings that we want to wear
 		*/
-		if (obj == NULL)
+		if (obj == null)
 			return;
-		if (obj.o_type != RING)
+		if (obj.o_type != d.RING)
 		{
 			if (!terse)
-				msg("it would be difficult to wrap that around a finger");
+				r.UI.msg("it would be difficult to wrap that around a finger");
 			else
-				msg("not a ring");
+				r.UI.msg("not a ring");
 			return;
 		}
 
@@ -36,21 +36,21 @@ function rings(r){
 		if (is_current(obj))
 			return;
 
-		if (cur_ring[LEFT] == NULL && cur_ring[RIGHT] == NULL)
+		if (cur_ring[d.LEFT] == null && cur_ring[d.RIGHT] == null)
 		{
 			if ((ring = gethand()) < 0)
 				return;
 		}
-		else if (cur_ring[LEFT] == NULL)
-			ring = LEFT;
-		else if (cur_ring[RIGHT] == NULL)
-			ring = RIGHT;
+		else if (cur_ring[d.LEFT] == null)
+			ring = d.LEFT;
+		else if (cur_ring[d.RIGHT] == null)
+			ring = d.RIGHT;
 		else
 		{
 			if (!terse)
-				msg("you already have a ring on each hand");
+				r.UI.msg("you already have a ring on each hand");
 			else
-				msg("wearing two");
+				r.UI.msg("wearing two");
 			return;
 		}
 		cur_ring[ring] = obj;
@@ -60,20 +60,20 @@ function rings(r){
 		*/
 		switch (obj.o_which)
 		{
-		case R_ADDSTR:
+		case d.R_ADDSTR:
 			player.misc.chg_str(obj.o_arm);
 			break;
-		case R_SEEINVIS:
+		case d.R_SEEINVIS:
 			invis_on();
 			break;
-		case R_AGGR:
+		case d.R_AGGR:
 			aggravate();
 			break;
 		}
 
 		if (!terse)
-			addmsg("you are now wearing ");
-		msg("%s (%c)", r.item.things.inv_name(obj, TRUE), obj.o_packch);
+			r.UI.addmsg("you are now wearing ");
+		r.UI.msg("%s (%c)", r.item.things.inv_name(obj, TRUE), obj.o_packch);
 	}
 
 	/*
@@ -85,30 +85,30 @@ function rings(r){
 		let ring;
 		let obj;	//THING *obj;
 
-		if (cur_ring[LEFT] == NULL && cur_ring[RIGHT] == NULL)
+		if (cur_ring[d.LEFT] == null && cur_ring[d.RIGHT] == null)
 		{
 		if (terse)
-			msg("no rings");
+			r.UI.msg("no rings");
 		else
-			msg("you aren't wearing any rings");
+			r.UI.msg("you aren't wearing any rings");
 		return;
 		}
-		else if (cur_ring[LEFT] == NULL)
-			ring = RIGHT;
-		else if (cur_ring[RIGHT] == NULL)
-			ring = LEFT;
+		else if (cur_ring[d.LEFT] == null)
+			ring = d.RIGHT;
+		else if (cur_ring[d.RIGHT] == null)
+			ring = d.LEFT;
 		else
 		if ((ring = gethand()) < 0)
 			return;
 		mpos = 0;
 		obj = cur_ring[ring];
-		if (obj == NULL)
+		if (obj == null)
 		{
-			msg("not wearing such a ring");
+			r.UI.msg("not wearing such a ring");
 			return;
 		}
 		if (dropcheck(obj))
-			msg("was wearing %s(%c)", r.item.things.inv_name(obj, TRUE), obj.o_packch);
+			r.UI.msg("was wearing %s(%c)", r.item.things.inv_name(obj, TRUE), obj.o_packch);
 	}
 
 	/*
@@ -122,20 +122,20 @@ function rings(r){
 		for (;;)
 		{
 		if (terse)
-			msg("left or right ring? ");
+			r.UI.msg("left or right ring? ");
 		else
-			msg("left hand or right hand? ");
+			r.UI.msg("left hand or right hand? ");
 		if ((c = readchar()) == ESCAPE)
 			return -1;
 		mpos = 0;
 		if (c == 'l' || c == 'L')
-			return LEFT;
+			return d.LEFT;
 		else if (c == 'r' || c == 'R')
-			return RIGHT;
+			return d.RIGHT;
 		if (terse)
-			msg("L or R");
+			r.UI.msg("L or R");
 		else
-			msg("please type L or R");
+			r.UI.msg("please type L or R");
 		}
 	}
 
@@ -178,15 +178,15 @@ function rings(r){
 	{
 		let buf;
 
-		if (!(obj.o_flags & ISKNOW))
+		if (!(obj.o_flags & d.ISKNOW))
 			return "";
 		switch (obj.o_which)
 		{
-		case R_PROTECT:
-		case R_ADDSTR:
-		case R_ADDDAM:
-		case R_ADDHIT:
-			sprintf(buf, " [%s]", num(obj.o_arm, 0, RING));
+		case d.R_PROTECT:
+		case d.R_ADDSTR:
+		case d.R_ADDDAM:
+		case d.R_ADDHIT:
+			sprintf(buf, " [%s]", num(obj.o_arm, 0, d.RING));
 			break;
 		default:
 			return "";

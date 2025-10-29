@@ -68,6 +68,8 @@ function ItemManager(r){
     this.things = new thingsf(r);
     this.sticks = new sticks(r);
     this.potions = new potions(r);
+    this.weapon = new weapons(r);
+    this.armor = new armor(r);
 
     this.inv_name = this.things.inv_name;
 

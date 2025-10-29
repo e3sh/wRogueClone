@@ -118,16 +118,18 @@ function PlayerCharacter(r){
         str.push(`maxhp:${pstats.s_maxhp} exp:${pstats.s_exp} dmg:${pstats.s_dmg}`);
 
         //str.push(`mobs:${r.mobs.length}`);
-        //str.push(`pack:${wst}`);
+        str.push(`pack:${wst}`);
         
         const eqc =(c)=>{
+            if (!Boolean(c)) return "none_";
             return (c.o_packch == null)?"none":
-            `${r.item.things.inv_name(c, false)} ${(c.o_arm != null)?c.o_arm:c.o_damage} (${c.o_packch})`;
+            `${(c.o_arm != null)?c.o_arm:c.o_damage} (${c.o_packch})${r.item.things.inv_name(c, false)}`;
         }
-        str.push(`armor: ${eqc(cur_armor)}`);
-        str.push(`weapon: ${eqc(cur_weapon)}`);
-        str.push(`ring_R: ${eqc(cur_ring[0])}`);
-        str.push(`ring_L: ${eqc(cur_ring[1])}`);
+
+        str.push(`): ${eqc(cur_weapon)}`);
+        str.push(`]: ${eqc(cur_armor)}`);
+        str.push(`=R: ${eqc(cur_ring[0])}`);
+        str.push(`=L: ${eqc(cur_ring[1])}`);
 
         //str.push(`armor: ${r.item.things.inv_name(cur_armor, false)} ${cur_armor.o_arm} (${cur_armor.o_packch})`);
         //str.push(`weapon: ${r.item.things.inv_name(cur_weapon, false)} ${cur_weapon.o_damage} (${cur_weapon.o_packch})`);
@@ -142,8 +144,22 @@ function PlayerCharacter(r){
     }
 
     this.equip_state_check = function(ch){
-        return ((ch == cur_weapon.o_packch)||
-            (ch == cur_armor.o_packch)||
+        let equip_weapon = false;
+        let equip_armor = false;
+        //let equip_ring_0 = false;
+        //let equip_ring_1 = fals
+        
+        if (Boolean(cur_weapon)){
+            if ('o_packch' in cur_weapon) {
+                if (ch == cur_weapon.o_packch) equip_weapon = true;
+            }
+        }
+        if (Boolean(cur_armor)){
+            if ('o_packch' in cur_armor) {
+                if (ch == cur_armor.o_packch) equip_armor = true;
+            }
+        }
+        return (equip_weapon || equip_armor ||
             (ch == cur_ring[0].o_packch)||
             (ch == cur_ring[1].o_packch));
     }

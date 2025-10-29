@@ -268,6 +268,8 @@ function GameManager(g){
         item.l_prev = null;
         //this.discard(item);
         
+        this.debug.mobslist();
+
         return list;
     }
     /*
@@ -288,6 +290,16 @@ function GameManager(g){
             item.l_prev = null;
         }
         list = item;
+
+        this.debug.mobslist();
+
+        let ln = 0;
+        for (let l = list ; l != null ; l = l.l_next){
+            ln++;
+            if (ln > 100) break;
+        }
+        this.UI.debug(`attach len:${ln}`);
+
         return list;
     }
     /*

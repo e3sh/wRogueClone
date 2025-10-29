@@ -44,7 +44,7 @@ function UIManager(r, g){
     let save_msg = true;			/* Remember last msg */
     let stat_msg = false;			/* Should status() print as a msg()  (ステータスメッセージ表示フラグ)*/
 
-    let delta;
+    let delta = 0;
     let dir_ch;     /* Direction from last get_dir() call */
     let last_comm;  /* Last command typed */
     let last_dir;   /* Last direction given */
@@ -133,7 +133,13 @@ function UIManager(r, g){
     
     this.debug  = function(text){      this.comment(`d: ${text}`); }
     this.comment = function(text){     g.console[2].insertln(); g.console[2].printw(text); }
-    this.submsg = function(text){     g.console[3].insertln(); g.console[3].printw(text); }
+    this.submsg = function(text){
+             //g.console[3].insertln();
+             g.console[3].move(g.console[3].cursor.x, g.console[3].cursor.y+1); 
+             g.console[3].printw(text); 
+    }
+    this.setHomesub = function(){ g.console[3].move(0,0);}
+
     /*
     * readchar:
     *	Reads and returns a character, checking for gross input errors
@@ -295,6 +301,7 @@ function UIManager(r, g){
         let fp; //*fp
         let mp; //THING *mp;
         let countch, direction, newcount = false;
+        let kvf = false;
 
         if (on(player, d.ISHASTE))
             ntimes++;
@@ -380,65 +387,17 @@ function UIManager(r, g){
             const viewInventry = ()=>{
                 //r.after = false; inventory(pack, 0);
                 let st = r.player.get_invstat();
+                r.UI.setHomesub();
                 r.UI.clear(3);
                 for (let i in st){
                     r.UI.submsg(st[i]);
                 }
                 r.UI.submsg(`inpack ${r.player.packf.read_inpack()} /cur:${r.player.packf.get_cur()}`);
                 r.player.packf.inventory(player.t_pack, 0);
+                r.debug.mobslist();
             }
 
-            //ki = this.readchar();
-            oldc = pr;
-            let opcmdf = false; //operation command flag
-            //if (!ki.includes("Space")){            
-            if (!ki.includes("Numpad0")){            
-
-                if (ki.includes("Numpad4")) pr = r.player.do_move( 0,-1);
-                if (ki.includes("Numpad2")) pr = r.player.do_move( 1, 0);
-                if (ki.includes("Numpad8")) pr = r.player.do_move(-1, 0);
-                if (ki.includes("Numpad6")) pr = r.player.do_move( 0, 1);
-                if (ki.includes("Numpad7")) pr = r.player.do_move(-1,-1);
-                if (ki.includes("Numpad9")) pr = r.player.do_move(-1, 1);
-                if (ki.includes("Numpad1")) pr = r.player.do_move( 1,-1);
-                if (ki.includes("Numpad3")) pr = r.player.do_move( 1, 1);
-                if (ki.includes("Numpad5")) {
-                    pr = r.player.do_move( 0, 0);
-                    search();
-                    opcmdf = true;
-                }
-                if (ki.includes("NumpadAdd")||ki.includes("NumpadSubtract")){
-                    r.player.packf.set_cur(
-                        (ki.includes("NumpadAdd"))?-1:1
-                    );
-                    viewInventry();
-                }
-                //if (ki.includes("NumpadAdd")) r.player.packf.set_cur(1);//r.UI.msg("+");
-                //if (ki.includes("NumpadSubtract")) r.player.packf.set_cur(-1)//r.UI.msg("-");
-                //if (ki.includes("Numpad0")) r.UI.msg("Zero");
-
-                if (ki.includes("KeyI")) viewInventry();
-                if (ki.includes("KeyD")) ;//drop(); //on mode
-                if (ki.includes("KeyR")) ;//read_scroll(); //auto_select
-                if (ki.includes("KeyE")) ;//eat(); //auto_select
-                if (ki.includes("KeyW")) ;//wear(); //auto_select
-                if (ki.includes("KeyT")) ;//take_off(); //auto_select
-                if (ki.includes("KeyP")) ;//ring_on(); //auto_select
-                if (ki.includes("KeyR")) ;//ring_off(); //auto_select
-                if (ki.includes("KeyL")) ;//ring// select position L /
-                if (ki.includes("KeyS")) ;//search(); //no operation
-                if (ki.includes("KeyM")) { //get item on/off
-                    r.after = false;
-                    r.player.packf.move_on = !(r.player.packf.move_on);
-                    r.UI.comment(`mv_on[${r.player.packf.move_on}]`);// ${r.after?"m":"s"}]`);
-                }//search();
-                //use potion function is quaff() (potions)
-                if (this.wait_for("KeyQ")) r.debug.mapcheckTest(); //debug command
-                if (this.wait_for("KeyA")) r.debug.monsterViewTest(); //debug command
-                if (this.wait_for("KeyZ")) r.dungeon.show_map(); //debug command
-                if (this.wait_for("ArrowDown")) r.debug.checkListsCount(); //debug command
-
-            } else {
+            const useItem = ()=>{
                 //let inkeyst = "";
                 //for (let i in ki){
                 //    if (ki[i].includes("Key")){
@@ -453,7 +412,7 @@ function UIManager(r, g){
                     let ws = "";
                     let useitem = r.player.packf.picky_inven(inkeyst);
                     if (useitem != null){
-                        ws = `Item type "${useitem.o_type}"`;
+                        //ws = `Item type "${useitem.o_type}"`;
                         r.after = false;
 
                         switch(useitem.o_type)
@@ -463,14 +422,15 @@ function UIManager(r, g){
                                 r.player.eat(useitem);
                                 break;
                             case ")"://WEAPON
-                                ws = "weapon";
+                                ws = "weapon .wield()";
                                 if (r.player.equip_state_check(inkeyst)) ws += "*";
-                                // wear()/ takeoff()
+                                r.item.weapon.wield(useitem);
+                                // wield()
                                 break;
                             case "]"://ARMOR
                                 ws = "armor";
                                 if (r.player.equip_state_check(inkeyst)) ws += "*";
-                                // wear()/ takeoff()
+                                r.item.armor.wear(useitem);/// takeoff()
                                 break;                            
                             case "="://RING
                                 ws = "ring";
@@ -493,8 +453,9 @@ function UIManager(r, g){
                                 ws = "etc";
                                 //no operation
                         }
+                        r.UI.msg(`use Item ${inkeyst})${r.item.things.inv_name(useitem, false)} ${ws}`);//(${cnum})` );
                     }
-                    r.UI.msg(`use Item ${inkeyst}) ${ws}`);//(${cnum})` );
+                    //r.UI.msg(`use Item ${inkeyst})${r.item.things.inv_name(obj, false)} ${ws}`);//(${cnum})` );
                     r.player.packf.set_cur(0);
                     viewInventry();
                 }
@@ -507,8 +468,72 @@ function UIManager(r, g){
                 //potion/scroll/staff/wand...thing.o_type DEFINE SYMBOL
                 // command:
                 // identify weild ware discoverd
-
             }
+
+            const dropItem =()=>{
+
+                let inkeyst = r.player.packf.get_cur();
+                let dobj = r.player.packf.picky_inven(inkeyst);
+                r.item.things.drop(dobj);
+                r.UI.msg(`drop Item ${inkeyst}`);
+                r.player.packf.set_cur(0);
+                viewInventry();
+            }
+
+            //ki = this.readchar();
+            oldc = pr;
+            let opcmdf = false; //operation command flag
+            //if (!ki.includes("Space")){            
+
+            if (ki.includes("Numpad4")) pr = r.player.do_move( 0,-1);
+            if (ki.includes("Numpad2")) pr = r.player.do_move( 1, 0);
+            if (ki.includes("Numpad8")) pr = r.player.do_move(-1, 0);
+            if (ki.includes("Numpad6")) pr = r.player.do_move( 0, 1);
+            if (ki.includes("Numpad7")) pr = r.player.do_move(-1,-1);
+            if (ki.includes("Numpad9")) pr = r.player.do_move(-1, 1);
+            if (ki.includes("Numpad1")) pr = r.player.do_move( 1,-1);
+            if (ki.includes("Numpad3")) pr = r.player.do_move( 1, 1);
+
+            if (ki.includes("Numpad5")) {
+                pr = r.player.do_move( 0, 0);
+                search();
+                opcmdf = true;
+            }
+            if (ki.includes("NumpadAdd")||ki.includes("NumpadSubtract")){
+                r.player.packf.set_cur(
+                    (ki.includes("NumpadAdd"))?1:-1
+                );
+                viewInventry();
+            }
+            //if (ki.includes("NumpadAdd")) r.player.packf.set_cur(1);//r.UI.msg("+");
+            //if (ki.includes("NumpadSubtract")) r.player.packf.set_cur(-1)//r.UI.msg("-");
+            //if (ki.includes("Numpad0")) r.UI.msg("Zero");
+
+            if (ki.includes("Numpad0")) useItem();
+
+            if (ki.includes("KeyI")) viewInventry();
+            if (ki.includes("KeyD")) dropItem(); 
+            if (ki.includes("KeyR")) ;//read_scroll(); //auto_select
+            if (ki.includes("KeyE")) ;//eat(); //auto_select
+            if (ki.includes("KeyW")) ;//wear(); //auto_select
+            if (ki.includes("KeyT")) ;//take_off(); //auto_select
+            if (ki.includes("KeyP")) ;//ring_on(); //auto_select
+            if (ki.includes("KeyR")) ;//ring_off(); //auto_select
+            if (ki.includes("KeyL")) ;//ring// select position L /
+            if (ki.includes("KeyS")) ;//search(); //no operation
+            if (ki.includes("KeyM")) { //get item on/off
+                r.after = false;
+                r.player.packf.move_on = !(r.player.packf.move_on);
+                r.UI.comment(`mv_on[${r.player.packf.move_on}]`);// ${r.after?"m":"s"}]`);
+            }//search();
+            //use potion function is quaff() (potions)
+            if (this.wait_for("KeyQ")) r.debug.mapcheckTest(); //debug command
+            if (this.wait_for("KeyA")) r.debug.monsterViewTest(); //debug command
+            if (this.wait_for("KeyZ")) r.dungeon.show_map(); //debug command
+            //if (this.wait_for("ArrowDown")) r.debug.checkListsCount(); //debug command
+
+            //} else {
+            //}
             //set delta
             for (let i in ki)
                 if (ki[i].includes("Numpad")){
@@ -516,7 +541,10 @@ function UIManager(r, g){
                     if (cnum >=1 && cnum <=9)    
                     {
                         //inkeyst = `direction: ${ki[i].substring(6).toLowerCase()}`;
-                        if (cnum !=5) delta = cnum;
+                        if (cnum !=5) {
+                            if (delta != cnum) kvf = true;
+                            delta = cnum;
+                        }
                         break;
                     }
                 }
@@ -554,6 +582,7 @@ function UIManager(r, g){
                 }
             }
         }
+
         r.daemon.do_daemons(d.AFTER);
         r.daemon.do_fuses(d.AFTER);
 
@@ -569,10 +598,11 @@ function UIManager(r, g){
             teleport();
 
         this.look(true);
+        r.UI.status();
 
         let s = " ";
 		for (let i in ki){s += `${ki[i]},`}
-            this.comment(`dir:${delta} input:${s}`);//[${pr} ${oldc}]`);
+        if (kvf) this.comment(`dir:${delta} input:${s}`);//[${pr} ${oldc}]`);
     }
 
     /*
@@ -857,5 +887,8 @@ function UIManager(r, g){
         if (found)
             this.look(false);
     }
+
+
+
 
 }

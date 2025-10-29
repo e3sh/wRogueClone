@@ -1,89 +1,88 @@
 /*
  * This file contains misc functions for dealing with armor
- * @(#)armor.c	4.14 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-//#include <curses.h>
-//#include "rogue.h"
+function armor(r){
 
-/*
- * wear:
- *	The player wants to wear something, so let him/her put it on.
- */
-//void
- function wear()
-{
-    let obj; //register THING *obj;
-    let sp; //register char *sp;
-
-    if ((obj = get_item("wear", ARMOR)) == NULL)
-	    return;
-    if (cur_armor != NULL)
+    const d = r.define;
+    //const f = r.func;
+    const t = r.types;
+    //const v = r.globalValiable;
+    
+    /*
+    * wear:
+    *	The player wants to wear something, so let him/her put it on.
+    */
+    //void
+    this.wear = function(obj)
     {
-        addmsg("you are already wearing some");
-        if (!terse)
-            addmsg(".  You'll have to take it off first");
-        endmsg();
-        after = FALSE;
-        return;
+        //let obj; //register THING *obj;
+        let sp; //register char *sp;
+
+        //if ((obj = get_item("wear", d.ARMOR)) == null)
+        //    return;
+        if (r.player.get_cur_armor() != null)
+        {
+            r.UI.addmsg("you are already wearing some");
+            //if (!terse)
+                r.UI.addmsg(".  You'll have to take it off first");
+            r.UI.msg("");
+            take_off();
+            r.after = false;
+            return;
+        }
+        if (obj.o_type != d.ARMOR)
+        {
+            r.UI.msg("you can't wear that");
+            return;
+        }
+        this.waste_time();
+        obj.o_flags |= d.ISKNOW;
+        sp = r.item.things.inv_name(obj, true);
+        r.player.set_cur_armor(obj);
+        //if (!terse)
+            r.UI.addmsg("you are now ");
+        r.UI.msg(`wearing ${sp}`);
     }
-    if (obj.o_type != ARMOR)
+
+    /*
+    * take_off:
+    *	Get the armor off of the players back
+    */
+    //void
+    function take_off()
     {
-        msg("you can't wear that");
-        return;
+        let obj; //register THING *obj;
+
+        if ((obj = r.player.get_cur_armor()) == null)
+        {
+            after = false;
+            if (terse)
+                r.UI.msg("not wearing armor");
+            else
+                r.UI.msg("you aren't wearing any armor");
+            return;
+        }
+        if (!r.item.things.dropcheck(r.player.get_cur_armor()))
+            return;
+        r.player.set_cur_armor(null);
+        //if (terse)
+        //    r.UI.addmsg("was");
+        //else
+            r.UI.addmsg("you used to be");
+        r.UI.msg(` wearing ${obj.o_packch}) ${r.item.things.inv_name(obj, true)}`);
     }
-    waste_time();
-    obj.o_flags |= ISKNOW;
-    sp = inv_name(obj, TRUE);
-    cur_armor = obj;
-    if (!terse)
-    	addmsg("you are now ");
-    msg("wearing %s", sp);
-}
 
-/*
- * take_off:
- *	Get the armor off of the players back
- */
-//void
-function take_off()
-{
-    let obj; //register THING *obj;
-
-    if ((obj = cur_armor) == NULL)
+    /*
+    * waste_time:
+    *	Do nothing but let other things happen
+    */
+    //void
+    this.waste_time = function()
     {
-	after = FALSE;
-	if (terse)
-		msg("not wearing armor");
-	else
-		msg("you aren't wearing any armor");
-	return;
+        r.daemon.do_daemons(d.BEFORE);
+        r.daemon.do_fuses(d.BEFORE);
+        r.daemon.do_daemons(d.AFTER);
+        r.daemon.do_fuses(d.AFTER);
     }
-    if (!dropcheck(cur_armor))
-	    return;
-    cur_armor = NULL;
-    if (terse)
-	    addmsg("was");
-    else
-	    addmsg("you used to be");
-    msg(" wearing %c) %s", obj.o_packch, inv_name(obj, TRUE));
-}
-
-/*
- * waste_time:
- *	Do nothing but let other things happen
- */
-//void
-function waste_time()
-{
-    do_daemons(BEFORE);
-    do_fuses(BEFORE);
-    do_daemons(AFTER);
-    do_fuses(AFTER);
 }

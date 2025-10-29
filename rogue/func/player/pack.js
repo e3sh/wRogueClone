@@ -40,7 +40,7 @@ function packf(r){
 	this.set_cur =(num)=>{ 
 		let puw = [];
 		for (let i = 0; i <26; i++) {
-			if (pack_used[i]) puw.push(i);
+			if (this.pack_used[i]) puw.push(i);
 			//puw.push(String.fromCharCode("a".charCodeAt(0)+i));	
 		} 
 		let pmax = puw.reduce((a, b) => Math.max(a,b), -Infinity);
@@ -100,7 +100,7 @@ function packf(r){
 		{
 			r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
 			r.UI.mvaddch(hero.y, hero.x, this.floor_ch());
-			places[hero.y][hero.x].p_ch = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
+			r.dungeon.places[hero.y][hero.x].p_ch = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
 			r.discard(obj);
 			r.UI.msg("the scroll turns to dust as you pick it up");
 			return;
@@ -270,7 +270,30 @@ function packf(r){
 	*/
 	this.leave_pack = function(obj, newobj, all)//THING *obj, bool newobj, bool all)
 	{
+		if (inpack <= 0) {
+			r.UI.debug("leave inpack0!");
+			return;
+		}
+
 		let nobj;	//THING *nobj;
+
+		const thingsClone =(m, s)=>{
+			m.o_type    = s.o_type;
+			m.o_text    = s.o_text;
+			m.o_launch  = s.o_launch;
+			//m.o_packch  = s.o_packch;
+			m.o_damage  = s.o_damage;
+			m.o_hurldmg = s.o_hurldmg;
+			m.o_count   = s.o_count;
+			m.o_which   = s.o_which;
+			m.o_hplus   = s.o_hplus;
+			m.o_dplus   = s.o_dplus;
+			m.o_arm     = s.o_arm;
+			m.o_flags   = s.o_flags;
+			m.o_group   = s.o_group;
+			m.o_label   = s.o_label;
+			return m;
+		}
 
 		inpack--;
 		nobj = obj;
@@ -282,8 +305,9 @@ function packf(r){
 				inpack++;
 			if (newobj)
 			{
-				nobj = new_item();
-				nobj = obj;
+				nobj = r.new_item();
+				nobj = thingsClone(nobj, obj);
+				nobj._o = obj._o;
 				nobj.l_next = null;
 				nobj.l_prev = null;
 				nobj.o_count = 1;
@@ -298,6 +322,7 @@ function packf(r){
 
 			last_pick = null;
 			this.pack_used[Number(obj.o_packch.charCodeAt(0) - 'a'.charCodeAt(0))] = false;
+			obj.o_packch = null;
 			player.t_pack = r.detach(player.t_pack, obj);
 		}
 		return nobj;
@@ -332,9 +357,13 @@ function packf(r){
 	*/
 	this.inventory = function(list, type)	//THING *list, int type)
 	{
+		if (inpack <= 0) return;
+		packch_sort(list, type);
+
 		let inv_temp = "";// = [];//static char inv_temp[MAXSTR];
 
 		n_objs = 0;
+
 		for (; list != null; list = list.l_next)
 		{
 			if (type && type != list.o_type && !(type == d.CALLABLE &&
@@ -343,12 +372,15 @@ function packf(r){
 					continue;
 			n_objs++;
 			let equip = r.player.equip_state_check(list.o_packch)?"E":" ";
-			let cur = (list.o_packch == this.get_cur())?"S":" ";
+			let cur = (list.o_packch == this.get_cur())?"&":" ";
+
+			if (list.o_packch == null) continue;
 
 			inv_temp = `${equip}${cur}${list.o_packch}) `;// ${}`"%c) %%s", list.o_packch);
 			//msg_esc = true;
 			inv_temp += r.item.things.inv_name(list, false);
 			r.UI.submsg(inv_temp);
+			//if (n_objs >= inpack) break;
 			//console.log(inv_temp);	
 			//if (add_line(inv_temp, inv_name(list, false)) == d.ESCAPE)
 			//{
@@ -370,6 +402,33 @@ function packf(r){
 		}
 		//end_line();
 		return true;
+	}
+
+	/*
+	* packch sort
+	*/
+	function packch_sort(list, type){
+
+		if (list == null || list.l_next == null) return;
+
+		for (let i in r.player.packf.pack_used) r.player.packf.pack_used[i] = false;
+		if (inpack <= 0) return;
+		
+		n_objs = 0;
+		for (; list != null; list = list.l_next)
+		{
+			if (type && type != list.o_type && !(type == d.CALLABLE &&
+				list.o_type != d.FOOD && list.o_type != d.AMULET) &&
+				!(type == d.R_OR_S && (list.o_type == d.RING || list.o_type == d.STICK)))
+					continue;
+			//if (list.o_packch != null){		
+				list.o_packch = String.fromCharCode("a".charCodeAt(0)+n_objs);
+				r.player.packf.pack_used[n_objs] = true;
+			//}
+			//r.UI.debug(list.o_packch);
+			n_objs++;
+			if (n_objs > inpack) break;
+		}
 	}
 
 	/*
@@ -442,8 +501,8 @@ function packf(r){
 			r.UI.msg("you aren't carrying anything");
 			return null;
 		}
-		else if (next(pack) == null){
-			r.UI.msg(`a) ${inv_name(pack, false)}`);
+		else if (pack.l_next == null){
+			//r.UI.msg(`a) ${r.item.things.inv_name(pack, false)}`);
 			return pack;
 		}
 		else
@@ -458,7 +517,7 @@ function packf(r){
 			for (obj = pack; obj != null; obj = next(obj))
 				if (mch == obj.o_packch)
 				{
-					r.UI.msg(`${mch}) ${r.item.things.inv_name(obj, false)}`);
+					//r.UI.msg(`${mch}) ${r.item.things.inv_name(obj, false)}`);
 					return obj;
 				}
 			r.UI.msg(`'${mch}' not in pack`);

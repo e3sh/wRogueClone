@@ -190,33 +190,37 @@ function thingsf(r){
 	*	Put something down
 	*/
 	//void
-	function drop()
+	this.drop = function(obj)
 	{
-		let ch;
-		let obj;	//THING *obj;
+		const ISMULT = (type)=> {return (type == d.POTION || type == d.SCROLL || type == d.FOOD)};
+		const hero = r.player.player.t_pos;
 
-		ch = chat(hero.y, hero.x);
-		if (ch != FLOOR && ch != PASSAGE)
+		let ch;
+		//let obj;	//THING *obj;
+
+		ch = r.dungeon.chat(hero.y, hero.x);
+		if (ch != d.FLOOR && ch != d.PASSAGE)
 		{
-			after = FALSE;
-			msg("there is something there already");
+			r.after = false;
+			r.UI.msg("there is something there already");
 			return;
 		}
-		if ((obj = get_item("drop", 0)) == NULL)
+		if (obj == null)
 			return;
-		if (!dropcheck(obj))
+		if (!this.dropcheck(obj))
 			return;
-		obj = leave_pack(obj, TRUE, !ISMULT(obj.o_type));
+		obj = r.player.packf.leave_pack(obj, true, !ISMULT(obj.o_type));
 		/*
 		* Link it into the level object list
 		*/
-		attach(lvl_obj, obj);
-		chat(hero.y, hero.x) = obj.o_type;
-		flat(hero.y, hero.x) |= F_DROPPED;
-		obj.o_pos = hero;
-		if (obj.o_type == AMULET)
-			amulet = FALSE;
-		msg("dropped %s", this.inv_name(obj, TRUE));
+		r.dungeon.lvl_obj = r.attach(r.dungeon.lvl_obj, obj);
+		r.dungeon.places[hero.y][hero.x].p_ch = obj.o_type;
+		r.dungeon.places[hero.y][hero.x].p_flags |= d.F_DROPPED;
+		obj.o_pos = {x:hero.x, y:hero.y};
+
+		if (obj.o_type == d.AMULET)
+			r.player.amulet = false;
+		r.UI.msg(`dropped ${this.inv_name(obj, true)}`);
 	}
 
 	/*
@@ -224,28 +228,40 @@ function thingsf(r){
 	*	Do special checks for dropping or unweilding|unwearing|unringing
 	*/
 	//bool
-	function dropcheck(obj)//THING *obj)
+	this.dropcheck = function(obj)//THING *obj)
 	{
+		let cur_weapon = r.player.get_cur_weapon();
+		let cur_armor = r.player.get_cur_armor();
+		let cur_ring = [];
+		cur_ring[d.LEFT] = r.player.get_cur_ring(d.LEFT);
+		cur_ring[d.RIGHT] = r.player.get_cur_ring(d.RIGHT);
+
 		if (obj == null)
-		return true;
+			return true;
 		if (obj != cur_armor && obj != cur_weapon
 		&& obj != cur_ring[d.LEFT] && obj != cur_ring[d.RIGHT])
 			return true;
 		if (obj.o_flags & d.ISCURSED)
 		{
-			msg("you can't.  It appears to be cursed");
+			r.UI.msg("you can't.  It appears to be cursed");
 			return false;
 		}
-		if (obj == cur_weapon)
-		cur_weapon = null;
+		if (obj == cur_weapon){
+			cur_weapon = null;
+			r.player.set_cur_weapon(null);
+		}
 		else if (obj == cur_armor)
 		{
-			waste_time();
+			r.item.armor.waste_time(); //armor
 			cur_armor = null;
+			r.player.set_cur_armor(null);
 		}
 		else
 		{
 			cur_ring[obj == cur_ring[d.LEFT] ? d.LEFT : d.RIGHT] = null;
+			r.player.set_cur_ring(d.LEFT) = cur_ring[d.LEFT];
+			r.player.set_cur_ring(d.RIGHT) = cur_ring[d.RIGHT];
+
 			switch (obj.o_which)
 			{
 				case d.R_ADDSTR:
@@ -264,121 +280,12 @@ function thingsf(r){
 	* new_thing:
 	*	Return a new thing
 	*/
-	//THING *
-	function new_thing()
-	{
-		let cur;//THING *cur;
-		let r;
-
-		cur = new_item();
-		cur.o_hplus = 0;
-		cur.o_dplus = 0;
-		cur.o_damage = "0x0";
-		cur.o_hurldmg = "0x0";
-		cur.o_arm = 11;
-		cur.o_count = 1;
-		cur.o_group = 0;
-		cur.o_flags = 0;
-		/*
-		* Decide what kind of object it will be
-		* If we haven't had food for a while, let it be food.
-		*/
-		switch (no_food > 3 ? 2 : pick_one(things, NUMTHINGS))
-		{
-		case 0:
-			cur.o_type = POTION;
-			cur.o_which = pick_one(pot_info, MAXPOTIONS);
-		break; case 1:
-			cur.o_type = SCROLL;
-			cur.o_which = pick_one(scr_info, MAXSCROLLS);
-		break; case 2:
-			cur.o_type = FOOD;
-			no_food = 0;
-			if (rnd(10) != 0)
-			cur.o_which = 0;
-			else
-			cur.o_which = 1;
-		break; case 3:
-			init_weapon(cur, pick_one(weap_info, MAXWEAPONS));
-			if ((r = rnd(100)) < 10)
-			{
-			cur.o_flags |= ISCURSED;
-			cur.o_hplus -= rnd(3) + 1;
-			}
-			else if (r < 15)
-			cur.o_hplus += rnd(3) + 1;
-		break; case 4:
-			cur.o_type = ARMOR;
-			cur.o_which = pick_one(arm_info, MAXARMORS);
-			cur.o_arm = a_class[cur.o_which];
-			if ((r = rnd(100)) < 20)
-			{
-			cur.o_flags |= ISCURSED;
-			cur.o_arm += rnd(3) + 1;
-			}
-			else if (r < 28)
-			cur.o_arm -= rnd(3) + 1;
-		break; case 5:
-			cur.o_type = RING;
-			cur.o_which = pick_one(ring_info, MAXRINGS);
-			switch (cur.o_which)
-			{
-			case R_ADDSTR:
-			case R_PROTECT:
-			case R_ADDHIT:
-			case R_ADDDAM:
-				if ((cur.o_arm = rnd(3)) == 0)
-				{
-				cur.o_arm = -1;
-				cur.o_flags |= ISCURSED;
-				}
-			break; case R_AGGR:
-			case R_TELEPORT:
-				cur.o_flags |= ISCURSED;
-			}
-		break; case 6:
-			cur.o_type = STICK;
-			cur.o_which = pick_one(ws_info, MAXSTICKS);
-			fix_stick(cur);
-	//#ifdef MASTER
-		break; default:
-			debug("Picked a bad kind of object");
-			wait_for(' ');
-	//#endif
-		}
-		return cur;
-	}
-
+	//-> ItemManager.js
 	/*
 	* pick_one:
 	*	Pick an item out of a list of nitems possible objects
 	*/
-	//int
-	function pick_one(info, nitems)//struct obj_info *info, int nitems)
-	{
-		let end, start, i;	//struct obj_info *end;
-		//struct obj_info *start;
-		//int i;
-
-		start = info;
-		for (end = info[nitems], i = rnd(100); info < end; info++)
-		if (i < info.oi_prob)
-			break;
-		if (info == end)
-		{
-		//#ifdef MASTER
-			if (wizard)
-			{
-				msg("bad pick_one: %d from %d items", i, nitems);
-				for (info = start; info < end; info++)
-					msg("%s: %d%%", info.oi_name, info.oi_prob);
-			}
-		//#endif
-			info = start;
-		}
-		return (info - start);
-	}
-
+	//-> ItemManager.js
 	/*
 	* discovered:
 	*	list what the player has discovered in this game of a certain type
