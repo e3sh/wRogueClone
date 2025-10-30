@@ -612,13 +612,13 @@ function MonsterManager(r){
     this.wanderer = function(){
         //let tp; //THING *tp;
         let cp; //static coord cp;
-        const tp = new_item();
+        const tp = r.new_item();
         do
         {
             r.dungeon.roomf.find_floor(null, cp, false, true);  // struct room *) NULL
         } while (roomin(r.dungeon.roomf.get_find_floor_result()) == proom);
 
-        tp = new_monster(tp, randmonster(true), r.dungeon.roomf.get_find_floor_result());//cp);
+        tp = this.new_monster(tp, this.randmonster(true), r.dungeon.roomf.get_find_floor_result());//cp);
 
         if (on(player, d.SEEMONST))
         {
@@ -679,7 +679,7 @@ function MonsterManager(r){
                 || dist(y, x, hero.y, hero.x) < d.LAMPDIST)
             {
                 tp.t_flags |= d.ISFOUND;
-                if (!save(d.VS_MAGIC))
+                if (!r.player.save(d.VS_MAGIC))
                 {
                     if (on(player, d.ISHUH))
                         r.deamon.lengthen(r.player.unconfuse, spread(d.HUHDURATION));
@@ -743,7 +743,7 @@ function MonsterManager(r){
     //int
     function save(which)
     {
-        //r.player.
+        //r.player.save で作成（当クラス外ではそれを使う）
 
         if (which == d.VS_MAGIC)
         {
@@ -780,4 +780,19 @@ function MonsterManager(r){
         tp.t_flags &= ~d.ISHELD;
         tp.t_dest = this.find_dest(tp);
     }
+
+    /*
+	* aggravate:
+	*	Aggravate all the monsters on this level
+	*/
+
+	//void
+	this.aggravate = function()
+	{
+		let mp;//THING mp;
+
+		for (mp = mlist; mp != null; mp = mp.l_next)
+			this.runto(mp.t_pos);
+	}
+
 }

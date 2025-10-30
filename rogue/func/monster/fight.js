@@ -56,6 +56,12 @@ function battle(r){
 	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
 	const GOLDCALC =()=> { return Math.floor(Math.random() * (50 + 10 * level)) + 2};
 
+	const rainbow = r.globalValiable.rainbow;
+	const pick_color =(col)=>
+	{
+		return (on(player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : col);
+	}
+
 	const death =(en)=>{alert(`death ${en}`)};
 
 	//const ISRING = (h,r)=>  {cur_ring[h] != null && cur_ring[h].o_which == r} //指定した手に特定のリングを着用しているか
@@ -228,7 +234,7 @@ function battle(r){
 				/*
 				* Rattlesnakes have poisonous bites
 				*/
-				if (!save(d.VS_POISON))
+				if (!r.player.save(d.VS_POISON))
 				{
 				if (!ISWEARING(d.R_SUSTSTR))
 				{
@@ -299,7 +305,7 @@ function battle(r){
 
 				lastpurse = purse;
 				purse -= GOLDCALC;
-				if (!save(d.VS_MAGIC))
+				if (!r.player.save(d.VS_MAGIC))
 				purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
 				if (purse < 0)
 				purse = 0;
@@ -501,7 +507,7 @@ function battle(r){
 			{
 				let proll; //int proll;
 				proll = r.roll(ndice, nsides);
-				debugstr = `roll_em:"${ndice}x${nsides}":${proll}`;
+				debugstr = `roll:"${ndice}x${nsides}":${proll}`;
 			//	#ifdef MASTER
 				if (ndice + nsides > 0 && proll <= 0)
 					console.log(
@@ -511,7 +517,8 @@ function battle(r){
 				debugstr += ` ${damage}=ac${dplus}+d${proll}+aj${add_dam[att.s_str]}`;
 				def.s_hpt -= Math.max(0, damage);
 				//if (Math.max(0, damage) > 0)
-					r.UI.msg(`hp:${def.s_hpt} hit:${Math.max(0, damage)} ${debugstr}`);
+					r.UI.addmsg(`hit:${Math.max(0, damage)}) `);//resthp:${def.s_hpt}`);
+					r.UI.comment(`${debugstr}`);
 				//console.log(`hp:${def.s_hpt} hit:${Math.max(0, damage)} ${debugstr}`);
 				did_hit = true;
 			}else{
@@ -584,7 +591,7 @@ function battle(r){
 		}
 		r.UI.addmsg(s);
 		if (!terse)
-			r.UI.addmsg(` ${prname(ee, false)}`);
+			r.UI.addmsg(`${prname(ee, false)}`);
 		if (!noend)
 			r.UI.endmsg();
 	}
@@ -671,6 +678,7 @@ function battle(r){
 	*	Called to put a monster to death
 	*/
 	//void
+	this.killed = killed;
 	function killed(tp, pr)//THING *tp, bool pr)
 	{
 		const player = r.player.player;
@@ -700,7 +708,7 @@ function battle(r){
 					gold = r.new_item();
 					gold.o_type = d.GOLD;
 					gold.o_goldval = GOLDCALC();
-					if (save(d.VS_MAGIC))
+					if (r.player.save(d.VS_MAGIC))
 						gold.o_goldval += GOLDCALC() + GOLDCALC()
 								+ GOLDCALC() + GOLDCALC();
 					tp.t_pack = r.attach(tp.t_pack, gold);

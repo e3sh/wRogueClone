@@ -6,16 +6,35 @@ function rings(r){
 
 	const d = r.define;
     const t = r.types;
+
+	const is_current =(obj)=>//THING *obj)
+	{
+		if (obj == null)
+			return false;
+		if (obj == r.player.get_cur_armor() || obj == r.player.get_cur_weapon() || obj == r.player.get_cur_ring(d.LEFT)
+		|| obj == r.player.get_cur_ring(d.RIGHT))
+		{
+			//if (!terse)
+				r.UI.addmsg("That's already ");
+			r.UI.msg("in use");
+			return true;
+		}
+		return false;
+	}
+
 	/*
 	* ring_on:
 	*	Put a ring on a hand
 	*/
-	this.ring_on = function()
+	this.ring_on = function(obj)
 	{
-		let obj;	//THING *obj;
+		//let obj;	//THING *obj;
 		let ring;
+		const cur_ring = [];
+		cur_ring[d.LEFT]  = r.player.get_cur_ring(d.LEFT);
+		cur_ring[d.RIGHT] = r.player.get_cur_ring(d.RIGHT);
 
-		obj = get_item("put on", d.RING);
+		//obj = get_item("put on", d.RING);
 		/*
 		* Make certain that it is somethings that we want to wear
 		*/
@@ -29,17 +48,21 @@ function rings(r){
 				r.UI.msg("not a ring");
 			return;
 		}
-
 		/*
 		* find out which hand to put it on
 		*/
 		if (is_current(obj))
 			return;
 
+		if (cur_ring[d.LEFT] == obj || cur_ring[d.RIGHT] == obj){
+			this.ring_off(obj);
+		}
+
 		if (cur_ring[d.LEFT] == null && cur_ring[d.RIGHT] == null)
 		{
-			if ((ring = gethand()) < 0)
-				return;
+			//if ((ring = gethand()) < 0)
+			//	return;
+			ring = d.LEFT;
 		}
 		else if (cur_ring[d.LEFT] == null)
 			ring = d.LEFT;
@@ -47,9 +70,9 @@ function rings(r){
 			ring = d.RIGHT;
 		else
 		{
-			if (!terse)
-				r.UI.msg("you already have a ring on each hand");
-			else
+			//if (!terse)
+				r.UI.addmsg("you already have a ring on each hand.");
+			//else
 				r.UI.msg("wearing two");
 			return;
 		}
@@ -58,57 +81,68 @@ function rings(r){
 		/*
 		* Calculate the effect it has on the poor guy.
 		*/
-		switch (obj.o_which)
+		switch (Number(obj.o_which))
 		{
 		case d.R_ADDSTR:
 			player.misc.chg_str(obj.o_arm);
 			break;
 		case d.R_SEEINVIS:
-			invis_on();
+			r.item.potions.invis_on();
 			break;
 		case d.R_AGGR:
-			aggravate();
+			r.monster.aggravate();
 			break;
 		}
 
-		if (!terse)
+		//if (!terse)
 			r.UI.addmsg("you are now wearing ");
-		r.UI.msg("%s (%c)", r.item.things.inv_name(obj, TRUE), obj.o_packch);
+		r.UI.msg(`${r.item.things.inv_name(obj, true)} (${obj.o_packch})`);
 	}
 
 	/*
 	* ring_off:
 	*	take off a ring
 	*/
-	this.ring_off = function()
+	this.ring_off = function(obj)
 	{
 		let ring;
-		let obj;	//THING *obj;
+		const cur_ring = [];
+		cur_ring[d.LEFT]  = r.player.get_cur_ring(d.LEFT);
+		cur_ring[d.RIGHT] = r.player.get_cur_ring(d.RIGHT);
+		//let obj;	//THING *obj;
 
 		if (cur_ring[d.LEFT] == null && cur_ring[d.RIGHT] == null)
 		{
-		if (terse)
-			r.UI.msg("no rings");
-		else
-			r.UI.msg("you aren't wearing any rings");
-		return;
+			if (terse)
+				r.UI.msg("no rings");
+			else
+				r.UI.msg("you aren't wearing any rings");
+			return;
 		}
 		else if (cur_ring[d.LEFT] == null)
 			ring = d.RIGHT;
 		else if (cur_ring[d.RIGHT] == null)
 			ring = d.LEFT;
-		else
-		if ((ring = gethand()) < 0)
-			return;
-		mpos = 0;
+		else 
+			if (obj == cur_ring[d.LEFT])
+				ring = d.LEFT;
+			else
+			if (obj == cur_ring[d.RIGHT])
+				ring = d.RIGHT;
+			else
+				return;
+		
+		//if ((ring = gethand()) < 0)
+		//	return;
+		//mpos = 0;
 		obj = cur_ring[ring];
 		if (obj == null)
 		{
 			r.UI.msg("not wearing such a ring");
 			return;
 		}
-		if (dropcheck(obj))
-			r.UI.msg("was wearing %s(%c)", r.item.things.inv_name(obj, TRUE), obj.o_packch);
+		if (r.item.things.dropcheck(obj))
+			r.UI.msg(`${r.item.things.inv_name(obj, true)} (${obj.o_packch})`);
 	}
 
 	/*
@@ -160,6 +194,7 @@ function rings(r){
 			1,	/* R_STEALTH */		 1	/* R_SUSTARM */
 		];
 		ring = cur_ring[hand];
+		if (ring == null) return 0;
 		if (!Boolean(ring.o_which))
 			return 0;
 		eat = uses[ring.o_which];
@@ -180,17 +215,33 @@ function rings(r){
 
 		if (!(obj.o_flags & d.ISKNOW))
 			return "";
-		switch (obj.o_which)
+		switch (Number(obj.o_which))
 		{
 		case d.R_PROTECT:
 		case d.R_ADDSTR:
 		case d.R_ADDDAM:
 		case d.R_ADDHIT:
-			sprintf(buf, " [%s]", num(obj.o_arm, 0, d.RING));
+			buf = ` [${num(obj.o_arm, 0, d.RING)}]`;
 			break;
 		default:
 			return "";
 		}
 		return buf;
 	}
+
+    /*
+    * num:
+    *	Figure out the plus number for armor/weapons
+    */
+    //char *
+    function num(n1, n2, type)
+    {
+        let numbuf;//static char numbuf[10];
+
+        numbuf = (n1 < 0)? `${n1}`:`+${n1}`;
+        if (type == d.WEAPON)
+            numbuf += (n2 < 0) ? `,${n2}`:`,+${n2}`;
+        return numbuf;
+    }
+
 }

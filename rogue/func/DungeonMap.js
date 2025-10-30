@@ -212,8 +212,9 @@ function DungeonMap(r){
             r.player.visuals();
 
         if (level == 1) {
-            r.UI.move(0, 0);
-            r.UI.printw(`Welcome ${whoami}`);
+            //r.UI.move(0, 0);
+            //r.UI.printw(`Welcome ${whoami}`);
+            r.UI.msg(`Welcome ${whoami}`);
         }else{
             r.UI.msg(`Dungeon level ${level}`);
         }
@@ -292,7 +293,7 @@ function DungeonMap(r){
         */
         if (level >= d.AMULETLEVEL && !amulet)
         {
-            const obj = r.item.new_item();
+            const obj = r.new_item();
             lvl_obj = r.attach(lvl_obj, obj);
             obj.o_hplus = 0;
             obj.o_dplus = 0;
@@ -410,7 +411,7 @@ function DungeonMap(r){
             spots = 0;
             if (this.roomf.find_floor(rp, mp, d.MAXTRIES, true))
             {
-                const tp = r.item.new_item();
+                const tp = r.new_item();
                 r.monster.new_monster(tp, r.monster.randmonster(false), this.roomf.get_findfloor_result());//mp);
                 tp.t_flags |= d.ISMEAN;	/* no sloughers in THIS room */
                 r.monster.give_pack(tp);

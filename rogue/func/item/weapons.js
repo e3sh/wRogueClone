@@ -9,8 +9,10 @@ function weapons(r){
     const t = r.types;
     const v = r.globalValiable;
 
-
     const NO_WEAPON = -1;
+
+    const ce = (a, b)=>{ return (a.x == b.x && a.y == b.y)};
+	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
 
     let group = 2;
 
@@ -44,7 +46,7 @@ function weapons(r){
         * or if it misses (combat) the monster, put it on the floor
         */
         if (moat(obj.o_pos.y, obj.o_pos.x) == null ||
-        !hit_monster(unc(obj.o_pos), obj))
+        !this.hit_monster(obj.o_pos.y, obj.o_pos.x, obj))
             fall(obj, true);
     }
 
@@ -54,8 +56,13 @@ function weapons(r){
     *	across the room
     */
     //void
-    function do_motion(obj, ydelta, xdelta)//THING *obj, int ydelta, int xdelta)
+    this.do_motion = function(obj, ydelta, xdelta)//THING *obj, int ydelta, int xdelta)
     {
+		const player = r.player.player;
+		const proom = player.t_room;
+		const pstats = player.t_stats;
+		const hero = player.t_pos;
+
         let ch;
         /*
         * Come fly with us ...
@@ -66,12 +73,12 @@ function weapons(r){
             /*
             * Erase the old one
             */
-            if (!ce(obj.o_pos, hero) && cansee(unc(obj.o_pos)) && !terse)
+            if (!ce(obj.o_pos, hero) && r.player.cansee(obj.o_pos.y, obj.o_pos.x)) //&& !terse)
             {
-                ch = chat(obj.o_pos.y, obj.o_pos.x);
-                if (ch == FLOOR && !show_floor())
+                ch = r.dungeon.chat(obj.o_pos.y, obj.o_pos.x);
+                if (ch == d.FLOOR && !r.UI.show_floor())
                 ch = ' ';
-                mvaddch(obj.o_pos.y, obj.o_pos.x, ch);
+                r.UI.mvaddch(obj.o_pos.y, obj.o_pos.x, ch);
             }
             /*
             * Get the new position
@@ -140,13 +147,13 @@ function weapons(r){
     *	Does the missile hit the monster?
     */
     //int
-    function hit_monster(y, x, obj)//int y, int x, THING *obj)
+    this.hit_monster = function(y, x, obj)//int y, int x, THING *obj)
     {
         let mp; //static coord mp;
 
         mp.y = y;
         mp.x = x;
-        return fight(mp, obj, true);
+        return r.monster.fight(mp, obj, true);
     }
 
     /*

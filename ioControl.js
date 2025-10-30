@@ -12,11 +12,11 @@ class ioControl extends GameTask {
 
 		const cp = [
 			//fontID,prompt	,charw, linew, location x,y
-			[80, 24,"std"	,["_" ," "], 8,16, 64,	0], //0:printw, addch, move, clear
+			[80, 24,"std"	,["_" ," "], 8,16,  0,	0], //0:printw, addch, move, clear
 			//[80, 24,"small"	,["_" ," "], 8,10,100, 16], //0:printw, addch, move, clear
 			[80, 10,"small"	,["_" ," "], 6, 8, 80,384],	//1:msg
-			[32, 26,"small"	,["_" ," "], 6, 8,640, 16], //2:debug, comment
-			[32, 26,"small"	,false , 6, 8,640,240], //3:inventry
+			[32, 20,"small"	,["_" ," "], 6, 8,640, 16], //2:debug, comment
+			[32, 32,"small"	,false , 6, 8,640,180], //3:inventry
 			[32, 50,"mini"	,["_" ," "], 4, 6,  0, 18], //4:mobslist
 			[80,  1,"std"	,false, 8,16,  0,368], //5:statusbar
 		]
@@ -63,6 +63,8 @@ class ioControl extends GameTask {
 			{con:c2, x: 640-50, y: 16}
 		];
 		*/
+		this.debugview = true;
+		this.waittime = g.time();
 		this.input = {};
 	}
 //----------------------------------------------------------------------
@@ -86,15 +88,22 @@ class ioControl extends GameTask {
 			//Z: Boolean(w[90]),
 			HOME: Boolean(w["Home"]),//Boolean(w[36]),
 			//P: Boolean(w[80]),
+			LOG: Boolean(w["End"])
 		}
 
-		let fullscr = (input.HOME)?true:false;
-		if (fullscr){
-			if (!document.fullscreenElement){ 
-				g.systemCanvas.requestFullscreen();
-		   }
-		}
+		if (this.waittime < g.time()){
+			let fullscr = (input.HOME)?true:false;
+			if (fullscr){
+				if (!document.fullscreenElement){ 
+					g.systemCanvas.requestFullscreen();
+				}
+			}
 
+			if (input.LOG) {
+				this.debugview = (this.debugview)?false:true;
+				this.waittime = g.time() + 500;
+			}
+		}
 		let p = false;
 		for (let i in input){
 			if (input[i]) p = true;
@@ -120,7 +129,8 @@ class ioControl extends GameTask {
 
 		for (let i in this.layout){
 			let d = this.layout[i];
-			d.con.draw(g, d.x, d.y);
+			if (!(this.debugview && (i ==2 || i ==4))) d.con.draw(g, d.x, d.y);
+			//if (this.debugview) d.con.draw(g, d.x, d.y);
 		}
 
 		let s = "input:";

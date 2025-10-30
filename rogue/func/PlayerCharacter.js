@@ -51,8 +51,8 @@ function PlayerCharacter(r){
 
     let cur_armor = new t.thing(); 			/* What he is wearing (装備中の防具)*/
     let cur_ring = [];  // (装備中の指輪)
-    cur_ring[0] = new t.thing();			/* Which rings are being worn */
-    cur_ring[1] = new t.thing();			/* Which rings are being worn */
+    cur_ring[0] = null;//new t.thing();			/* Which rings are being worn */
+    cur_ring[1] = null;//new t.thing();			/* Which rings are being worn */
     let cur_weapon = new t.thing();			/* Which weapon he is weilding  (装備品)*/
 
     let inpack = 0;				/* Number of things in pack */
@@ -115,7 +115,7 @@ function PlayerCharacter(r){
                 wst += String.fromCharCode(Number("a".charCodeAt(0)) + Number(i));//str.push(`pack${i}:${this.packf.pack_used[i]}`);
         }
 
-        str.push(`maxhp:${pstats.s_maxhp} exp:${pstats.s_exp} dmg:${pstats.s_dmg}`);
+        //str.push(`maxhp:${pstats.s_maxhp} exp:${pstats.s_exp} dmg:${pstats.s_dmg}`);
 
         //str.push(`mobs:${r.mobs.length}`);
         str.push(`pack:${wst}`);
@@ -123,14 +123,14 @@ function PlayerCharacter(r){
         const eqc =(c)=>{
             if (!Boolean(c)) return "none_";
             return (c.o_packch == null)?"none":
-            `${(c.o_arm != null)?c.o_arm:c.o_damage} (${c.o_packch})${r.item.things.inv_name(c, false)}`;
+            `${(c.o_damage != "0x0")?c.o_damage:c.o_arm} (${c.o_packch})${r.item.things.inv_name(c, false)}`;
         }
 
-        str.push(`): ${eqc(cur_weapon)}`);
-        str.push(`]: ${eqc(cur_armor)}`);
-        str.push(`=R: ${eqc(cur_ring[0])}`);
-        str.push(`=L: ${eqc(cur_ring[1])}`);
-
+        str.push(`. ${eqc(cur_weapon)}`);
+        str.push(`. ${eqc(cur_armor)}`);
+        str.push(`R. ${eqc(cur_ring[0])}`);
+        str.push(`L. ${eqc(cur_ring[1])}`);
+        str.push("");
         //str.push(`armor: ${r.item.things.inv_name(cur_armor, false)} ${cur_armor.o_arm} (${cur_armor.o_packch})`);
         //str.push(`weapon: ${r.item.things.inv_name(cur_weapon, false)} ${cur_weapon.o_damage} (${cur_weapon.o_packch})`);
         //str.push(`ring_R ${r.item.things.inv_name(cur_ring[0], false)} ${cur_ring[0].o_which} (${cur_ring[0].o_packch})`);
@@ -146,8 +146,8 @@ function PlayerCharacter(r){
     this.equip_state_check = function(ch){
         let equip_weapon = false;
         let equip_armor = false;
-        //let equip_ring_0 = false;
-        //let equip_ring_1 = fals
+        let equip_ring_0 = false;
+        let equip_ring_1 = false;
         
         if (Boolean(cur_weapon)){
             if ('o_packch' in cur_weapon) {
@@ -159,9 +159,18 @@ function PlayerCharacter(r){
                 if (ch == cur_armor.o_packch) equip_armor = true;
             }
         }
+        if (Boolean(cur_ring[0])){
+            if ('o_packch' in cur_ring[0]) {
+                if (ch == cur_ring[0].o_packch) equip_ring_0 = true;
+            }
+        }
+        if (Boolean(cur_ring[1])){
+            if ('o_packch' in cur_ring[1]) {
+                if (ch == cur_ring[1].o_packch) equip_ring_1 = true;
+            }
+        }
         return (equip_weapon || equip_armor ||
-            (ch == cur_ring[0].o_packch)||
-            (ch == cur_ring[1].o_packch));
+            equip_ring_0 || equip_ring_1);
     }
 
     this.get_status = function(){
@@ -1186,6 +1195,70 @@ function PlayerCharacter(r){
             "you float gently to the ground"));
     }
 
+    /*
+    * cansee:
+    *	Returns true if the hero can see a certain coordinate.
+    */
+    //bool
+    this.cansee = function(y, x)//int y, int x)
+    {
+        const dist =(y1, x1, y2, x2)=>
+        {
+            return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        }
 
+        let rer;	//register struct room *rer;
+        let tp;		//static coord tp;
+
+        if (on(player, d.ISBLIND))
+            return false;
+        if (dist(y, x, hero.y, hero.x) < d.LAMPDIST)
+        {
+            if (r.dungeon.flat(y, x) & F_PASS)
+                if (y != hero.y && x != hero.x &&
+                !r.dungeon.step_ok(r.dungeon.chat(y, hero.x)) && !r.dungeon.step_ok(r.dungeon.chat(hero.y, x)))
+                    return false;
+            return true;
+        }
+        /*
+        * We can only see if the hero in the same room as
+        * the coordinate and the room is lit or if it is close.
+        */
+        tp.y = y;
+        tp.x = x;
+        return ((rer = r.dungeon.roomin(tp)) == proom && !(rer.r_flags & d.ISDARK));	//(bool)
+    }
+
+    /*
+    * save_throw:
+    *	See if a creature save against something
+    */
+    //int
+    function save_throw(which, tp)//THING tp)
+    {
+        let need;
+
+        need = 14 + which - tp.t_stats.s_lvl / 2;
+        return (r.roll(1, 20) >= need);
+    }
+
+    /*
+    * save:
+    *	See if he saves against various nasty things
+    */
+    //int
+    this.save = function(which)
+    {
+        //r.player.
+
+        if (which == d.VS_MAGIC)
+        {
+        if (ISRING(d.LEFT, d.R_PROTECT))
+            which -= cur_ring[LEFT].o_arm;
+        if (ISRING(d.RIGHT, d.R_PROTECT))
+            which -= cur_ring[d.RIGHT].o_arm;
+        }
+        return save_throw(which, player);
+    }
 
 }

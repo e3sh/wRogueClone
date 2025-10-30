@@ -153,8 +153,8 @@ function potions(r){
 					if (is_magic(tp))
 					{
 						show = true;
-						r.UI.move(hw, tp.o_pos.y, tp.o_pos.x);
-						r.UI.addch(hw, d.MAGIC);
+						r.UI.move(tp.o_pos.y, tp.o_pos.x);
+						r.UI.addch(d.MAGIC);
 						pot_info[d.P_TFIND].oi_know = true;
 					}
 				}
@@ -165,8 +165,8 @@ function potions(r){
 						if (is_magic(tp))
 						{
 							show = true;
-							r.UI.move(hw, mp.t_pos.y, mp.t_pos.x);
-							r.UI.addch(hw, d.MAGIC);
+							r.UI.move(mp.t_pos.y, mp.t_pos.x);
+							r.UI.addch(d.MAGIC);
 						}
 					}
 				}
@@ -194,7 +194,7 @@ function potions(r){
 			show = on(player, d.CANSEE);
 			do_pot(d.P_SEEINVIS, false);
 			if (!show)
-				invis_on();
+				this.invis_on();
 			r.player.sight();
 			break; 
 		case d.P_RAISE:
@@ -270,6 +270,8 @@ function potions(r){
 	//bool
 	function is_magic(obj)//THING *obj)
 	{
+		const a_class = r.globalValiable.a_class;
+
 		switch (obj.o_type)
 		{
 		case d.ARMOR:
@@ -292,7 +294,7 @@ function potions(r){
 	*/
 
 	//void
-	function invis_on()
+	this.invis_on = function()
 	{
 		let mp;
 

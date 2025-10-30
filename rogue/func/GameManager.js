@@ -171,6 +171,11 @@ function GameManager(g){
         //this.mapcheckTest();
         this.UI.status();
 
+        this.UI.status();
+        this.UI.setHomesub();
+        this.UI.clear(3); //inventry display
+        this.player.packf.inventory(this.player.player.t_pack, 0);
+
         this.playit(g); //ゲームのメインループです。オプションの解析とcommand()の呼び出しを行います。
     }
 
@@ -183,6 +188,9 @@ function GameManager(g){
         this.dungeon.new_level();			/* Draw current level new_level.c*/
 
         this.UI.status();
+        this.UI.setHomesub();
+        this.UI.clear(3); //inventry display
+        this.player.packf.inventory(this.player.player.t_pack, 0);
 
         this.playit(g); //ゲームのメインループです。オプションの解析とcommand()の呼び出しを行います。
     }
@@ -201,18 +209,17 @@ function GameManager(g){
 
         oldrp = this.dungeon.roomin(hero);
 
-        g.console[1].insertln();
-        g.console[1].printw(`func playit execute. text rnd:${this.rnd(10)}.${this.mobs.length}`);
+        //g.console[1].insertln();
+        //g.console[1].printw(`func playit execute. text rnd:${this.rnd(10)}.${this.mobs.length}`);
 
 
         //viewInventry
-        let st = this.player.get_invstat();
-        this.UI.clear(3);
-        for (let i in st){
-            this.UI.submsg(st[i]);
-        }
-        this.player.packf.inventory(this.player.t_pack, 0);
-        
+        //let st = this.player.get_invstat();
+        //this.UI.clear(3);
+        //for (let i in st){
+        //    this.UI.submsg(st[i]);
+        //}
+        //this.player.packf.inventory(this.player.t_pack, 0);
     
         this.UI.comment("play_it");
     
@@ -298,7 +305,7 @@ function GameManager(g){
             ln++;
             if (ln > 100) break;
         }
-        this.UI.debug(`attach len:${ln}`);
+        //this.UI.debug(`attach len:${ln}`);
 
         return list;
     }

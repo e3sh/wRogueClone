@@ -262,7 +262,7 @@ function thingsf(r){
 			r.player.set_cur_ring(d.LEFT) = cur_ring[d.LEFT];
 			r.player.set_cur_ring(d.RIGHT) = cur_ring[d.RIGHT];
 
-			switch (obj.o_which)
+			switch (Number(obj.o_which))
 			{
 				case d.R_ADDSTR:
 					player.misc.chg_str(-obj.o_arm);

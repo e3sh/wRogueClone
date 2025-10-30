@@ -51,6 +51,8 @@ function rips(r){
 	const whoami = "Player";
 	const monsters = r.globalValiable.monsters;
 
+	const startleft = 8;
+
 	/*
 	* score:
 	*	Figure score and post it.
@@ -209,6 +211,8 @@ function rips(r){
 		let lt;//struct tm *lt;
 		let date; //time_t
 		//struct tm *localtime();
+		const SL = startleft;
+
 
 		let purse = r.player.get_purse();
 		purse -= purse / 10;
@@ -218,22 +222,22 @@ function rips(r){
 
 		const currentDate = new Date();//time(date);
 		lt = currentDate.getFullYear();//localtime(date);
-		r.UI.move(8, 0);
+		r.UI.move(8, SL);
 		dp = rip;
 		for (let i in rip){
-			r.UI.move(Number(i)+8, 0);
+			r.UI.move(Number(i)+8, SL);
 			r.UI.printw(rip[i]);
 		}
 		r.UI.mvaddstr(17, center(killer), killer);
 		if (monst == 's' || monst == 'h')
-			r.UI.mvaddch(16, 32, ' ');
+			r.UI.mvaddch(16, 32+SL, ' ');
 		else
-			r.UI.mvaddstr(16, 33, vowelstr(killer));
+			r.UI.mvaddstr(16, 33+SL, vowelstr(killer));
 		r.UI.mvaddstr(14, center(whoami), whoami);
 		prbuf = `${purse} Au`;
 		r.UI.move(15, center(prbuf));
 		r.UI.addstr(prbuf);
-		r.UI.mvaddstr(18, 26, `${lt}`);
+		r.UI.mvaddstr(18, 26+SL, `${lt}`);
 
 		r.UI.move(d.LINES - 1, 0);
 		score(purse, r.player.amulet ? 3 : 0, monst);
@@ -249,7 +253,7 @@ function rips(r){
 	*/
 	function center(str)
 	{
-		return 28 - Math.floor(((str.length) + 1) / 2);
+		return (28 + startleft) - Math.floor(((str.length) + 1) / 2);
 	}
 
 	/*

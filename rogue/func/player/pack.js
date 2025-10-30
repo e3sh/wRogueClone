@@ -218,10 +218,10 @@ function packf(r){
 			let ms = "";
 			if (!terse)
 				ms = "you now have ";//r.UI.addmsg("you now have ");
-			r.UI.msg(`${ms}${r.item.inv_name(obj, !terse)} (${obj.o_packch}`);
+			r.UI.msg(`${ms}${r.item.inv_name(obj, !terse)}`);// (${obj.o_packch}`);
 		}
 
-		r.UI.comment(".add_pack" + debugstr);
+		r.UI.comment(".add_pack " + debugstr);
 	}
 
 	/*
@@ -371,8 +371,8 @@ function packf(r){
 				!(type == d.R_OR_S && (list.o_type == d.RING || list.o_type == d.STICK)))
 					continue;
 			n_objs++;
-			let equip = r.player.equip_state_check(list.o_packch)?"E":" ";
-			let cur = (list.o_packch == this.get_cur())?"&":" ";
+			let equip = r.player.equip_state_check(list.o_packch)?"E":"-";
+			let cur = (list.o_packch == this.get_cur())?">":" ";
 
 			if (list.o_packch == null) continue;
 
@@ -427,7 +427,7 @@ function packf(r){
 			//}
 			//r.UI.debug(list.o_packch);
 			n_objs++;
-			if (n_objs > inpack) break;
+			//if (n_objs > inpack) break;
 		}
 	}
 

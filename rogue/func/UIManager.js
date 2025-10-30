@@ -70,6 +70,8 @@ function UIManager(r, g){
 
     this.has_hit = has_hit;
 
+    this.delta = delta;
+
     /*
     **関連する関数（提案されるメソッドの例）:**
     *   `msg()`, `addmsg()`, `endmsg()`, `doadd()` (メッセージ表示)。
@@ -389,10 +391,14 @@ function UIManager(r, g){
                 let st = r.player.get_invstat();
                 r.UI.setHomesub();
                 r.UI.clear(3);
-                for (let i in st){
-                    r.UI.submsg(st[i]);
+
+                let io = g.task.read("io");
+                if (!io.debugview){
+                    for (let i in st){
+                        r.UI.submsg(st[i]);
+                    }
+                    r.UI.submsg(`inpack ${r.player.packf.read_inpack()} /cur:${r.player.packf.get_cur()}`);
                 }
-                r.UI.submsg(`inpack ${r.player.packf.read_inpack()} /cur:${r.player.packf.get_cur()}`);
                 r.player.packf.inventory(player.t_pack, 0);
                 r.debug.mobslist();
             }
@@ -418,42 +424,42 @@ function UIManager(r, g){
                         switch(useitem.o_type)
                         {
                             case ":"://FOOD
-                                ws = "food .eat()";
+                                ws = "food eat()";
                                 r.player.eat(useitem);
                                 break;
                             case ")"://WEAPON
-                                ws = "weapon .wield()";
+                                ws = "weapon wield()";
                                 if (r.player.equip_state_check(inkeyst)) ws += "*";
                                 r.item.weapon.wield(useitem);
                                 // wield()
                                 break;
                             case "]"://ARMOR
-                                ws = "armor";
+                                ws = "armor wear()/takeoff()";
                                 if (r.player.equip_state_check(inkeyst)) ws += "*";
                                 r.item.armor.wear(useitem);/// takeoff()
                                 break;                            
                             case "="://RING
-                                ws = "ring";
+                                ws = "ring ring_on/ring_off()";
                                 if (r.player.equip_state_check(inkeyst)) ws += "*";
-                                //ring_on()/ ring_off()
+                                r.item.rings.ring_on(useitem);// ring_off()
                                 break;                            
                             case "/"://STICK
-                                ws = "stick/wand";
-                                //?
+                                ws = "stick/wand do_zap()";
+                                r.item.sticks.do_zap(useitem)//do_zap()
                                 break;                            
                             case "!"://POTION
-                                ws = "potion .quaff()";
+                                ws = "potion quaff()";
                                 r.item.potions.quaff(useitem);
                                 break;                            
                             case "?"://SCROLL
-                                ws = "scroll";
-                                //read_scroll()
+                                ws = "scroll read_scroll()";
+                                r.item.scroll.read_scroll(useitem);
                                 break;                            
                             default:
                                 ws = "etc";
                                 //no operation
                         }
-                        r.UI.msg(`use Item ${inkeyst})${r.item.things.inv_name(useitem, false)} ${ws}`);//(${cnum})` );
+                        r.UI.msg(`${ws} ${inkeyst})${r.item.things.inv_name(useitem, false)}`);//(${cnum})` );
                     }
                     //r.UI.msg(`use Item ${inkeyst})${r.item.things.inv_name(obj, false)} ${ws}`);//(${cnum})` );
                     r.player.packf.set_cur(0);
@@ -475,7 +481,7 @@ function UIManager(r, g){
                 let inkeyst = r.player.packf.get_cur();
                 let dobj = r.player.packf.picky_inven(inkeyst);
                 r.item.things.drop(dobj);
-                r.UI.msg(`drop Item ${inkeyst}`);
+                r.UI.msg(`drop Item ${inkeyst})${r.item.things.inv_name(dobj, false)}`);
                 r.player.packf.set_cur(0);
                 viewInventry();
             }
@@ -499,9 +505,11 @@ function UIManager(r, g){
                 search();
                 opcmdf = true;
             }
-            if (ki.includes("NumpadAdd")||ki.includes("NumpadSubtract")){
+            if (ki.includes("NumpadAdd")||ki.includes("NumpadSubtract")||
+                ki.includes("ArrowDown")||ki.includes("ArrowUp"))
+            {
                 r.player.packf.set_cur(
-                    (ki.includes("NumpadAdd"))?1:-1
+                    (ki.includes("NumpadAdd")||ki.includes("ArrowDown"))?1:-1
                 );
                 viewInventry();
             }
@@ -660,6 +668,12 @@ function UIManager(r, g){
             diffhero = hero.y - hero.x;
         }
         pp = r.dungeon.INDEX(hero.y, hero.x);
+        
+        if (!Boolean(pp)) {
+            r.UI.debug("LK outside?")   
+            return 
+        }
+
         pch = pp.p_ch;
         pfl = pp.p_flags;
 
@@ -888,7 +902,63 @@ function UIManager(r, g){
             this.look(false);
     }
 
+	/*
+	* get_dir:
+	*      Set up the direction co_ordinate for use in varios "prefix"
+	*	commands
+	*/
+	//bool
+	function get_dir()
+	{
+		let prompt;
+		let gotit;
+		let last_delt= {x:0,y:0};//static coord last_delt= {0,0};
 
-
-
+		if (again && last_dir != '\0')
+		{
+			delta.y = last_delt.y;
+			delta.x = last_delt.x;
+			dir_ch = last_dir;
+		}
+		else
+		{
+			if (!terse)
+				this.msg(prompt = "which direction? ");
+			else
+				prompt = "direction: ";
+			do
+			{
+				gotit = TRUE;
+				switch (dir_ch = readchar())
+				{
+				case 'h': case'H': delta.y =  0; delta.x = -1;
+				break; case 'j': case'J': delta.y =  1; delta.x =  0;
+				break; case 'k': case'K': delta.y = -1; delta.x =  0;
+				break; case 'l': case'L': delta.y =  0; delta.x =  1;
+				break; case 'y': case'Y': delta.y = -1; delta.x = -1;
+				break; case 'u': case'U': delta.y = -1; delta.x =  1;
+				break; case 'b': case'B': delta.y =  1; delta.x = -1;
+				break; case 'n': case'N': delta.y =  1; delta.x =  1;
+				break; case ESCAPE: last_dir = '\0'; reset_last(); return FALSE;
+				otherwise:
+					mpos = 0;
+					msg(prompt);
+					gotit = FALSE;
+				}
+			} while (!gotit);
+			if (isupper(dir_ch))
+				dir_ch = tolower(dir_ch);
+			last_dir = dir_ch;
+			last_delt.y = delta.y;
+			last_delt.x = delta.x;
+		}
+		if (on(player, ISHUH) && rnd(5) == 0)
+		do
+		{
+			delta.y = rnd(3) - 1;
+			delta.x = rnd(3) - 1;
+		} while (delta.y == 0 && delta.x == 0);
+		mpos = 0;
+		return TRUE;
+	}
 }

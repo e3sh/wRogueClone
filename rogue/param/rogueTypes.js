@@ -93,7 +93,7 @@ function rogueTypes(){
             this._t_dest = {};		/* Where it is running to */ //coord  //モンスターが追跡している**目標の座標**（`coord *`型）へのポインタ。プレイヤーの位置（`&hero`）を指すことが多いです。 |
             this._t_flags = null;	/* State word */ //実体の**状態**を示すビットマスクフラグ。`ISRUN`（走行中）、`ISHUH`（混乱）、`ISINVIS`（不可視）、`ISMEAN`（攻撃的）などが含まれます。 |
             //実体の**身体能力の統計値**（HP、筋力、経験値、レベル、防御力）を格納する構造体。 
-            this._t_stats = new stats([0,0,0,0,0,"0/0",0]);		/* Physical description */ //struct stats
+            this._t_stats = new stats([0,0,0,0,0,"0x0",0]);		/* Physical description */ //struct stats
             this._t_room = null;    /* Current room for thing */ //struct room //実体が現在いる**部屋**（`struct room`）へのポインタ。
             this._t_pack = null;    /* What the thing is carrying */ //union thing //その実体（プレイヤーまたはモンスター）が所持している**アイテムの連結リスト**（インベントリ）の先頭へのポインタ。
             this._t_reserved = null;
@@ -106,8 +106,8 @@ function rogueTypes(){
             this._o_text = null;	/* What it says if you read it */ //string
             this._o_launch = null;	/* What you need to launch it */
             this._o_packch = null;	/* What character it is in the pack */ //プレイヤーのインベントリ内でアイテムを識別するための**文字**（'a'、'b'など）
-            this._o_damage ="0/0";  // =[8];    /* Damage if used like sword */
-            this._o_hurldmg ="0/0"; //= [8];    /* Damage if thrown */
+            this._o_damage ="0x0";  // =[8];    /* Damage if used like sword */
+            this._o_hurldmg ="0x0"; //= [8];    /* Damage if thrown */
             this._o_count = 0;		/* count for plural objects */ //ポーションや矢など、スタック可能なアイテムの**数量**。 
             this._o_which = null;	/* Which object of a type it is */ //アイテムの`o_type`内における**具体的な種類**を示す番号（例: どの種類のポーションか、どの種類の武器か）
             this._o_hplus = null;	/* Plusses to hit */ //武器の**命中ボーナス/ダメージボーナス**
