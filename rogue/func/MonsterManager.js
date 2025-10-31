@@ -564,7 +564,7 @@ function MonsterManager(r){
         tp.t_oldch = r.UI.inch();//CCHAR( inch() );
         tp.t_room = r.dungeon.roomin(cp); //console.log(cp);
         r.dungeon.places[cp.y][cp.x].p_monst = tp;
-        mp = monsters[Number(tp.t_type.charCodeAt()) - Number('A'.charCodeAt()) ]; //console.log(mp, tp);
+        mp = monsters[Number(tp.t_type.charCodeAt(0)) - Number('A'.charCodeAt(0)) ]; //console.log(mp, tp);
         //console.log(tp, mp);
         tp.t_stats.s_lvl = mp.m_stats.s_lvl + lev_add;
         tp.t_stats.s_hpt = r.roll(tp.t_stats.s_lvl, 8);

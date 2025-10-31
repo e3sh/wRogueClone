@@ -584,7 +584,7 @@ function PlayerCharacter(r){
     this.do_move = function(dy, dx)
     {
         
-        if (hero.x + dx < 0 || hero.x + dx >= d.NUMCOLS || hero.y + dy < 0 || hero.y + dy >= d.NUMLINES - 1){
+        if (hero.x + dx < 0 || hero.x + dx >= d.NUMCOLS || hero.y + dy <= 0 || hero.y + dy >= d.NUMLINES - 1){
             //console.log("overscreen do_move");
             return;
         }
@@ -1078,7 +1078,7 @@ function PlayerCharacter(r){
     {
         let th; //register THING *th;
 
-        for (th = mlist; th != null; th = th.l_next)
+        for (th = r.dungeon.mlist; th != null; th = th.l_next)
         if (on(th, d.ISINVIS) && this.see_monst(th))
             r.UI.mvaddch(th.t_pos.y, th.t_pos.x, th.t_oldch);
         player.t_flags &= ~d.CANSEE;

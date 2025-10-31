@@ -28,7 +28,7 @@ function potions(r){
 		return sp;
 	}
 
-	let prbuf;
+	//let prbuf;
 
 	function PACT(flag, daemon, time, high, straight)
 	{
@@ -49,8 +49,8 @@ function potions(r){
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_POISON */
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_STRENGTH */
 	p_actions.push(new PACT(d.CANSEE,	r.player.unsee,	d.SEEDURATION,		/* P_SEEINVIS */
-			prbuf,
-			prbuf)),
+			`this potion tastes like ${fruit} juice`,
+			`this potion tastes like ${fruit} juice`)),
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_HEALING */
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_MFIND */
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_TFIND  */
@@ -191,7 +191,7 @@ function potions(r){
 			do_pot(d.P_LSD, true);
 			break; 
 		case d.P_SEEINVIS:
-			r.UI.msg(`this potion tastes like ${fruit} juice`);
+			//r.UI.msg(`this potion tastes like ${fruit} juice`);
 			show = on(player, d.CANSEE);
 			do_pot(d.P_SEEINVIS, false);
 			if (!show)

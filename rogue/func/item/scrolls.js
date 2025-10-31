@@ -391,20 +391,21 @@ function scroll(r){
 	{
 		const player = r.player.player;
 		const hero = player.t_pos;
+		const proom = player.t_room;
 
 		let c = {};
 
 		r.UI.mvaddch(hero.y, hero.x, r.player.floor_at());
-		r.dungeon.roomf.find_floor(null, null, c, false, true);
+		r.dungeon.roomf.find_floor(null, c, false, true);
 		if (r.dungeon.roomin(c) != proom)
 		{
 			r.dungeon.roomf.leave_room(hero);
-			hero = c;
+			player.tpos = c; //hero;
 			r.player.enter_room(hero);
 		}
 		else
 		{
-			hero = c;
+			player.tpos = c; //hero;
 			r.UI.look(true);
 		}
 		r.UI.mvaddch(hero.y, hero.x, d.PLAYER);
@@ -415,7 +416,7 @@ function scroll(r){
 		if (on(player, d.ISHELD)) {
 			const monsters =  r.globalValiable.monsters;
 
-			player.t_flags &= ~ISHELD;
+			player.t_flags &= ~d.ISHELD;
 			vf_hit = 0;
 			monsters['F'.charCodeAt(0)-'A'.charCodeAt(0)].m_stats.s_dmg = "000x0";
 		}

@@ -71,6 +71,22 @@ function UIManager(r, g){
     this.has_hit = has_hit;
 
     this.delta = delta;
+    this.get_delta =()=>{
+        let resd = {};
+        switch (Number(delta))
+        {
+            case 7: resd.y = -1; resd.x = -1; break;
+            case 8: resd.y = -1; resd.x =  0; break;
+            case 9: resd.y = -1; resd.x =  1; break;
+            case 4: resd.y =  0; resd.x = -1; break;
+            case 6: resd.y =  0; resd.x =  1; break;
+            case 1: resd.y =  1; resd.x = -1; break;
+            case 2: resd.y =  1; resd.x =  0; break;
+            case 3: resd.y =  1; resd.x =  1; break;
+            default:  return; 
+        }
+        return resd;
+    }
 
     /*
     **関連する関数（提案されるメソッドの例）:**
@@ -490,6 +506,7 @@ function UIManager(r, g){
                         }
                         //r.UI.msg(`${ws} ${inkeyst})${r.item.things.inv_name(useitem, false)}`);//(${cnum})` );
                     }
+                    r.UI.comment(`${ws} ${inkeyst})`);
                     //r.UI.msg(`use Item ${inkeyst})${r.item.things.inv_name(obj, false)} ${ws}`);//(${cnum})` );
                     r.player.packf.set_cur(0);
                     viewInventry();
@@ -512,19 +529,7 @@ function UIManager(r, g){
                 if (!Boolean(dobj)) return;
 
                 if (dobj.o_type == d.WEAPON){
-                    let delta = {};
-                    switch (Number(r.UI.delta))
-                    {
-                        case 7: delta.y = -1; delta.x = -1; break;
-                        case 8: delta.y = -1; delta.x =  0; break;
-                        case 9: delta.y = -1; delta.x =  1; break;
-                        case 4: delta.y =  0; delta.x = -1; break;
-                        case 6: delta.y =  0; delta.x =  1; break;
-                        case 1: delta.y =  1; delta.x = -1; break;
-                        case 2: delta.y =  1; delta.x =  0; break;
-                        case 3: delta.y =  1; delta.x =  1; break;
-                        default:  return;
-                    }
+                    let delta = this.get_delta();
                     r.item.weapon.missile(dobj, delta.y, delta.x);
                     //r.UI.msg(`throw ${inkeyst})${r.item.things.inv_name(dobj, false)} x${delta.x},y${delta.y}`);
                 }else{

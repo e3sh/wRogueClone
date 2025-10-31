@@ -68,19 +68,7 @@ function sticks(r){
 			return;
 		}
 
-		let delta = {};
-		switch (Number(r.UI.delta))
-		{
-			case 7: delta.y = -1; delta.x = -1; break;
-			case 8: delta.y = -1; delta.x =  0; break;
-			case 9: delta.y = -1; delta.x =  1; break;
-			case 4: delta.y =  0; delta.x = -1; break;
-			case 6: delta.y =  0; delta.x =  1; break;
-			case 1: delta.y =  1; delta.x = -1; break;
-			case 2: delta.y =  1; delta.x =  0; break;
-			case 3: delta.y =  1; delta.x =  1; break;
-			default:  return false;
-		}
+		let delta = r.UI.get_delta();
 
 		switch (Number(obj.o_which))
 		{
@@ -194,19 +182,21 @@ function sticks(r){
 			break; 
 		case d.WS_MISSILE:
 			ws_info[d.WS_MISSILE].oi_know = true;
+			bolt = r.new_item();
 			bolt.o_type = '*';
 			bolt.o_hurldmg = "1x4";
 			bolt.o_hplus = 100;
 			bolt.o_dplus = 1;
 			bolt.o_flags = d.ISMISL;
-			if (cur_weapon != null)
-				bolt.o_launch = cur_weapon.o_which;
-			do_motion(bolt, delta.y, delta.x);
+			const cw = r.player.get_cur_weapon();
+			if (cw != null)
+				bolt.o_launch = cw.o_which;
+			r.item.weapon.do_motion(bolt, delta.y, delta.x);
 			if ((tp = r.dungeon.moat(bolt.o_pos.y, bolt.o_pos.x)) != null
 			&& !save_throw(VS_MAGIC, tp))
 				r.item.weapon.hit_monster(bolt.o_pos.y ,bolt.o_pos.x , bolt);
-			else if (terse)
-				r.UI.msg("missle vanishes");
+			//else if (terse)
+			//	r.UI.msg("missle vanishes");
 			else
 				r.UI.msg("the missle vanishes with a puff of smoke");
 			break; 
@@ -252,7 +242,9 @@ function sticks(r){
 				name = "ice";
 			this.fire_bolt(hero, delta, name);
 			ws_info[obj.o_which].oi_know = true;
-		break; case WS_NOP:
+			break; 
+		case WS_NOP:
+			r.UI.msg("no operation. what a bizarre schtick!");
 			break;
 		default:
 			r.UI.msg("what a bizarre schtick!");

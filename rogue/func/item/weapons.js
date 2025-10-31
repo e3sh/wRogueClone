@@ -64,6 +64,11 @@ function weapons(r){
         * AHA! Here it has hit something.  If it is a wall or a door,
         * or if it misses (combat) the monster, put it on the floor
         */
+        if (!Boolean(obj)){
+            r.UI.debug("misil obj none");
+            return
+        }
+
         if (r.dungeon.moat(obj.o_pos.y, obj.o_pos.x) == null ||
         !this.hit_monster(obj.o_pos.y, obj.o_pos.x, obj))
             fall(obj, true);
