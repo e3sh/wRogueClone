@@ -12,12 +12,11 @@ class ioControl extends GameTask {
 
 		const cp = [
 			//fontID,prompt	,charw, linew, location x,y
-			[80, 24,"std"	,["_" ," "], 8,16,  0,	0], //0:printw, addch, move, clear
-			//[80, 24,"small"	,["_" ," "], 8,10,100, 16], //0:printw, addch, move, clear
-			[80, 10,"small"	,["_" ," "], 6, 8, 80,384],	//1:msg
-			[32, 20,"small"	,["_" ," "], 6, 8,640, 16], //2:debug, comment
-			[32, 32,"small"	,false , 6, 8,640,180], //3:inventry
-			[32, 50,"mini"	,["_" ," "], 4, 6,  0, 18], //4:mobslist
+			[80, 24,"std"	,["_" ," "], 8,16	,  0,  0], //0:printw, addch, move, clear
+			[80, 10,"small"	,["_" ," "], 6, 8	, 80,384],	//1:msg
+			[32, 20,"small"	,["_" ," "], 6, 8	,640, 16], //2:debug, comment
+			[32, 32,"small"	,false ,	 6, 10	,640,180], //3:inventry
+			[32, 50,"mini"	,["_" ," "], 4, 6	,  0, 18], //4:mobslist
 			[80,  1,"std"	,false, 8,16,  0,368], //5:statusbar
 		]
 
@@ -116,9 +115,70 @@ class ioControl extends GameTask {
 				keylist.push(i);
 			}
 		}
-		input.keylist = keylist;
+		keylist = GpadToKey(g, keylist);
 
+		input.keylist = keylist;
 		this.input = input;
+
+		//-----------------------------------------------------------------------------
+		// internal function 
+		function GpadToKey(g, input){
+
+			let gpd = g.gamepad;
+			gpd.check();
+
+			const KEYASSIGN = { 
+				N0: "Numpad0",
+				N1: "Numpad1",
+				N2: "Numpad2",
+				N3: "Numpad3",
+				N4: "Numpad4",
+				N5: "Numpad5",
+				N6: "Numpad6",
+				N7: "Numpad7",
+				N8: "Numpad8",
+				N9: "Numpad9",
+				D:  "KeyD", 
+				I:  "KeyI",
+				SPC:"Space",
+				RET:"Enter",
+				HOME:"Home",
+				END:"End",
+				UP: "ArrowUp",
+				DOWN:"ArrowDown"
+			}
+			
+			if (gpd.upkey){
+				if (gpd.leftkey || gpd.rightkey){
+					input.push((gpd.leftkey)?KEYASSIGN.N7:KEYASSIGN.N9);
+				}else
+					input.push(KEYASSIGN.N8);
+			} else 
+				if (gpd.downkey){
+					if (gpd.leftkey || gpd.rightkey){
+						input.push((gpd.leftkey)?KEYASSIGN.N1:KEYASSIGN.N3);
+					}else
+						input.push(KEYASSIGN.N2);
+				}else
+					if (!gpd.upkey && !gpd.downkey) {
+						if (gpd.leftkey) input.push(KEYASSIGN.N4);
+						if (gpd.rightkey) input.push(KEYASSIGN.N6);
+					}
+			if (gpd.btn_x) input.push(KEYASSIGN.N0);
+			if (gpd.btn_a) input.push(KEYASSIGN.N5);
+			if (gpd.btn_b) input.push(KEYASSIGN.I);
+			if (gpd.btn_y) input.push(KEYASSIGN.D);
+
+			if (gpd.btn_start) input.push(KEYASSIGN.RET);
+			//if (gpd.btn_back) input.push(KEYASSIGN.END) ;
+
+			if (gpd.btn_rb) input.push(KEYASSIGN.DOWN);
+			if (gpd.btn_rt) input.push(KEYASSIGN.UP);
+
+			//if (gpd.btn_lb) input.push(KEYASSIGN.HOME);
+
+			return input;
+		}
 	}
 //----------------------------------------------------------------------
 	draw(g){// this.visible が true時にループ毎に実行される。

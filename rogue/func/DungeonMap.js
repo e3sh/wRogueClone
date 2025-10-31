@@ -236,14 +236,14 @@ function DungeonMap(r){
                 return obj;
         }
         //sprintf(prbuf, "Non-object %d,%d", y, x);
-        r.UI.msg(`mobs searching...`);
+        r.UI.debug(`mobs searching...`);
         for (let i in r.mobs)
         {
             obj = r.mobs[i];
             if (obj.o_pos.y == y && obj.o_pos.x == x)
                 return obj;
         }
-        r.UI.msg(`Non-object x:${x} y:${y}`);
+        r.UI.debug(`Non-object x:${x} y:${y}`);
         return null;
     }
     /*
@@ -494,14 +494,18 @@ function DungeonMap(r){
     //void
     this.u_level = function()
     {
+        const hero = r.player.player.t_pos;
+
         if (levit_check())
             return;
-        if (chat(hero.y, hero.x) == d.STAIRS)
+        if (this.chat(hero.y, hero.x) == d.STAIRS)
             if (r.player.amulet)
             {
                 level--;
-                if (level == 0)
-                    total_winner();
+                if (level == 0){
+                    r.rips.total_winner();
+                    return;
+                }
                 r.dungeon.new_level();
                 r.UI.msg("you feel a wrenching sensation in your gut");
             }

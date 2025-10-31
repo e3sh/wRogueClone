@@ -76,7 +76,7 @@ function rings(r){
 				r.UI.msg("wearing two");
 			return;
 		}
-		cur_ring[ring] = obj;
+		r.player.set_cur_ring(ring, obj);
 
 		/*
 		* Calculate the effect it has on the poor guy.
@@ -141,8 +141,10 @@ function rings(r){
 			r.UI.msg("not wearing such a ring");
 			return;
 		}
-		if (r.item.things.dropcheck(obj))
+		if (r.item.things.dropcheck(obj)){
 			r.UI.msg(`${r.item.things.inv_name(obj, true)} (${obj.o_packch})`);
+			
+		}
 	}
 
 	/*

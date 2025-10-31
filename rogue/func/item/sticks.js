@@ -12,7 +12,7 @@ function sticks(r){
 	const rainbow = r.globalValiable.rainbow;
 	const pick_color =(col)=>
 	{
-		return (on(player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : col);
+		return (on(r.player.player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : col);
 	}
 
     const ce = (a, b)=>{ return (a.x == b.x && a.y == b.y)};
@@ -250,7 +250,7 @@ function sticks(r){
 				name = "flame";
 			else
 				name = "ice";
-			fire_bolt(hero, delta, name);
+			this.fire_bolt(hero, delta, name);
 			ws_info[obj.o_which].oi_know = true;
 		break; case WS_NOP:
 			break;
@@ -310,7 +310,7 @@ function sticks(r){
 		{
 			mp = drainee[i];
 			if ((mp.t_stats.s_hpt -= cnt) <= 0)
-				r.monster.fight.killed(mp, r.player.see_monst(mp));
+				r.monster.battle.killed(mp, r.player.see_monst(mp));
 			else
 				r.monster.runto(mp.t_pos);
 		}
@@ -461,8 +461,8 @@ function sticks(r){
 
 		if (!(obj.o_flags & d.ISKNOW))
 			buf = '';
-		else if (terse)
-			buf = ` [${obj.o_charges}]`;
+		//else if (terse)
+		//	buf = ` [${obj.o_charges}]`;
 		else
 			buf = ` [${obj.o_charges} charges]`;
 		return buf;

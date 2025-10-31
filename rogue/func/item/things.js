@@ -258,9 +258,9 @@ function thingsf(r){
 		}
 		else
 		{
-			cur_ring[obj == cur_ring[d.LEFT] ? d.LEFT : d.RIGHT] = null;
-			r.player.set_cur_ring(d.LEFT) = cur_ring[d.LEFT];
-			r.player.set_cur_ring(d.RIGHT) = cur_ring[d.RIGHT];
+			cur_ring[(obj == cur_ring[d.LEFT] ? d.LEFT : d.RIGHT)] = null;
+			r.player.set_cur_ring(d.LEFT, cur_ring[d.LEFT]);
+			r.player.set_cur_ring(d.RIGHT,cur_ring[d.RIGHT]);
 
 			switch (Number(obj.o_which))
 			{

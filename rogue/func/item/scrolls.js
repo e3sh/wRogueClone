@@ -23,7 +23,7 @@ function scroll(r){
 
     function choose_str(ts, ns)
     {
-        return (on(player, d.ISHALU) ? ts : ns);
+        return (on(r.player.player, d.ISHALU) ? ts : ns);
     }
 
 	/*
@@ -124,8 +124,8 @@ function scroll(r){
 			/*
 			* Scroll which makes you fall asleep
 			*/
-			scr_info[S_SLEEP].oi_know = true;
-			no_command += r.rnd(d.SLEEPTIME) + 4;
+			scr_info[d.S_SLEEP].oi_know = true;
+			r.player.set_no_command(r.player.get_no_command()+ r.rnd(d.SLEEPTIME) + 4);
 			player.t_flags &= ~d.ISRUN;
 			r.UI.msg("you fall asleep");
 			break; 
@@ -207,8 +207,8 @@ function scroll(r){
 			/*
 			* take all the things we want to keep hidden out of the window
 			*/
-			for (y = 1; y < NUMLINES - 1; y++)
-			for (x = 0; x < NUMCOLS; x++)
+			for (y = 1; y < d.NUMLINES - 1; y++)
+			for (x = 0; x < d.NUMCOLS; x++)
 			{
 				pp = r.dungeon.INDEX(y, x);
 				switch (ch = pp.p_ch)
@@ -233,7 +233,7 @@ function scroll(r){
 					ch = pp.p_ch = d.PASSAGE;
 					/* FALLTHROUGH */
 
-				case PASSAGE:
+				case d.PASSAGE:
 	pass:			pass();
 					//if (!(pp.p_flags & d.F_REAL))
 					//pp.p_ch = d.PASSAGE;
@@ -241,7 +241,7 @@ function scroll(r){
 					//ch = d.PASSAGE;
 					break;
 
-				case FLOOR:
+				case d.FLOOR:
 					if (pp.p_flags & d.F_REAL)
 					ch = ' ';
 					else
@@ -395,7 +395,7 @@ function scroll(r){
 		let c = {};
 
 		r.UI.mvaddch(hero.y, hero.x, r.player.floor_at());
-		r.dungeon.roomf.find_floor(null, NULL, c, false, true);
+		r.dungeon.roomf.find_floor(null, null, c, false, true);
 		if (r.dungeon.roomin(c) != proom)
 		{
 			r.dungeon.roomf.leave_room(hero);

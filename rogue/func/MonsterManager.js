@@ -224,7 +224,7 @@ function MonsterManager(r){
                     delta.x = Math.sign(hero.x - th.t_pos.x);
                     if (r.UI.has_hit)
                         r.UI.endmsg();
-                    fire_bolt(th.t_pos, delta, "flame");
+                    r.item.sticks.fire_bolt(th.t_pos, delta, "flame");
                     running = false;
                     count = 0;
                     quiet = 0;
@@ -611,7 +611,7 @@ function MonsterManager(r){
     */
     this.wanderer = function(){
         //let tp; //THING *tp;
-        let cp; //static coord cp;
+        let cp = {}; //static coord cp;
         const tp = r.new_item();
         do
         {

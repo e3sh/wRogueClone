@@ -13,6 +13,25 @@ function weapons(r){
 
     const ce = (a, b)=>{ return (a.x == b.x && a.y == b.y)};
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
+   
+    const is_current =(obj)=>//THING *obj)
+    {
+        if (obj == null)
+            return false;
+        if (obj == r.player.get_cur_armor() || obj == r.player.get_cur_weapon() || obj == r.player.get_cur_ring(d.LEFT)
+        || obj == r.player.get_cur_ring(d.RIGHT))
+        {
+            //if (!terse)
+                r.UI.addmsg("That's already ");
+            r.UI.msg("in use");
+            return true;
+        }
+        return false;
+    }
+
+    const step_ok = r.dungeon.step_ok
+
+    const weap_info = v.weap_info;
 
     let group = 2;
 
@@ -29,23 +48,23 @@ function weapons(r){
     *	Fire a missile in a given direction
     */
     //void
-    function missile(ydelta, xdelta)
+    this.missile = function(obj, ydelta, xdelta)
     {
-        let obj;    //THING *obj;
+        //let obj;    //THING *obj;
         /*
         * Get which thing we are hurling
         */
-        if ((obj = get_item("throw", d.WEAPON)) == null)
+        //if ((obj = get_item("throw", d.WEAPON)) == null)
+        //    return;
+        if (!r.item.things.dropcheck(obj) || is_current(obj))
             return;
-        if (!dropcheck(obj) || is_current(obj))
-            return;
-        obj = leave_pack(obj, true, false);
-        do_motion(obj, ydelta, xdelta);
+        obj = r.player.packf.leave_pack(obj, true, false);
+        this.do_motion(obj, ydelta, xdelta);
         /*
         * AHA! Here it has hit something.  If it is a wall or a door,
         * or if it misses (combat) the monster, put it on the floor
         */
-        if (moat(obj.o_pos.y, obj.o_pos.x) == null ||
+        if (r.dungeon.moat(obj.o_pos.y, obj.o_pos.x) == null ||
         !this.hit_monster(obj.o_pos.y, obj.o_pos.x, obj))
             fall(obj, true);
     }
@@ -67,7 +86,8 @@ function weapons(r){
         /*
         * Come fly with us ...
         */
-        obj.o_pos = hero;
+        if (!Boolean(obj)) return;
+        obj.o_pos = {x:hero.x, y:hero.y};
         for (;;)
         {
             /*
@@ -85,16 +105,16 @@ function weapons(r){
             */
             obj.o_pos.y += ydelta;
             obj.o_pos.x += xdelta;
-            if (step_ok(ch = winat(obj.o_pos.y, obj.o_pos.x)) && ch != DOOR)
+            if (step_ok(ch = r.dungeon.winat(obj.o_pos.y, obj.o_pos.x)) && ch != d.DOOR)
             {
                 /*
                 * It hasn't hit anything yet, so display it
                 * If it alright.
                 */
-                if (cansee(unc(obj.o_pos)) && !terse)
+                if (r.player.cansee(obj.o_pos.y,obj.o_pos.x))// && !terse)
                 {
-                    mvaddch(obj.o_pos.y, obj.o_pos.x, obj.o_type);
-                    refresh();
+                    r.UI.mvaddch(obj.o_pos.y, obj.o_pos.x, obj.o_type);
+                    //refresh();
                 }
                 continue;
             }
@@ -110,34 +130,33 @@ function weapons(r){
     function fall(obj, pr)//THING *obj, bool pr)
     {
         let pp;     //PLACE *pp;
-        let fpos;   //static coord fpos;
+        let fpos = {};   //static coord fpos;
 
         if (fallpos(obj.o_pos, fpos))
         {
-            pp = INDEX(fpos.y, fpos.x);
+            pp = r.dungeon.INDEX(fpos.y, fpos.x);
             pp.p_ch = obj.o_type;
             obj.o_pos = fpos;
-            if (cansee(fpos.y, fpos.x))
+            if (r.player.cansee(fpos.y, fpos.x))
             {
                 if (pp.p_monst != null)
                     pp.p_monst.t_oldch = obj.o_type;
                 else
-                    mvaddch(fpos.y, fpos.x, obj.o_type);
+                    r.UI.mvaddch(fpos.y, fpos.x, obj.o_type);
             }
-            attach(lvl_obj, obj);
+            r.attach(r.dungeon.lvl_obj, obj);
             return;
         }
         if (pr)
         {
-            if (has_hit)
+            if (r.UI.has_hit)
             {
-                endmsg();
-                has_hit = false;
+                r.UI.endmsg("");
+                r.UI.has_hit = false;
             }
-            msg("the %s vanishes as it hits the ground",
-                weap_info[obj.o_which].oi_name);
+            r.UI.msg(`the ${weap_info[obj.o_which].oi_name} vanishes as it hits the ground`);
         }
-        discard(obj);
+        r.discard(obj);
     }
 
     //init_weapon -> r.item
@@ -149,11 +168,11 @@ function weapons(r){
     //int
     this.hit_monster = function(y, x, obj)//int y, int x, THING *obj)
     {
-        let mp; //static coord mp;
+        let mp = {}; //static coord mp;
 
         mp.y = y;
         mp.x = x;
-        return r.monster.fight(mp, obj, true);
+        return r.monster.battle.fight(mp, obj, true);
     }
 
     /*
@@ -180,21 +199,6 @@ function weapons(r){
     {
         let oweapon;//THING *obj, *oweapon;
         let sp;
-
-        const is_current =(obj)=>//THING *obj)
-        {
-            if (obj == null)
-                return false;
-            if (obj == r.player.get_cur_armor() || obj == r.player.get_cur_weapon() || obj == r.player.get_cur_ring(d.LEFT)
-            || obj == r.player.get_cur_ring(d.RIGHT))
-            {
-                //if (!terse)
-                    r.UI.addmsg("That's already ");
-                r.UI.msg("in use");
-                return true;
-            }
-            return false;
-        }
 
         oweapon = r.player.get_cur_weapon();
         if (!r.item.things.dropcheck(r.player.get_cur_weapon()))
@@ -234,6 +238,8 @@ function weapons(r){
     //bool
     function fallpos(pos, newpos)//coord *pos, coord *newpos)
     {
+        const hero = r.player.player.t_pos;
+
         let y, x, cnt, ch;
 
         cnt = 0;
@@ -247,8 +253,8 @@ function weapons(r){
                 */
                 if (y == hero.y && x == hero.x)
                     continue;
-                if (((ch = chat(y, x)) == d.FLOOR || ch == d.PASSAGE)
-                            && rnd(++cnt) == 0)
+                if (((ch = r.dungeon.chat(y, x)) == d.FLOOR || ch == d.PASSAGE)
+                            && r.rnd(++cnt) == 0)
                 {
                     newpos.y = y;
                     newpos.x = x;

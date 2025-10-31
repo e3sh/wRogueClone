@@ -120,8 +120,10 @@ function potions(r){
 			break; 
 		case d.P_HEALING:
 			pot_info[d.P_HEALING].oi_know = true;
-			if ((pstats.s_hpt += r.roll(pstats.s_lvl, 4)) > max_hp)
-				pstats.s_hpt = ++max_hp;
+			pstats.s_hpt += r.roll(pstats.s_lvl, 4);
+			if (pstats.s_hpt > pstats.s_maxhp){//;//max_hp){
+				pstats.s_hpt = ++pstats.s_maxhp;
+			}
 			r.player.sight();
 			r.UI.msg("you begin to feel better");
 			break; 
@@ -134,8 +136,7 @@ function potions(r){
 			player.t_flags |= d.SEEMONST;
 			r.daemon.fuse(turn_see, true, d.HUHDURATION, d.AFTER);
 			if (!turn_see(false))
-				r.UI.msg("you have a %s feeling for a moment, then it passes",
-			choose_str("normal", "strange"));
+				r.UI.msg(`you have a ${choose_str("normal", "strange")} feeling for a moment, then it passes`);
 			break; 
 		case d.P_TFIND:
 			/*
@@ -249,7 +250,6 @@ function potions(r){
 			r.UI.debug(`potion_type: ${obj.o_which}`);
 			return;
 		}
-		
 		r.player.set_pstats(pstats);
 		r.UI.status();
 		/*
@@ -388,8 +388,12 @@ function potions(r){
 	//void
 	function raise_level()
 	{
+		const e_levels = r.globalValiable.e_levels;
+
+		const pstats = r.player.get_pstats();
 		pstats.s_exp = e_levels[pstats.s_lvl-1] + 1;
-		check_level();
+		r.player.misc.check_level();
+		r.player.set_pstats(pstats);
 	}
 
 	/*

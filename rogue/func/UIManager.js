@@ -140,6 +140,11 @@ function UIManager(r, g){
              g.console[3].move(g.console[3].cursor.x, g.console[3].cursor.y+1); 
              g.console[3].printw(text); 
     }
+    this.submvprintw = function(y, x, text){
+             g.console[3].move(x, y); 
+             g.console[3].printw(text); 
+    }
+
     this.setHomesub = function(){ g.console[3].move(0,0);}
 
     /*
@@ -242,12 +247,35 @@ function UIManager(r, g){
         {
             //this.move(d.STATLINE, 0);
             g.console[5].clear();
-            g.console[5].mvprintw(`Level: ${level}  Gold: ${purse}  Hp: ${pstats.s_hpt}(${max_hp})`+  
+            g.console[5].mvprintw(`${getPtnDelta(this.delta)} Level: ${level}  Gold: ${purse}  Hp: ${pstats.s_hpt}(${max_hp})`+  
                 `  Str: ${pstats.s_str}(${max_stats.s_str})  Arm: ${10 - s_arm}` +
                 `  Exp: ${pstats.s_lvl}/${pstats.s_exp}  ${state_name[hungry_state]}`
                 ,0,0);
         }
     }
+    //
+    function getPtnDelta(delta){
+
+        let res = "";
+        const U = String.fromCharCode(24);
+        const D = String.fromCharCode(25);
+        const L = String.fromCharCode(27);
+        const R = String.fromCharCode(26);
+
+        switch(delta){
+            case 7: res = `${L}${U} `; break;
+            case 8: res = ` ${U} ` ;break;
+            case 9: res = ` ${U}${R}` ; break;
+            case 4: res = `${L}- ` ; break;
+            case 6: res = ` -${R}` ; break;
+            case 1: res = `${L}${D} ` ; break;
+            case 2: res = ` ${D} ` ; break;
+            case 3: res = ` ${D}${R}`; break;
+            default: res = " + "; break;
+        }
+        return res;
+    } 
+
     /*
     * 
     *
@@ -318,7 +346,7 @@ function UIManager(r, g){
             again = false;
             if (has_hit)
             {
-                r.UI.endmsg();
+                r.UI.endmsg("");
                 has_hit = false;
             }
             /*
@@ -365,7 +393,8 @@ function UIManager(r, g){
                 ch = '.';
             if (no_command)
             {
-                if (--no_command == 0)
+                r.player.set_no_command(--no_command);
+                if (no_command == 0)
                 {
                     player.t_flags |= d.ISRUN;
                     r.UI.msg("you can move again");
@@ -423,35 +452,35 @@ function UIManager(r, g){
 
                         switch(useitem.o_type)
                         {
-                            case ":"://FOOD
+                            case d.FOOD:
                                 ws = "food eat()";
                                 r.player.eat(useitem);
                                 break;
-                            case ")"://WEAPON
+                            case d.WEAPON:
                                 ws = "weapon wield()";
                                 if (r.player.equip_state_check(inkeyst)) ws += "*";
                                 r.item.weapon.wield(useitem);
                                 // wield()
                                 break;
-                            case "]"://ARMOR
+                            case d.ARMOR:
                                 ws = "armor wear()/takeoff()";
                                 if (r.player.equip_state_check(inkeyst)) ws += "*";
                                 r.item.armor.wear(useitem);/// takeoff()
                                 break;                            
-                            case "="://RING
+                            case d.RING:
                                 ws = "ring ring_on/ring_off()";
                                 if (r.player.equip_state_check(inkeyst)) ws += "*";
                                 r.item.rings.ring_on(useitem);// ring_off()
                                 break;                            
-                            case "/"://STICK
+                            case d.STICK:
                                 ws = "stick/wand do_zap()";
                                 r.item.sticks.do_zap(useitem)//do_zap()
                                 break;                            
-                            case "!"://POTION
+                            case d.POTION:
                                 ws = "potion quaff()";
                                 r.item.potions.quaff(useitem);
                                 break;                            
-                            case "?"://SCROLL
+                            case d.SCROLL:
                                 ws = "scroll read_scroll()";
                                 r.item.scroll.read_scroll(useitem);
                                 break;                            
@@ -459,7 +488,7 @@ function UIManager(r, g){
                                 ws = "etc";
                                 //no operation
                         }
-                        r.UI.msg(`${ws} ${inkeyst})${r.item.things.inv_name(useitem, false)}`);//(${cnum})` );
+                        //r.UI.msg(`${ws} ${inkeyst})${r.item.things.inv_name(useitem, false)}`);//(${cnum})` );
                     }
                     //r.UI.msg(`use Item ${inkeyst})${r.item.things.inv_name(obj, false)} ${ws}`);//(${cnum})` );
                     r.player.packf.set_cur(0);
@@ -480,8 +509,28 @@ function UIManager(r, g){
 
                 let inkeyst = r.player.packf.get_cur();
                 let dobj = r.player.packf.picky_inven(inkeyst);
-                r.item.things.drop(dobj);
-                r.UI.msg(`drop Item ${inkeyst})${r.item.things.inv_name(dobj, false)}`);
+                if (!Boolean(dobj)) return;
+
+                if (dobj.o_type == d.WEAPON){
+                    let delta = {};
+                    switch (Number(r.UI.delta))
+                    {
+                        case 7: delta.y = -1; delta.x = -1; break;
+                        case 8: delta.y = -1; delta.x =  0; break;
+                        case 9: delta.y = -1; delta.x =  1; break;
+                        case 4: delta.y =  0; delta.x = -1; break;
+                        case 6: delta.y =  0; delta.x =  1; break;
+                        case 1: delta.y =  1; delta.x = -1; break;
+                        case 2: delta.y =  1; delta.x =  0; break;
+                        case 3: delta.y =  1; delta.x =  1; break;
+                        default:  return;
+                    }
+                    r.item.weapon.missile(dobj, delta.y, delta.x);
+                    //r.UI.msg(`throw ${inkeyst})${r.item.things.inv_name(dobj, false)} x${delta.x},y${delta.y}`);
+                }else{
+                    r.item.things.drop(dobj);
+                    //r.UI.msg(`drop ${inkeyst})${r.item.things.inv_name(dobj, false)}`);
+                }
                 r.player.packf.set_cur(0);
                 viewInventry();
             }
@@ -552,6 +601,7 @@ function UIManager(r, g){
                         if (cnum !=5) {
                             if (delta != cnum) kvf = true;
                             delta = cnum;
+                            this.delta = delta;
                         }
                         break;
                     }
@@ -569,9 +619,17 @@ function UIManager(r, g){
                         break;
                     case d.STAIRS: //r.UI.msg("STAIRS");
                         if (opcmdf) 
-                            r.dungeon.d_level(); //or u_level();
+                            if (r.player.amulet){
+                                r.dungeon.u_level();
+                            }else{
+                                r.dungeon.d_level();
+                            }      
                         else
-                            r.UI.msg(`find down stairs push[5]key next dungeon level`); 
+                            if (r.player.amulet){
+                                r.UI.msg(`you find up stairs.`);//(push[5] or pad(A)key next dungeon level)`);
+                            }else{
+                                r.UI.msg(`you find down stairs.`);//(push[5] or pad(A)key next dungeon level)`);
+                            }
                         break;
                     case d.GOLD:  
                     case d.FOOD:  

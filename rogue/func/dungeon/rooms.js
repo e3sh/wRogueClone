@@ -340,7 +340,11 @@ function rooms_f(r, dg){
 	this.rnd_pos = function(rp, cp) //(struct room *rp, coord *cp)
 	{
 		//console.log(`${rp} ${cp}`);
-	
+		if (!Boolean(cp)) {
+			cp = {};
+			r.UI.debug("rnd_pos cp");
+		}
+
 		cp.x = rp.r_pos.x + r.rnd(rp.r_max.x - 2) + 1;
 		cp.y = rp.r_pos.y + r.rnd(rp.r_max.y - 2) + 1;
 		return cp;

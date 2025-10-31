@@ -83,7 +83,13 @@ function miscf(r){
 
 		if (amt == 0)
 			return;
-		add_str(pstats.s_str, amt);
+		//add_str(pstats.s_str, amt);
+		pstats.s_str += amt;
+		if (pstats.s_str < 3)	
+			pstats.s_str = 3;
+		else if (pstats.s_str > 31)
+			pstats.s_str = 31;
+
 		comp = pstats.s_str;
 		if (ISRING(d.LEFT, d.R_ADDSTR))
 			add_str(comp, -cur_ring[d.LEFT].o_arm);
@@ -120,7 +126,7 @@ function miscf(r){
 
 		if (on(player, d.ISHASTE))
 		{
-			no_command += r.rnd(8);
+			r.player.set_no_command(r.player.get_no_command() + r.rnd(8));
 			player.t_flags &= ~(d.ISRUN|d.ISHASTE);
 			r.daemon.extinguish(nohaste);
 			r.UI.msg("you faint from exhaustion");
@@ -140,57 +146,21 @@ function miscf(r){
 	* aggravate:
 	*	Aggravate all the monsters on this level
 	*/
-
-	//void
-	function aggravate()
-	{
-		let mp;//THING mp;
-
-		for (mp = mlist; mp != NULL; mp = next(mp))
-			runto(mp.t_pos);
-	}
-
+	//->MonsterManager.
+	
 	/*
 	* vowelstr:
 	*      For printfs: if string starts with a vowel, return "n" for an
 	*	"an".
 	*/
-	//char *
-	//things.js
-	function vowelstr(str)
-	{
-		switch (str)
-		{
-		case 'a': case 'A':
-		case 'e': case 'E':
-		case 'i': case 'I':
-		case 'o': case 'O':
-		case 'u': case 'U':
-			return "n";
-		default:
-			return "";
-		}
-	}
-
+	// ->local things and rips function
+	
 	/* 
 	* is_current:
 	*	See if the object is one of the currently used items
 	*/
 	//bool
-	function is_current(obj)//THING *obj)
-	{
-		if (obj == NULL)
-		return FALSE;
-		if (obj == cur_armor || obj == cur_weapon || obj == cur_ring[LEFT]
-		|| obj == cur_ring[RIGHT])
-		{
-			if (!terse)
-				addmsg("That's already ");
-			msg("in use");
-			return TRUE;
-		}
-		return FALSE;
-	}
+	// ->local rings and weapons function
 
 	/*
 	* get_dir:
@@ -198,72 +168,14 @@ function miscf(r){
 	*	commands
 	*/
 	//bool
-	function get_dir()
-	{
-		let prompt;
-		let gotit;
-		let last_delt= {x:0,y:0};//static coord last_delt= {0,0};
-
-		if (again && last_dir != '\0')
-		{
-			delta.y = last_delt.y;
-			delta.x = last_delt.x;
-			dir_ch = last_dir;
-		}
-		else
-		{
-			if (!terse)
-				msg(prompt = "which direction? ");
-			else
-				prompt = "direction: ";
-			do
-			{
-				gotit = TRUE;
-				switch (dir_ch = readchar())
-				{
-				case 'h': case'H': delta.y =  0; delta.x = -1;
-				break; case 'j': case'J': delta.y =  1; delta.x =  0;
-				break; case 'k': case'K': delta.y = -1; delta.x =  0;
-				break; case 'l': case'L': delta.y =  0; delta.x =  1;
-				break; case 'y': case'Y': delta.y = -1; delta.x = -1;
-				break; case 'u': case'U': delta.y = -1; delta.x =  1;
-				break; case 'b': case'B': delta.y =  1; delta.x = -1;
-				break; case 'n': case'N': delta.y =  1; delta.x =  1;
-				break; case ESCAPE: last_dir = '\0'; reset_last(); return FALSE;
-				otherwise:
-					mpos = 0;
-					msg(prompt);
-					gotit = FALSE;
-				}
-			} while (!gotit);
-			if (isupper(dir_ch))
-				dir_ch = tolower(dir_ch);
-			last_dir = dir_ch;
-			last_delt.y = delta.y;
-			last_delt.x = delta.x;
-		}
-		if (on(player, ISHUH) && rnd(5) == 0)
-		do
-		{
-			delta.y = rnd(3) - 1;
-			delta.x = rnd(3) - 1;
-		} while (delta.y == 0 && delta.x == 0);
-		mpos = 0;
-		return TRUE;
-	}
+	// -> UIManager
 
 	/*
 	* sign:
 	*	Return the sign of the number
 	*/
 	//*int
-	function sign(nm)
-	{
-		if (nm < 0)
-		return -1;
-		else
-		return (nm > 0);
-	}
+	// -> Math.sign use
 
 	/*
 	* spread:
@@ -318,8 +230,5 @@ function miscf(r){
 	*	player is tripping
 	*/
 	//char *
-	function choose_str(ts, ns)//har *ts, char *ns)
-	{
-		return (on(player, ISHALU) ? ts : ns);
-	}
+	// -> PlayerCharactor, potion, scrolls, fight local function use
 }

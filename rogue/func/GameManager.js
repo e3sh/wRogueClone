@@ -183,6 +183,9 @@ function GameManager(g){
 
         g.console[1].printw(`Hello ${this.UI.whoami} , restart /just a moment while I dig the dungeon...`);
 
+        globalVariableInit(this);
+        this.dungeon.set_level(1);
+
         init_check();
         this.player.init_player();			/* Set up initial player stats プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。*/
         this.dungeon.new_level();			/* Draw current level new_level.c*/

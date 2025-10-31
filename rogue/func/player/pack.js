@@ -244,7 +244,7 @@ function packf(r){
 			r.UI.addmsg("no room");
 			if (!terse)
 				r.UI.addmsg(" in your pack");
-			r.UI.endmsg();
+			r.UI.endmsg("");
 			if (from_floor)
 				this.move_msg(obj);
 			inpack = d.MAXPACK;

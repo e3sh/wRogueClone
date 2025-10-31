@@ -260,55 +260,73 @@ function rips(r){
 	* total_winner:
 	*	Code for a winner
 	*/
-	function total_winner()
+	this.total_winner = function()
 	{
+		const pack = r.player.player.t_pack;
+
 		let obj;	//THING *obj;
 		let op;		//struct obj_info *op;
 		let worth = 0;
 		let oldpurse;
 
-		clear();
+	    const v = r.globalValiable;
+
+		const weap_info = v.weap_info;
+		const arm_info = v.arm_info;
+		const a_class = v.a_class;
+		const scr_info = v.scr_info;
+		const pot_info = v.pot_info;
+		const ring_info = v.ring_info;
+		const ws_info = v.ws_info;
+
+		r.UI.clear();
 		//standout();
-		addstr("                                                               \n");
-		addstr("  @   @               @   @           @          @@@  @     @  \n");
-		addstr("  @   @               @@ @@           @           @   @     @  \n");
-		addstr("  @   @  @@@  @   @   @ @ @  @@@   @@@@  @@@      @  @@@    @  \n");
-		addstr("   @@@@ @   @ @   @   @   @     @ @   @ @   @     @   @     @  \n");
-		addstr("      @ @   @ @   @   @   @  @@@@ @   @ @@@@@     @   @     @  \n");
-		addstr("  @   @ @   @ @  @@   @   @ @   @ @   @ @         @   @  @     \n");
-		addstr("   @@@   @@@   @@ @   @   @  @@@@  @@@@  @@@     @@@   @@   @  \n");
-		addstr("                                                               \n");
-		addstr("     Congratulations, you have made it to the light of day!    \n");
-		//standend();
-		addstr("\nYou have joined the elite ranks of those who have escaped the\n");
-		addstr("Dungeons of Doom alive.  You journey home and sell all your loot at\n");
-		addstr("a great profit and are admitted to the Fighters' Guild.\n");
+		let cmes = [];
+		r.UI.move(0,0);
+
+		cmes.push("                                                               ");
+		cmes.push("  @   @               @   @           @          @@@  @     @  ");
+		cmes.push("  @   @               @@ @@           @           @   @     @  ");
+		cmes.push("  @   @  @@@  @   @   @ @ @  @@@   @@@@  @@@      @  @@@    @  ");
+		cmes.push("   @@@@ @   @ @   @   @   @     @ @   @ @   @     @   @     @  ");
+		cmes.push("      @ @   @ @   @   @   @  @@@@ @   @ @@@@@     @   @     @  ");
+		cmes.push("  @   @ @   @ @  @@   @   @ @   @ @   @ @         @   @  @     ");
+		cmes.push("   @@@   @@@   @@ @   @   @  @@@@  @@@@  @@@     @@@   @@   @  ");
+		cmes.push("                                                               ");
+		cmes.push("     Congratulations, you have made it to the light of day!    ");
+		cmes.push("");
+		cmes.push("You have joined the elite ranks of those who have escaped the");
+		cmes.push("Dungeons of Doom alive.  You journey home and sell all your loot at");
+		cmes.push("a great profit and are admitted to the Fighters' Guild.");
 		
-		mvaddstr(LINES - 1, 0, "--Press space to continue--");
-		refresh();
-		wait_for(' ');
-		clear();
-		mvaddstr(0, 0, "   Worth  Item\n");
+		//r.UI.mvaddstr(d.LINES - 1, 0, "--Press space to continue--");
+
+		//wait_for(' ');
+		//clear();
+		//mvaddstr(0, 0, "   Worth  Item\n");
+		let sclist = [];
+
+		let purse = r.player.get_purse();
 		oldpurse = purse;
-		for (obj = pack; obj != null; obj = next(obj))
+		for (obj = pack; obj != null; obj = obj.l_next)
 		{
 			switch (obj.o_type)
 			{
-				case FOOD:
+				case d.FOOD:
 					worth = 2 * obj.o_count;
 					break; 
-				case WEAPON:
+				case d.WEAPON:
 					worth = weap_info[obj.o_which].oi_worth;
 					worth *= 3 * (obj.o_hplus + obj.o_dplus) + obj.o_count;
-					obj.o_flags |= ISKNOW;
+					obj.o_flags |= d.ISKNOW;
 					break; 
-				case ARMOR:
+				case d.ARMOR:
 					worth = arm_info[obj.o_which].oi_worth;
 					worth += (9 - obj.o_arm) * 100;
 					worth += (10 * (a_class[obj.o_which] - obj.o_arm));
-					obj.o_flags |= ISKNOW;
+					obj.o_flags |= d.ISKNOW;
 					break; 
-				case SCROLL:
+				case d.SCROLL:
 					worth = scr_info[obj.o_which].oi_worth;
 					worth *= obj.o_count;
 					op = scr_info[obj.o_which];
@@ -316,7 +334,7 @@ function rips(r){
 						worth /= 2;
 					op.oi_know = true;
 					break; 
-				case POTION:
+				case d.POTION:
 					worth = pot_info[obj.o_which].oi_worth;
 					worth *= obj.o_count;
 					op = pot_info[obj.o_which];
@@ -324,43 +342,57 @@ function rips(r){
 						worth /= 2;
 					op.oi_know = true;
 					break; 
-				case RING:
+				case d.RING:
 					op = ring_info[obj.o_which];
 					worth = op.oi_worth;
-					if (obj.o_which == R_ADDSTR || obj.o_which == R_ADDDAM ||
-						obj.o_which == R_PROTECT || obj.o_which == R_ADDHIT)
+					if (obj.o_which == d.R_ADDSTR || obj.o_which == d.R_ADDDAM ||
+						obj.o_which == d.R_PROTECT || obj.o_which == d.R_ADDHIT)
 					{
 						if (obj.o_arm > 0)
 							worth += obj.o_arm * 100;
 						else
 							worth = 10;
 					}
-					if (!(obj.o_flags & ISKNOW))
+					if (!(obj.o_flags & d.ISKNOW))
 						worth /= 2;
-					obj.o_flags |= ISKNOW;
+					obj.o_flags |= d.ISKNOW;
 					op.oi_know = true;
 					break; 
-				case STICK:
+				case d.STICK:
 					op = ws_info[obj.o_which];
 					worth = op.oi_worth;
 					worth += 20 * obj.o_charges;
-					if (!(obj.o_flags & ISKNOW))
+					if (!(obj.o_flags & d.ISKNOW))
 						worth /= 2;
-					obj.o_flags |= ISKNOW;
+					obj.o_flags |= d.ISKNOW;
 					op.oi_know = true;
 					break; 
-				case AMULET:
+				case d.AMULET:
 					worth = 1000;
 			}
 			if (worth < 0)
 				worth = 0;
-			printw(`${obj.o_packch}) ${worth}  ${inv_name(obj, false)}`);
+			sclist.push(`${obj.o_packch}) ${worth}  ${r.item.inv_name(obj, false)}`);
 			purse += worth;
 		}
-		printw("   %5d  Gold Pieces          ", oldpurse);
-		refresh();
+		sclist.push(`   ${oldpurse}  Gold Pieces          `);
+		sclist.push(``);
+		sclist.push(`TOTAL SCORE: ${purse}`);
+
 		score(purse, 2, ' ');
-		my_exit(0);
+
+		for (let i in cmes){
+			r.UI.move(Number(i)+5, 5);
+			r.UI.printw(cmes[i]);
+		}
+		r.UI.clear(3);
+		for (let i in sclist){
+			r.UI.submvprintw(i, 0 ,sclist[i]);
+		}
+
+		r.UI.pause("[Press return to continue]");
+		r.pause = true;
+		//my_exit(0);
 	}
 
 	/*

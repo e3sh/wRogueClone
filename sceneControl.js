@@ -29,7 +29,7 @@ class sceneControl extends GameTask {
 		this.step = function(g){
 
 			waitc++;
-			if (!stf && (waitc > 90)){
+			if (!stf && (waitc > 5)){//90
 				stf = true;
 				g.console[2].insertln();
 				g.console[2].printw(`rouge.start()`);

@@ -51,6 +51,10 @@ function battle(r){
 	let fight_flush = false;
 	let max_hit = 0;
 
+	let to_death = false;
+
+	const weap_info = r.globalValiable.weap_info;
+
 	const terse = false; //
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
 	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
@@ -59,7 +63,7 @@ function battle(r){
 	const rainbow = r.globalValiable.rainbow;
 	const pick_color =(col)=>
 	{
-		return (on(player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : col);
+		return (on(r.player.player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : col);
 	}
 
 	const death =(en)=>{alert(`death ${en}`)};
@@ -133,7 +137,7 @@ function battle(r){
 				did_hit = true;
 				tp.t_flags |= d.ISHUH;
 				player.t_flags &= ~d.CANHUH;
-				r.UI.endmsg();
+				r.UI.endmsg("");
 				r.UI.has_hit = false;
 				r.UI.msg(`your hands stop glowing ${pick_color("red")}`);
 			}
@@ -170,16 +174,16 @@ function battle(r){
 		running = false;
 		count = 0;
 		quiet = 0;
-		if (r.player.to_death && !on(mp, d.ISTARGET))
+		if (to_death && !on(mp, d.ISTARGET))
 		{
-			r.player.to_death = false;
+			to_death = false;
 			r.player.kamikaze = false;
 		}
 		if (mp.t_type == 'X' && mp.t_disguise != 'X' && !on(player, d.ISBLIND))
 		{
 			mp.t_disguise = 'X';
 			if (on(player, d.ISHALU))
-				mvaddch(mp.t_pos.y, mp.t_pos.x, r.rnd(26) + 'A');
+				r.UI.mvaddch(mp.t_pos.y, mp.t_pos.x, String.fromCharCode(r.rnd(26) + 'A'.charCodeAt(0)));
 		}
 		mname = this.set_mname(mp);
 		oldhp = pstats.s_hpt;
@@ -188,12 +192,12 @@ function battle(r){
 		if (mp.t_type != 'I')
 		{
 			if (r.UI.has_hit)
-			addmsg(".  ");
+			r.UI.addmsg(".  ");
 			hit(mname, null, false); //(char *) NULL
 		}
 		else
 			if (r.UI.has_hit)
-			endmsg();
+			r.UI.endmsg("");
 		r.UI.has_hit = false;
 		if (pstats.s_hpt <= 0)
 			r.death(mp.t_type);	/* Bye bye life ... */
@@ -212,22 +216,22 @@ function battle(r){
 				/*
 				* If an aquator hits, you can lose armor class.
 				*/
-				rust_armor(cur_armor);
+				r.player.rust_armor(cur_armor);
 				break; 
 			case 'I':
 				/*
 				* The ice monster freezes you
 				*/
 				player.t_flags &= ~d.ISRUN;
-				if (!no_command)
+				if (!r.player.set_no_command())
 				{
-				addmsg("you are frozen");
-				if (!terse)
-					addmsg(" by the %s", mname);
-				endmsg();
+					r.UI.addmsg("you are frozen");
+					//if (!terse)
+						r.UI.addmsg(` by the ${mname}`);
+					r.UI.endmsg("");
 				}
-				no_command += r.rnd(2) + 2;
-				if (no_command > d.BORE_LEVEL)
+				r.player.set_no_command(r.player.get_no_command()+ r.rnd(2) + 2);
+				if (r.player.set_no_command() > d.BORE_LEVEL)
 				r.death('h');
 				break; 
 			case 'R':
@@ -239,17 +243,17 @@ function battle(r){
 				if (!ISWEARING(d.R_SUSTSTR))
 				{
 					player.misc.chg_str(-1);
-					if (!terse)
+					//if (!terse)
 					r.UI.msg("you feel a bite in your leg and now feel weaker");
-					else
-					r.UI.msg("a bite has weakened you");
+					//else
+					//r.UI.msg("a bite has weakened you");
 				}
 				else if (!to_death)
 				{
-					if (!terse)
+					//if (!terse)
 					r.UI.msg("a bite momentarily weakens you");
-					else
-					r.UI.msg("bite has no effect");
+					//else
+					//r.UI.msg("bite has no effect");
 				}
 				}
 				break; 
@@ -279,10 +283,10 @@ function battle(r){
 					else
 						fewer = r.roll(1, 3);
 					pstats.s_hpt -= fewer;
-					max_hp -= fewer;
+					pstats.s_maxhp -= fewer;
 					if (pstats.s_hpt <= 0)
 						pstats.s_hpt = 1;
-					if (max_hp <= 0)
+					if (pstats.s_maxhp <= 0)
 						r.death(mp.t_type);
 					r.UI.msg("you suddenly feel weaker");
 				}
@@ -295,24 +299,26 @@ function battle(r){
 				r.UI.msg(`${monsters['F'.charCodeAt(0)-'A'.charCodeAt(0)].m_stats.s_dmg} ${++vf_hit}x1`);
 				if (--pstats.s_hpt <= 0)
 				r.death('F');
-			break; 
+				break; 
 			case 'L':
 			{
 				/*
 				* Leperachaun steals some gold
 				*/
+				let purse = r.player.get_purse();
 				let lastpurse;//register int lastpurse;
 
 				lastpurse = purse;
 				purse -= GOLDCALC;
 				if (!r.player.save(d.VS_MAGIC))
-				purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
+					purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
 				if (purse < 0)
-				purse = 0;
+					purse = 0;
 				remove_mon(mp.t_pos, mp, false);
-						mp=null;
+				mp=null;
 				if (purse != lastpurse)
-				r.UI.msg("your purse feels lighter");
+					r.UI.msg("your purse feels lighter");
+				r.player.set_purse(purse);
 			}
 			break; 
 			case 'N':
@@ -325,9 +331,9 @@ function battle(r){
 				* and pick out one we like.
 				*/
 				steal = null;
-				for (nobj = 0, obj = pack; obj != null; obj = next(obj))
-				if (obj != cur_armor && obj != cur_weapon
-					&& obj != cur_ring[LEFT] && obj != cur_ring[RIGHT]
+				for (nobj = 0, obj = pack; obj != null; obj = obj.l_next)
+				if (obj != r.player.get_cur_armor() && obj != r.player.get_cur_weapon()
+					&& obj != r.player.get_cur_ring(d.LEFT) && obj != r.player.get_cur_ring(d.RIGHT)
 					&& is_magic(obj) && r.rnd(++nobj) == 0)
 					steal = obj;
 				if (steal != null)
@@ -335,7 +341,7 @@ function battle(r){
 					remove_mon(mp.t_pos, moat(mp.t_pos.y, mp.t_pos.x), false);
 								mp=null;
 					r.player.packf.leave_pack(steal, false, false);
-					r.UI.msg("she stole %s!", inv_name(steal, true));
+					r.UI.msg(`she stole ${r.item.inv_name(steal, true)}`);
 					r.discard(steal);
 				}
 			}
@@ -361,7 +367,9 @@ function battle(r){
 		}
 		if (fight_flush && !r.player.to_death)
 		//flush_type();
+	
 		count = 0;
+		r.player.set_pstats(pstats);
 		r.UI.status();
 		if (mp == null)
 			return(-1);
@@ -558,12 +566,12 @@ function battle(r){
 		if (to_death)
 			return;
 		if (weap.o_type == d.WEAPON)
-			addmsg(`the ${weap_info[weap.o_which].oi_name} hits ` );
+			r.UI.addmsg(`the ${weap_info[weap.o_which].oi_name} hits ` );
 		else
-			addmsg("you hit ");
-		addmsg(`${mname}`);
+			r.UI.addmsg("you hit ");
+		r.UI.addmsg(`${mname}`);
 		if (!noend)
-			endmsg();
+			r.UI.endmsg("");
 	}
 
 	/*
@@ -577,7 +585,7 @@ function battle(r){
 		let s;
 		//h_names = []//extern char *h_names[];
 
-		if (r.to_death)
+		if (to_death)
 			return;
 		r.UI.addmsg(`${prname(er, false)}`);
 		if (terse)
@@ -593,7 +601,7 @@ function battle(r){
 		if (!terse)
 			r.UI.addmsg(`${prname(ee, false)}`);
 		if (!noend)
-			r.UI.endmsg();
+			r.UI.endmsg("");
 	}
 
 	/*
@@ -619,7 +627,7 @@ function battle(r){
 		if (!terse)
 			r.UI.addmsg(` ${prname(ee, false)}`);
 		if (!noend)
-			r.UI.endmsg();
+			r.UI.endmsg("");
 	}
 
 	/*
@@ -637,7 +645,7 @@ function battle(r){
 			r.UI.addmsg("you missed ");
 		r.UI.addmsg(mname);
 		if (!noend)
-			r.UI.endmsg();
+			r.UI.endmsg("");
 	}
 
 	/*
@@ -666,7 +674,7 @@ function battle(r){
 		if (on(tp, d.ISTARGET))
 		{
 			r.player.kamikaze = false;
-			r.player.to_death = false;
+			to_death = false;
 			if (fight_flush)
 				flush_type();
 		}
@@ -742,4 +750,30 @@ function battle(r){
 		if (fight_flush)
 		;//flush_type();
 	}
+
+	/*
+	* is_magic:
+	*	Returns true if an object radiates magic
+	*/
+	//bool
+	function is_magic(obj)//THING *obj)
+	{
+		const a_class = r.globalValiable.a_class;
+
+		switch (obj.o_type)
+		{
+		case d.ARMOR:
+			return ((obj.o_flags&d.ISPROT) || obj.o_arm != a_class[obj.o_which]);
+		case d.WEAPON:
+			return (obj.o_hplus != 0 || obj.o_dplus != 0);
+		case d.POTION:
+		case d.SCROLL:
+		case d.STICK:
+		case d.RING:
+		case d.AMULET:
+			return true;
+		}
+		return false;
+	}
+
 }

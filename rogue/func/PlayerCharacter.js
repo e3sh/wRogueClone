@@ -222,6 +222,9 @@ function PlayerCharacter(r){
     this.get_max_stats = ()=>{ return max_stats;}
     this.set_max_stats = (rs)=>{max_stats = rs;}
 
+    this.get_no_command = ()=>{ return no_command;}
+    this.set_no_command = (num)=>{ no_command = num;}
+
     //this.packf = new packf(r);
     //this.misc  = new miscf(r);
 
@@ -580,6 +583,11 @@ function PlayerCharacter(r){
     */
     this.do_move = function(dy, dx)
     {
+        
+        if (hero.x + dx < 0 || hero.x + dx >= d.NUMCOLS || hero.y + dy < 0 || hero.y + dy >= d.NUMLINES - 1){
+            //console.log("overscreen do_move");
+            return;
+        }
         //if (!r.after){
         //    r.after = true;
         //    return;
@@ -610,6 +618,7 @@ function PlayerCharacter(r){
                         }
                         dx = 0;
                         turnref();
+
                         nh.y = hero.y + dy;
                         nh.x = hero.x + dx;
                         break;
@@ -631,8 +640,10 @@ function PlayerCharacter(r){
                         }
                         dy = 0;
                         turnref();
-                        nh.y = hero.y + dy;
-                        nh.x = hero.x + dx;
+                        nh = {y: hero.y + dy, x: hero.x + dx}
+
+                        //nh.y = hero.y + dy;
+                        //nh.x = hero.x + dx;
                         break;
                 }
             }
@@ -672,14 +683,21 @@ function PlayerCharacter(r){
         {
             nh.y = hero.y + dy;
             nh.x = hero.x + dx;
+            //nh = {y: hero.y + dy, x: hero.x + dx}
         }
 
         /*
         * Check if he tried to move off the screen or make an illegal
         * diagonal move, and stop him if he did.
         */
-        if (nh.x < 0 || nh.x >= d.NUMCOLS || nh.y <= 0 || nh.y >= d.NUMLINES - 1)
+        if (nh.x < 0 || nh.x >= d.NUMCOLS || nh.y < 0 || nh.y >= d.NUMLINES - 1){
             hit_bound();
+            //r.running = false;
+            //r.after = false;
+
+            //nh.y -= dy;
+            //nh.x -= dx;
+        }   
         if (!this.diag_ok(hero, nh))
         {
             r.after = false;
@@ -721,7 +739,7 @@ function PlayerCharacter(r){
                 r.running = false;
                 //console.log((r.dungeon.flat(hero.y, hero.x) & d.F_PASS))
                 if (r.dungeon.flat(hero.y, hero.x) & d.F_PASS)
-                    enter_room(nh);
+                    this.enter_room(nh);
                 move_stuff();
                 //console.log("door");
                 break;
@@ -995,22 +1013,22 @@ function PlayerCharacter(r){
     */
     this.rust_armor = function(arm) //THING *arm)
     {
-        if (arm == null || arm.o_type != ARMOR || arm.o_which == LEATHER ||
+        if (arm == null || arm.o_type != d.ARMOR || arm.o_which == d.LEATHER ||
         arm.o_arm >= 9)
             return;
 
-        if ((arm.o_flags & ISPROT) || ISWEARING(R_SUSTARM))
+        if ((arm.o_flags & d.ISPROT) || ISWEARING(d.R_SUSTARM))
         {
-        if (!to_death)
-            msg("the rust vanishes instantly");
+            if (!to_death)
+                r.UI.msg("the rust vanishes instantly");
         }
         else
         {
-        arm.o_arm++;
-        if (!terse)
-            msg("your armor appears to be weaker now. Oh my!");
-        else
-            msg("your armor weakens");
+            arm.o_arm++;
+            //if (!terse)
+                r.UI.msg("your armor appears to be weaker now. Oh my!");
+            //else
+            //    msg("your armor weakens");
         }
     }
     /*
@@ -1208,13 +1226,13 @@ function PlayerCharacter(r){
         }
 
         let rer;	//register struct room *rer;
-        let tp;		//static coord tp;
+        let tp = {};		//static coord tp;
 
         if (on(player, d.ISBLIND))
             return false;
         if (dist(y, x, hero.y, hero.x) < d.LAMPDIST)
         {
-            if (r.dungeon.flat(y, x) & F_PASS)
+            if (r.dungeon.flat(y, x) & d.F_PASS)
                 if (y != hero.y && x != hero.x &&
                 !r.dungeon.step_ok(r.dungeon.chat(y, hero.x)) && !r.dungeon.step_ok(r.dungeon.chat(hero.y, x)))
                     return false;
