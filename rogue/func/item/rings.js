@@ -84,7 +84,7 @@ function rings(r){
 		switch (Number(obj.o_which))
 		{
 		case d.R_ADDSTR:
-			player.misc.chg_str(obj.o_arm);
+			r.player.misc.chg_str(obj.o_arm);
 			break;
 		case d.R_SEEINVIS:
 			r.item.potions.invis_on();
@@ -113,9 +113,9 @@ function rings(r){
 
 		if (cur_ring[d.LEFT] == null && cur_ring[d.RIGHT] == null)
 		{
-			if (terse)
-				r.UI.msg("no rings");
-			else
+			//if (terse)
+			//	r.UI.msg("no rings");
+			//else
 				r.UI.msg("you aren't wearing any rings");
 			return;
 		}
@@ -181,8 +181,8 @@ function rings(r){
 	*/
 	this.ring_eat = function(hand)
 	{
-		const gs = r.player.get_status();
-		const cur_ring = gs.ring;
+		//const gs = r.player.get_status();
+		const cur_ring = r.player.get_cur_ring(hand);
 
 		let ring;	//THING *ring;
 		let eat;
@@ -195,7 +195,7 @@ function rings(r){
 			-2,	/* R_DIGEST */		 0,	/* R_TELEPORT */
 			1,	/* R_STEALTH */		 1	/* R_SUSTARM */
 		];
-		ring = cur_ring[hand];
+		ring = cur_ring;//[hand];
 		if (ring == null) return 0;
 		if (!Boolean(ring.o_which))
 			return 0;

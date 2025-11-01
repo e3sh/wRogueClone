@@ -17,7 +17,8 @@ class ioControl extends GameTask {
 			[32, 20,"small"	,["_" ," "], 6, 8	,640, 16], //2:debug, comment
 			[32, 32,"small"	,false ,	 6, 10	,640,180], //3:inventry
 			[32, 50,"mini"	,["_" ," "], 4, 6	,  0, 18], //4:mobslist
-			[80,  1,"std"	,false, 8,16,  0,368], //5:statusbar
+			[80,  1,"std"	,false, 8,16,   0,368], //5:statusbar
+			[40, 30,"stdbg"	,false,	8,16, 320,180]	//6:viewUpwindow
 		]
 
 		let cnsl = [];
@@ -63,6 +64,7 @@ class ioControl extends GameTask {
 		];
 		*/
 		this.debugview = true;
+		this.overlapview = false;
 		this.waittime = g.time();
 		this.input = {};
 	}
@@ -187,9 +189,13 @@ class ioControl extends GameTask {
 		let dt = g.deltaTime().toString().substring(0,4);
 		g.font["small"].putchr(`FPS:${Math.floor(r.fps)}  delta:${dt}`,640, 0);
 
+		let dispf = [true, true, !this.debugview, !this.overlapview, !this.debugview, true, this.overlapview];
+
 		for (let i in this.layout){
 			let d = this.layout[i];
-			if (!(this.debugview && (i ==2 || i ==4))) d.con.draw(g, d.x, d.y);
+
+			if (dispf[i]) d.con.draw(g, d.x, d.y);
+			//if (!((this.debugview && (i ==2 || i ==4)) || (this.overlapview && i==6))) d.con.draw(g, d.x, d.y);
 			//if (this.debugview) d.con.draw(g, d.x, d.y);
 		}
 

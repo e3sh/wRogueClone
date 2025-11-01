@@ -191,17 +191,26 @@ function UIManager(r, g){
     
     this.debug  = function(text){      this.comment(`d: ${text}`); }
     this.comment = function(text){     g.console[2].insertln(); g.console[2].printw(text); }
-    this.submsg = function(text){
-             //g.console[3].insertln();
-             g.console[3].move(g.console[3].cursor.x, g.console[3].cursor.y+1); 
-             g.console[3].printw(text); 
+
+    this.submsg = function(text, mode){
+        let cn = (!Boolean(mode))?3:6; 
+
+        //g.console[3].insertln();
+        g.console[cn].move(g.console[cn].cursor.x, g.console[cn].cursor.y+1); 
+        g.console[cn].printw(text); 
     }
-    this.submvprintw = function(y, x, text){
-             g.console[3].move(x, y); 
-             g.console[3].printw(text); 
+    this.submvprintw = function(y, x, text, mode){
+        let cn = (!Boolean(mode))?3:6; 
+        
+        g.console[cn].move(x, y); 
+        g.console[cn].printw(text); 
     }
 
-    this.setHomesub = function(){ g.console[3].move(0,0);}
+    this.setHomesub = function(mode){
+        let cn = (!Boolean(mode))?3:6; 
+       
+        g.console[cn].move(0,0);
+    }
 
     /*
     * readchar:
@@ -471,11 +480,13 @@ function UIManager(r, g){
                 //last_pick = null;
             }
 
-            const viewInventry = ()=>{
+            const viewInventry = (mode)=>{
                 //r.after = false; inventory(pack, 0);
                 let st = r.player.get_invstat();
                 r.UI.setHomesub();
-                r.UI.clear(3);
+                r.UI.setHomesub(mode);
+                r.UI.clear(3); //sideconsole 
+                r.UI.clear(6); //centerconsole
 
                 let io = g.task.read("io");
                 if (!io.debugview){
@@ -484,7 +495,9 @@ function UIManager(r, g){
                     }
                     r.UI.submsg(`inpack ${r.player.packf.read_inpack()} /cur:${r.player.packf.get_cur()}`);
                 }
-                r.player.packf.inventory(player.t_pack, 0);
+
+                io.overlapview = mode;
+                r.player.packf.inventory(player.t_pack, 0, mode);
                 r.debug.mobslist();
             }
 
@@ -606,8 +619,9 @@ function UIManager(r, g){
                 r.player.packf.set_cur(
                     (ki.includes("NumpadAdd")||ki.includes("ArrowDown"))?1:-1
                 );
+                viewInventry(true);
+            }else
                 viewInventry();
-            }
             //if (ki.includes("NumpadAdd")) r.player.packf.set_cur(1);//r.UI.msg("+");
             //if (ki.includes("NumpadSubtract")) r.player.packf.set_cur(-1)//r.UI.msg("-");
             //if (ki.includes("Numpad0")) r.UI.msg("Zero");

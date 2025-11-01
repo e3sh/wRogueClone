@@ -359,7 +359,7 @@ function packf(r){
 	*	List what is in the pack.  Return TRUE if there is something of
 	*	the given type.
 	*/
-	this.inventory = function(list, type)	//THING *list, int type)
+	this.inventory = function(list, type, mode)	//THING *list, int type)
 	{
 		if (inpack <= 0) return;
 		if (r.UI.get_execItemuse()){
@@ -386,7 +386,7 @@ function packf(r){
 			inv_temp = `${equip}${cur}${list.o_packch}) `;// ${}`"%c) %%s", list.o_packch);
 			//msg_esc = true;
 			inv_temp += r.item.things.inv_name(list, false);
-			r.UI.submsg(inv_temp);
+			r.UI.submsg(inv_temp, mode);
 			//if (n_objs >= inpack) break;
 			//console.log(inv_temp);	
 			//if (add_line(inv_temp, inv_name(list, false)) == d.ESCAPE)

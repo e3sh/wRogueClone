@@ -10,6 +10,7 @@ function main() {
     game.asset.imageLoad("ASCII", p + "pdcfont.png");
     game.asset.imageLoad("SMALL", p + "k12x8_jisx0201c.png");
     game.asset.imageLoad("MINIF", p + "font4x6.png");
+    game.asset.imageLoad("ASCBG", p + "pdcfont_bg.png");
 
 	const spfd = SpriteFontData();
 	for (let i in spfd) {
@@ -61,5 +62,6 @@ function SpriteFontData() {
         { name: "std"   , id: "ASCII", pattern: sp, ucc: true },
         { name: "small" , id: "SMALL", pattern: s2 },
         { name: "mini"  , id: "MINIF", pattern: ss },
+        { name: "stdbg" , id: "ASCBG", pattern: sp, ucc: true },
     ]
 }
