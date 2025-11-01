@@ -88,10 +88,13 @@ function weapons(r){
 		const hero = player.t_pos;
 
         let ch;
+        let startpos;
         /*
         * Come fly with us ...
         */
         if (!Boolean(obj)) return;
+        startpos = {x:hero.x, y:hero.y};
+
         obj.o_pos = {x:hero.x, y:hero.y};
         for (;;)
         {
@@ -125,6 +128,8 @@ function weapons(r){
             }
             break;
         }
+        r.UI.comment(`domo st(x${startpos.x}y${startpos.y})ed(x${obj.o_pos.x}y${obj.o_pos.y})`);
+        r.UI.setEffect(obj.o_type, startpos, {x:obj.o_pos.x, y:obj.o_pos.y})
     }
 
     /*

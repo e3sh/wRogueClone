@@ -775,6 +775,11 @@ function PlayerCharacter(r){
                 r.running = false;
                 if (isupper(ch) || r.dungeon.moat(nh.y, nh.x)){
                     //battle
+
+                    r.UI.battleEffect("+",
+                        nh.x, nh.y
+                    )
+
                     r.monster.battle.fight(nh, cur_weapon, false);
 
                     r.running = false;

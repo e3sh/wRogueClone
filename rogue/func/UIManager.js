@@ -88,6 +88,32 @@ function UIManager(r, g){
         return resd;
     }
 
+    const scene = g.task.read("scene")
+    const moveEffect = scene.moveEffect;
+    this.setEffect = moveEffect.setEffect; 
+
+    this.battleEffect = function(asch, x ,y){
+        for (let i=0; i<3.14; i+=0.3){
+            this.setEffect(asch,{x:x,y:y},
+                {x: x+Math.cos(i)*5,
+                 y: y+Math.sin(i)*10 
+                }
+            )
+        }        
+    } 
+    this.damageEffect = function(asch, x ,y){
+        for (let i=0; i<3.14; i+=0.3){
+            this.setEffect(asch,
+                {x: x+Math.floor(Math.cos(i)*3),
+                 y: y+Math.floor(Math.sin(i)*6) 
+                },
+                {x:x,y:y}
+            )
+        }        
+    } 
+
+
+
     /*
     **関連する関数（提案されるメソッドの例）:**
     *   `msg()`, `addmsg()`, `endmsg()`, `doadd()` (メッセージ表示)。

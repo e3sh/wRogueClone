@@ -32,6 +32,7 @@ const w = [
         r + "item/scrolls.js",
         r + "item/sticks.js",
     r + "UIManager.js",
+        r + "UI/moveEffect.js",
     r + "DaemonScheduler.js",
     r + "SystemAdapter.js",
     // Rogue Parameters

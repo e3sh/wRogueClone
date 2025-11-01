@@ -296,7 +296,7 @@ function scroll(r){
 			{
 				cur_room = player.t_room;
 				teleport();
-				if (cur_room != proom)
+				if (cur_room != r.player.player.t_room)
 					scr_info[d.S_TELEP].oi_know = true;
 			}
 			break; 

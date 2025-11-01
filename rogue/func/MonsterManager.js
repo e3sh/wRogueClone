@@ -253,6 +253,9 @@ function MonsterManager(r){
             if (ce(cthis, hero))
             {
                 //console.log("attack");
+                r.UI.damageEffect("*",
+                    hero.x,hero.y
+                )
                 return r.monster.battle.attack(th);
             }
             else if (ce(cthis, th.t_dest))
