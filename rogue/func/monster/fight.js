@@ -191,166 +191,168 @@ function battle(r){
 		oldhp = pstats.s_hpt;
 		if (roll_em(mp, player, null, false))//(THING *) NULL
 		{
-		if (mp.t_type != 'I')
-		{
-			if (r.UI.has_hit)
-			r.UI.addmsg(".  ");
-			hit(mname, null, false); //(char *) NULL
-		}
-		else
-			if (r.UI.has_hit)
-			r.UI.endmsg("");
-		r.UI.has_hit = false;
-		if (pstats.s_hpt <= 0)
-			r.death(mp.t_type);	/* Bye bye life ... */
-		else if (!r.player.kamikaze)
-		{
-			oldhp -= pstats.s_hpt;
-			if (oldhp > max_hit)
-				max_hit = oldhp;
-			if (pstats.s_hpt <= max_hit)
-				to_death = false;
-		}
-		if (!on(mp, d.ISCANC))
-			switch (mp.t_type)
-			{
-			case 'A':
-				/*
-				* If an aquator hits, you can lose armor class.
-				*/
-				r.player.rust_armor(r.player.get_cur_armor());
-				break; 
-			case 'I':
-				/*
-				* The ice monster freezes you
-				*/
-				player.t_flags &= ~d.ISRUN;
-				if (!r.player.set_no_command())
-				{
-					r.UI.addmsg("you are frozen");
-					//if (!terse)
-						r.UI.addmsg(` by the ${mname}`);
-					r.UI.endmsg("");
-				}
-				r.player.set_no_command(r.player.get_no_command()+ r.rnd(2) + 2);
-				if (r.player.set_no_command() > d.BORE_LEVEL)
-				r.death('h');
-				break; 
-			case 'R':
-				/*
-				* Rattlesnakes have poisonous bites
-				*/
-				if (!r.player.save(d.VS_POISON))
-				{
-				if (!r.player.isWearing(d.R_SUSTSTR))
-				{
-					r.player.misc.chg_str(-1);
-					//if (!terse)
-					r.UI.msg("you feel a bite in your leg and now feel weaker");
-					//else
-					//r.UI.msg("a bite has weakened you");
-				}
-				else if (!to_death)
-				{
-					//if (!terse)
-					r.UI.msg("a bite momentarily weakens you");
-					//else
-					//r.UI.msg("bite has no effect");
-				}
-				}
-				break; 
-			case 'W':
-			case 'V':
-				/*
-				* Wraiths might drain energy levels, and Vampires
-				* can steal max_hp
-				*/
-				if (r.rnd(100) < (mp.t_type == 'W' ? 15 : 30))
-				{
-					let fewer;	//register int fewer;
+			r.UI.damageEffect("*" ,player.t_pos.x ,player.t_pos.y);
 
-					if (mp.t_type == 'W')
+			if (mp.t_type != 'I')
+			{
+				if (r.UI.has_hit)
+				r.UI.addmsg(".  ");
+				hit(mname, null, false); //(char *) NULL
+			}
+			else
+				if (r.UI.has_hit)
+					r.UI.endmsg("");
+			r.UI.has_hit = false;
+			if (pstats.s_hpt <= 0)
+				r.death(mp.t_type);	/* Bye bye life ... */
+			else if (!r.player.kamikaze)
+			{
+				oldhp -= pstats.s_hpt;
+				if (oldhp > max_hit)
+					max_hit = oldhp;
+				if (pstats.s_hpt <= max_hit)
+					to_death = false;
+			}
+			if (!on(mp, d.ISCANC))
+				switch (mp.t_type)
+				{
+				case 'A':
+					/*
+					* If an aquator hits, you can lose armor class.
+					*/
+					r.player.rust_armor(r.player.get_cur_armor());
+					break; 
+				case 'I':
+					/*
+					* The ice monster freezes you
+					*/
+					player.t_flags &= ~d.ISRUN;
+					if (!r.player.set_no_command())
 					{
-						if (pstats.s_exp == 0)
-							r.death('W');		/* All levels gone */
-						if (--pstats.s_lvl == 0)
+						r.UI.addmsg("you are frozen");
+						//if (!terse)
+							r.UI.addmsg(` by the ${mname}`);
+						r.UI.endmsg("");
+					}
+					r.player.set_no_command(r.player.get_no_command()+ r.rnd(2) + 2);
+					if (r.player.set_no_command() > d.BORE_LEVEL)
+					r.death('h');
+					break; 
+				case 'R':
+					/*
+					* Rattlesnakes have poisonous bites
+					*/
+					if (!r.player.save(d.VS_POISON))
+					{
+					if (!r.player.isWearing(d.R_SUSTSTR))
+					{
+						r.player.misc.chg_str(-1);
+						//if (!terse)
+						r.UI.msg("you feel a bite in your leg and now feel weaker");
+						//else
+						//r.UI.msg("a bite has weakened you");
+					}
+					else if (!to_death)
+					{
+						//if (!terse)
+						r.UI.msg("a bite momentarily weakens you");
+						//else
+						//r.UI.msg("bite has no effect");
+					}
+					}
+					break; 
+				case 'W':
+				case 'V':
+					/*
+					* Wraiths might drain energy levels, and Vampires
+					* can steal max_hp
+					*/
+					if (r.rnd(100) < (mp.t_type == 'W' ? 15 : 30))
+					{
+						let fewer;	//register int fewer;
+
+						if (mp.t_type == 'W')
 						{
-							pstats.s_exp = 0;
-							pstats.s_lvl = 1;
+							if (pstats.s_exp == 0)
+								r.death('W');		/* All levels gone */
+							if (--pstats.s_lvl == 0)
+							{
+								pstats.s_exp = 0;
+								pstats.s_lvl = 1;
+							}
+							else
+								pstats.s_exp = e_levels[pstats.s_lvl-1]+1;
+							fewer = r.roll(1, 10);
 						}
 						else
-							pstats.s_exp = e_levels[pstats.s_lvl-1]+1;
-						fewer = r.roll(1, 10);
+							fewer = r.roll(1, 3);
+						pstats.s_hpt -= fewer;
+						pstats.s_maxhp -= fewer;
+						if (pstats.s_hpt <= 0)
+							pstats.s_hpt = 1;
+						if (pstats.s_maxhp <= 0)
+							r.death(mp.t_type);
+						r.UI.msg("you suddenly feel weaker");
 					}
-					else
-						fewer = r.roll(1, 3);
-					pstats.s_hpt -= fewer;
-					pstats.s_maxhp -= fewer;
-					if (pstats.s_hpt <= 0)
-						pstats.s_hpt = 1;
-					if (pstats.s_maxhp <= 0)
-						r.death(mp.t_type);
-					r.UI.msg("you suddenly feel weaker");
-				}
-				break; 
-			case 'F':
-				/*
-				* Venus Flytrap stops the poor guy from moving
-				*/
-				player.t_flags |= d.ISHELD;
-				r.UI.msg(`${monsters['F'.charCodeAt(0)-'A'.charCodeAt(0)].m_stats.s_dmg} ${++vf_hit}x1`);
-				if (--pstats.s_hpt <= 0)
-				r.death('F');
-				break; 
-			case 'L':
-			{
-				/*
-				* Leperachaun steals some gold
-				*/
-				let purse = r.player.get_purse();
-				let lastpurse;//register int lastpurse;
-
-				lastpurse = purse;
-				purse -= GOLDCALC();
-				if (!r.player.save(d.VS_MAGIC))
-					purse -= GOLDCALC() + GOLDCALC() + GOLDCALC() + GOLDCALC();
-				if (purse < 0)
-					purse = 0;
-				remove_mon(mp.t_pos, mp, false);
-				mp=null;
-				if (purse != lastpurse)
-					r.UI.msg("your purse feels lighter");
-				r.player.set_purse(purse);
-			}
-			break; 
-			case 'N':
-			{
-				let obj, steal;//register THING *obj, *steal;
-				let nobj;	//register int nobj;
-
-				/*
-				* Nymph's steal a magic item, look through the pack
-				* and pick out one we like.
-				*/
-				steal = null;
-				for (nobj = 0, obj = pack; obj != null; obj = obj.l_next)
-				if (obj != r.player.get_cur_armor() && obj != r.player.get_cur_weapon()
-					&& obj != r.player.get_cur_ring(d.LEFT) && obj != r.player.get_cur_ring(d.RIGHT)
-					&& is_magic(obj) && r.rnd(++nobj) == 0)
-					steal = obj;
-				if (steal != null)
+					break; 
+				case 'F':
+					/*
+					* Venus Flytrap stops the poor guy from moving
+					*/
+					player.t_flags |= d.ISHELD;
+					r.UI.msg(`${monsters['F'.charCodeAt(0)-'A'.charCodeAt(0)].m_stats.s_dmg} ${++vf_hit}x1`);
+					if (--pstats.s_hpt <= 0)
+					r.death('F');
+					break; 
+				case 'L':
 				{
-					remove_mon(mp.t_pos, moat(mp.t_pos.y, mp.t_pos.x), false);
-								mp=null;
-					r.player.packf.leave_pack(steal, false, false);
-					r.UI.msg(`she stole ${r.item.inv_name(steal, true)}`);
-					r.discard(steal);
+					/*
+					* Leperachaun steals some gold
+					*/
+					let purse = r.player.get_purse();
+					let lastpurse;//register int lastpurse;
+
+					lastpurse = purse;
+					purse -= GOLDCALC();
+					if (!r.player.save(d.VS_MAGIC))
+						purse -= GOLDCALC() + GOLDCALC() + GOLDCALC() + GOLDCALC();
+					if (purse < 0)
+						purse = 0;
+					remove_mon(mp.t_pos, mp, false);
+					mp=null;
+					if (purse != lastpurse)
+						r.UI.msg("your purse feels lighter");
+					r.player.set_purse(purse);
 				}
-			}
-			break;
-			default:
+				break; 
+				case 'N':
+				{
+					let obj, steal;//register THING *obj, *steal;
+					let nobj;	//register int nobj;
+
+					/*
+					* Nymph's steal a magic item, look through the pack
+					* and pick out one we like.
+					*/
+					steal = null;
+					for (nobj = 0, obj = pack; obj != null; obj = obj.l_next)
+					if (obj != r.player.get_cur_armor() && obj != r.player.get_cur_weapon()
+						&& obj != r.player.get_cur_ring(d.LEFT) && obj != r.player.get_cur_ring(d.RIGHT)
+						&& is_magic(obj) && r.rnd(++nobj) == 0)
+						steal = obj;
+					if (steal != null)
+					{
+						remove_mon(mp.t_pos, moat(mp.t_pos.y, mp.t_pos.x), false);
+									mp=null;
+						r.player.packf.leave_pack(steal, false, false);
+						r.UI.msg(`she stole ${r.item.inv_name(steal, true)}`);
+						r.discard(steal);
+					}
+				}
 				break;
-			}
+				default:
+					break;
+				}
 		}
 		else if (mp.t_type != 'I')
 		{
@@ -368,7 +370,7 @@ function battle(r){
 			miss(mname, null, false); //(char *) NULL
 		}
 		if (fight_flush && !r.player.to_death)
-		//flush_type();
+			;//flush_type();
 	
 		count = 0;
 		r.player.set_pstats(pstats);

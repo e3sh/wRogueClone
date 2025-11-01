@@ -99,34 +99,19 @@ function UIManager(r, g){
 
     this.battleEffect = function(asch, x ,y){
         for (let i=0; i<(2*Math.PI); i+=0.3){
-            this.setEffect(asch,{x:x,y:y},
-                {x: x+Math.cos(i)*3,
-                 y: y+Math.sin(i)*3 
-                }
-            )
+            this.setEffect(asch, {x:x,y:y} ,{x: x+Math.cos(i)*3, y: y+Math.sin(i)*3});
         }        
     } 
     this.damageEffect = function(asch, x ,y){
         for (let i=0; i<(2*Math.PI); i+=0.3){
-            this.setEffect(asch,
-                {x: x+Math.floor(Math.cos(i)*2),
-                 y: y+Math.floor(Math.sin(i)*2) 
-                },
-                {x:x,y:y}
-            )
+            this.setEffect(asch, {x: x+Math.cos(i)*2, y: y+Math.sin(i)*2}, {x:x,y:y});
         }        
     } 
     this.hitEffect = function(asch, x ,y){
         for (let i=0; i<(2*Math.PI); i+=0.3){
-            this.setEffect(asch,{x:x,y:y},
-                {x: x+Math.cos(i)*1.5,
-                 y: y+Math.sin(i)*1.5 
-                }
-            )
+            this.setEffect(asch, {x:x,y:y}, {x: x+Math.cos(i)*1.5, y: y+Math.sin(i)*1.5});
         }        
     } 
-
-
 
     /*
     **関連する関数（提案されるメソッドの例）:**

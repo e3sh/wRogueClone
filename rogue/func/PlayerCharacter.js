@@ -778,11 +778,15 @@ function PlayerCharacter(r){
                 if (isupper(ch) || r.dungeon.moat(nh.y, nh.x)){
                     //battle
 
-                    r.UI.battleEffect("+",
-                        nh.x, nh.y
-                    )
+                    //r.UI.battleEffect("+",
+                    //    nh.x, nh.y
+                    //)
 
-                    r.monster.battle.fight(nh, cur_weapon, false);
+                    if (r.monster.battle.fight(nh, cur_weapon, false)){
+                        r.UI.battleEffect("+",
+                            nh.x, nh.y
+                        )
+                    }
 
                     r.running = false;
                     r.after = false;
