@@ -194,7 +194,7 @@ function sticks(r){
 				bolt.o_launch = cw.o_which;
 			r.item.weapon.do_motion(bolt, delta.y, delta.x);
 			if ((tp = r.dungeon.moat(bolt.o_pos.y, bolt.o_pos.x)) != null
-			&& !save_throw(VS_MAGIC, tp))
+			&& !save_throw(d.VS_MAGIC, tp))
 				r.item.weapon.hit_monster(bolt.o_pos.y ,bolt.o_pos.x , bolt);
 			//else if (terse)
 			//	r.UI.msg("missle vanishes");
