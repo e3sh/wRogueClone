@@ -47,6 +47,7 @@ function battle(r){
     const t = r.types;
 
 	const monsters =  r.globalValiable.monsters;
+	const e_levels =  r.globalValiable.e_levels;
 
 	let fight_flush = false;
 	let max_hit = 0;
