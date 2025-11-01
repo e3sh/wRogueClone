@@ -166,7 +166,7 @@ function sticks(r){
 						{
 							do
 							{
-								r.dungeon.find_floor(null, new_pos, false, true);
+								r.dungeon.roomf.find_floor(null, new_pos, false, true);
 							} while (ce(new_pos, hero));
 						}
 						else
