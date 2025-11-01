@@ -216,7 +216,7 @@ function battle(r){
 				/*
 				* If an aquator hits, you can lose armor class.
 				*/
-				r.player.rust_armor(cur_armor);
+				r.player.rust_armor(r.player.get_cur_armor());
 				break; 
 			case 'I':
 				/*
