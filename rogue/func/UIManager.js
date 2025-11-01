@@ -70,6 +70,11 @@ function UIManager(r, g){
 
     this.has_hit = has_hit;
 
+    let exec_iu = false;
+    this.get_execItemuse =()=>{return exec_iu;};
+    this.set_execItemuse =()=>{exec_iu = true;};
+    this.reset_execItemuse =()=>{exec_iu = false;}
+
     this.delta = delta;
     this.get_delta =()=>{
         let resd = {};
@@ -93,21 +98,30 @@ function UIManager(r, g){
     this.setEffect = moveEffect.setEffect; 
 
     this.battleEffect = function(asch, x ,y){
-        for (let i=0; i<3.14; i+=0.3){
+        for (let i=0; i<(2*Math.PI); i+=0.3){
             this.setEffect(asch,{x:x,y:y},
-                {x: x+Math.cos(i)*5,
-                 y: y+Math.sin(i)*10 
+                {x: x+Math.cos(i)*3,
+                 y: y+Math.sin(i)*3 
                 }
             )
         }        
     } 
     this.damageEffect = function(asch, x ,y){
-        for (let i=0; i<3.14; i+=0.3){
+        for (let i=0; i<(2*Math.PI); i+=0.3){
             this.setEffect(asch,
-                {x: x+Math.floor(Math.cos(i)*3),
-                 y: y+Math.floor(Math.sin(i)*6) 
+                {x: x+Math.floor(Math.cos(i)*2),
+                 y: y+Math.floor(Math.sin(i)*2) 
                 },
                 {x:x,y:y}
+            )
+        }        
+    } 
+    this.hitEffect = function(asch, x ,y){
+        for (let i=0; i<(2*Math.PI); i+=0.3){
+            this.setEffect(asch,{x:x,y:y},
+                {x: x+Math.cos(i)*1.5,
+                 y: y+Math.sin(i)*1.5 
+                }
             )
         }        
     } 
@@ -535,6 +549,7 @@ function UIManager(r, g){
                     r.UI.comment(`${ws} ${inkeyst})`);
                     //r.UI.msg(`use Item ${inkeyst})${r.item.things.inv_name(obj, false)} ${ws}`);//(${cnum})` );
                     r.player.packf.set_cur(0);
+                    exec_iu = true;
                     viewInventry();
                 }
                 //selectしたキーのalphabetのitemがあるか？

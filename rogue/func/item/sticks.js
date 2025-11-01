@@ -8,6 +8,7 @@ function sticks(r){
     const t = r.types;
 
 	const ws_info = r.globalValiable.ws_info;
+	const weap_info = r.globalValiable.weap_info;
 	
 	const rainbow = r.globalValiable.rainbow;
 	const pick_color =(col)=>
@@ -381,6 +382,7 @@ function sticks(r){
 		let spotpos = [];//static coord spotpos[BOLT_LENGTH];
 		let bolt;	//THING bolt;
 
+		bolt = r.new_item();
 		bolt.o_type = d.WEAPON;
 		bolt.o_which = d.FLAME;
 		bolt.o_hurldmg = "6x6";

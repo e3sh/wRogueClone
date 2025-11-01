@@ -18,8 +18,8 @@ function moveEffect(g){
         let sx = st.x * 8;
         let sy = st.y * 16;
 
-        let cw = ed.x*8 - sx;
-        let ch = ed.y*16 - sy;
+        let cw = (ed.x*8 ) - sx;
+        let ch = (ed.y*16) - sy;
 
         let count = Math.max(Math.abs(cw), Math.abs(ch));
         

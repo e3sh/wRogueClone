@@ -182,6 +182,7 @@ function weapons(r){
 
         mp.y = y;
         mp.x = x;
+        r.UI.hitEffect(".",x, y);
         return r.monster.battle.fight(mp, obj, true);
     }
 
@@ -246,6 +247,7 @@ function weapons(r){
     *	Pick a random position around the give (y, x) coordinates
     */
     //bool
+    this.fallpos = fallpos;
     function fallpos(pos, newpos)//coord *pos, coord *newpos)
     {
         const hero = r.player.player.t_pos;

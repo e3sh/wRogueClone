@@ -240,7 +240,7 @@ function battle(r){
 				*/
 				if (!r.player.save(d.VS_POISON))
 				{
-				if (!ISWEARING(d.R_SUSTSTR))
+				if (!r.player.isWearing(d.R_SUSTSTR))
 				{
 					player.misc.chg_str(-1);
 					//if (!terse)
@@ -711,7 +711,7 @@ function battle(r){
 			{
 				let gold;	//THING *gold;
 
-				if (fallpos(tp.t_pos, tp.t_room.r_gold) && level >= max_level)
+				if (r.item.weapon.fallpos(tp.t_pos, tp.t_room.r_gold) && level >= max_level)
 				{
 					gold = r.new_item();
 					gold.o_type = d.GOLD;

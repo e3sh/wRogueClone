@@ -43,8 +43,11 @@ function packf(r){
 			if (this.pack_used[i]) puw.push(i);
 			//puw.push(String.fromCharCode("a".charCodeAt(0)+i));	
 		} 
-		let pmax = puw.reduce((a, b) => Math.max(a,b), -Infinity);
-		let pmin = puw.reduce((a, b) => Math.min(a,b), Infinity);
+		//let pmax = puw.reduce((a, b) => Math.max(a,b), -Infinity);
+		//let pmin = puw.reduce((a, b) => Math.min(a,b), Infinity);
+
+		let pmin = 0;
+		let pmax = inpack+1;
 
 		if (num != 0){
 			do {
@@ -55,7 +58,7 @@ function packf(r){
 		}
 	}
 	this.get_cur =()=>{
-		return String.fromCharCode("a".charCodeAt(0) + pack_cursor);
+		return String.fromCharCode(Number("a".charCodeAt(0)) + Number(pack_cursor));
 	}
 
 	this.read_inpack =()=>{return inpack;}
@@ -209,7 +212,7 @@ function packf(r){
 				op.t_dest = hero;
 
 		if (obj.o_type == d.AMULET)
-			amulet = true;
+			r.player.amulet = true;
 		/*
 		* Notify the user
 		*/
@@ -220,6 +223,7 @@ function packf(r){
 				ms = "you now have ";//r.UI.addmsg("you now have ");
 			r.UI.msg(`${ms}${r.item.inv_name(obj, !terse)}`);// (${obj.o_packch}`);
 		}
+
 
 		r.UI.comment(".add_pack " + debugstr);
 	}
@@ -260,7 +264,7 @@ function packf(r){
 			//chat(hero.y, hero.x) = (proom.r_flags & ISGONE) ? PASSAGE : FLOOR;
 			r.dungeon.places[hero.y][hero.x].p_ch = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
 		}
-
+		r.UI.set_execItemuse();
 		return true;
 	}
 
@@ -358,7 +362,10 @@ function packf(r){
 	this.inventory = function(list, type)	//THING *list, int type)
 	{
 		if (inpack <= 0) return;
-		packch_sort(list, type);
+		if (r.UI.get_execItemuse()){
+			packch_sort(list, type);
+			r.UI.reset_execItemuse();
+		}
 
 		let inv_temp = "";// = [];//static char inv_temp[MAXSTR];
 
@@ -422,13 +429,17 @@ function packf(r){
 				!(type == d.R_OR_S && (list.o_type == d.RING || list.o_type == d.STICK)))
 					continue;
 			//if (list.o_packch != null){		
-				list.o_packch = String.fromCharCode("a".charCodeAt(0)+n_objs);
+				list.o_packch = String.fromCharCode(Number("a".charCodeAt(0)) + Number(n_objs));
 				r.player.packf.pack_used[n_objs] = true;
 			//}
 			//r.UI.debug(list.o_packch);
 			n_objs++;
 			//if (n_objs > inpack) break;
 		}
+
+		inpack = 0;
+		for (let i in r.player.packf.pack_used)
+			if (r.player.packf.pack_used[i]) inpack++;
 	}
 
 	/*

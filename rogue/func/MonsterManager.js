@@ -537,7 +537,8 @@ function MonsterManager(r){
         mons = (wander ? wand_mons : lvl_mons);
         do
         {
-            d = r.dungeon.level + (r.rnd(10) - 6);
+            let level = r.dungeon.get_level();
+            d = level + (r.rnd(10) - 6);
             if (d < 0)
                 d = r.rnd(5);
             if (d > 25)
