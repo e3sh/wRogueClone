@@ -719,9 +719,11 @@ function PlayerCharacter(r){
         else if (on(player, d.ISHELD) && ch != 'F')
         {
             r.UI.msg("you are being held");
-            return;
+            //動作異常の為、解除
+            //return;
         }
- 
+        //現状移動系の状態変化/異常は無効とする(混乱/高速移動/浮遊/拘束)2025/11/01
+
         switch (ch)
         {
             case ' ':

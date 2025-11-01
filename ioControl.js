@@ -18,7 +18,7 @@ class ioControl extends GameTask {
 			[32, 32,"small"	,false ,	 6, 10	,640,180], //3:inventry
 			[32, 50,"mini"	,["_" ," "], 4, 6	,  0, 18], //4:mobslist
 			[80,  1,"std"	,false, 8,16,   0,368], //5:statusbar
-			[40, 30,"stdbg"	,false,	8,16, 320,180]	//6:viewUpwindow
+			[60, 27,"stdbg"	,false,	8,16, 320, 48]	//6:viewUpwindow
 		]
 
 		let cnsl = [];
