@@ -242,7 +242,7 @@ function battle(r){
 				{
 				if (!r.player.isWearing(d.R_SUSTSTR))
 				{
-					player.misc.chg_str(-1);
+					r.player.misc.chg_str(-1);
 					//if (!terse)
 					r.UI.msg("you feel a bite in your leg and now feel weaker");
 					//else
@@ -309,9 +309,9 @@ function battle(r){
 				let lastpurse;//register int lastpurse;
 
 				lastpurse = purse;
-				purse -= GOLDCALC;
+				purse -= GOLDCALC();
 				if (!r.player.save(d.VS_MAGIC))
-					purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
+					purse -= GOLDCALC() + GOLDCALC() + GOLDCALC() + GOLDCALC();
 				if (purse < 0)
 					purse = 0;
 				remove_mon(mp.t_pos, mp, false);
