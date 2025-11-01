@@ -175,7 +175,7 @@ class ioControl extends GameTask {
 			//if (gpd.btn_back) input.push(KEYASSIGN.END) ;
 
 			if (gpd.btn_rb) input.push(KEYASSIGN.DOWN);
-			if (gpd.btn_rt) input.push(KEYASSIGN.UP);
+			if (gpd.btn_rt || gpd.btn_lb) input.push(KEYASSIGN.UP);
 
 			//if (gpd.btn_lb) input.push(KEYASSIGN.HOME);
 
