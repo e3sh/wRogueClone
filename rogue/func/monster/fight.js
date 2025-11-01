@@ -58,7 +58,7 @@ function battle(r){
 	const terse = false; //
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
 	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
-	const GOLDCALC =()=> { return Math.floor(Math.random() * (50 + 10 * level)) + 2};
+	const GOLDCALC =()=> { return Math.floor(Math.random() * (50 + 10 * r.dungeon.get_level())) + 2};
 
 	const rainbow = r.globalValiable.rainbow;
 	const pick_color =(col)=>
