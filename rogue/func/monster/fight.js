@@ -53,6 +53,8 @@ function battle(r){
 
 	let to_death = false;
 
+	let vf_hit = 0;
+
 	const weap_info = r.globalValiable.weap_info;
 
 	const terse = false; //
