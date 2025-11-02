@@ -292,11 +292,11 @@ function rogueDefines(){
         //#define CTRL(c)		(c & 037)
 
         //thing Location
-        //L_FREE : 0,
-        //L_MLIST: 1,
-        //L_LEVEL: 2,
-        //L_PACK : 3,
-
+        FREE  : 0,
+        MLIST : 1,
+        LVLOBJ: 2,
+        PACK_P: 3,
+        PACK_M: 4,
     }
     return d;
 }

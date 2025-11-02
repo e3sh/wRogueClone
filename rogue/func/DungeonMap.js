@@ -279,6 +279,7 @@ function DungeonMap(r){
             * Pick a new object and link it in the list
             */
             const obj = r.item.new_thing(); //things.c
+            obj.location = d.LVLOBJ;
             lvl_obj = r.attach(lvl_obj, obj);
             /*
             * Put it somewhere
@@ -294,6 +295,7 @@ function DungeonMap(r){
         if (level >= d.AMULETLEVEL && !amulet)
         {
             const obj = r.new_item();
+            obj.location = d.LVLOBJ;
             lvl_obj = r.attach(lvl_obj, obj);
             obj.o_hplus = 0;
             obj.o_dplus = 0;
@@ -386,6 +388,7 @@ function DungeonMap(r){
            this.roomf.find_floor(rp, mp, 2 * d.MAXTRIES, false);
             const tp = r.item.new_thing();
             tp.o_pos = this.roomf.get_findfloor_result();//mp;
+            tp.location = d.LVLOBJ;
             lvl_obj = r.attach(lvl_obj, tp);
             //chat(mp.y, mp.x) = tp.o_type;
             this.places[mp.y][mp.x].p_ch = tp.o_type; 

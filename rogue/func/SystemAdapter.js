@@ -83,11 +83,12 @@ function debug(r, g){
 
             let st_pc   = (mc.o_packch != null)?`(${mc.o_packch})${st_eq}`:`[${st_opx}${st_tpx},${st_opy}${st_tpy}]`; 
 
-            let st_parm = ""; let st_tloc = (Boolean(mc.t_dest.x))?`x:${mc.t_dest.x} y:${mc.t_dest.y}`:"-";
-            let st_loc = "FREE";
-            if (mc.t_type != null) {st_loc = "MONS"; st_parm = `hp:${mc.t_stats.s_hpt} ${st_tloc}`;}
-            if (mc.o_type != null)   st_loc = "LVL ";
-            if (mc.o_packch != null) st_loc = "PACK";
+            let st_parm = ""; let st_tloc = (Boolean(mc.t_dest.x))?`x:${mc.t_dest.x} y:${mc.t_dest.y}`:".";
+
+            const sttype = {0:"Fre",1:"Mon",2:"Lvl",3:"Pp ",4:"Pm "}
+
+            let st_loc = sttype[mc.location];
+            if (mc.t_type != null) {st_parm = `hp:${mc.t_stats.s_hpt} ${st_tloc}`;}
 
             if (sw) {
                 //g.screen[0].fill(0, 0, 32*6, 50*8, "Blue");   

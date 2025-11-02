@@ -181,6 +181,8 @@ function GameManager(g){
 
     this.restart = function(){
 
+        idcount = 0; //itemIDreset
+
         g.console[1].printw(`Hello ${this.UI.whoami} , restart /just a moment while I dig the dungeon...`);
 
         globalVariableInit(this);
@@ -277,6 +279,7 @@ function GameManager(g){
         item.l_next = null;
         item.l_prev = null;
         //this.discard(item);
+        item.location = d.FREE;
         
         this.debug.mobslist();
 
@@ -333,6 +336,10 @@ function GameManager(g){
     */
     this.discard = function(item)
     {
+        item.location = d.FREE;
+        item.reset();
+
+        if (false){
         let table = []; 
         for (let i in this.mobs){
             if (this.mobs[i] != item){
@@ -349,7 +356,7 @@ function GameManager(g){
         }
         //console.log(table);
         this.mobs = table;
-
+        }
         this.debug.mobslist();
     }
     /*
@@ -360,12 +367,20 @@ function GameManager(g){
     this.new_item = function()
     {
         let item;
-        item = new t.thing();
+        let freecheck = false;
+        for (let i in this.mobs){
+            if (this.mobs[i].location != d.FREE) continue;
+            freecheck = true;
+            item = this.mobs[i];
+            break;
+        }
+        if (!freecheck){
+            item = new t.thing();
+            item.id = idcount++;// this.mobs.length;
+            this.mobs.push(item);
+        }
         item.l_next = null;
         item.l_prev = null;
-        item.id = idcount++;// this.mobs.length;
-
-        this.mobs.push(item);
 
         this.debug.mobslist();
 

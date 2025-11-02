@@ -263,6 +263,7 @@ function MonsterManager(r){
                 if (th.t_dest == obj.o_pos)
                 {
                     r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
+                    obj.location = d.PACK_M;
                     th.t_pack = r.attach(th.t_pack, obj);
                     r.dungeon.chat(obj.o_pos.y, obj.o_pos.x) =
                         (th.t_room.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
@@ -559,6 +560,7 @@ function MonsterManager(r){
 
         if ((lev_add = r.dungeon.level - d.AMULETLEVEL) < 0)
             lev_add = 0;
+        tp.location = d.MLIST;
         r.dungeon.mlist = r.attach(r.dungeon.mlist, tp);
         tp.t_type = type;
         tp.t_disguise = type;
@@ -720,8 +722,12 @@ function MonsterManager(r){
     this.give_pack = function(tp){
 
         if (r.dungeon.level >= r.dungeon.max_level 
-            && r.rnd(100) < monsters[Number(tp.t_type.charCodeAt(0))-Number('A'.charCodeAt(0))].m_carry)
-	            tp.t_pack = r.attach(tp.t_pack, r.item.new_thing());
+            && r.rnd(100) < monsters[Number(tp.t_type.charCodeAt(0))-Number('A'.charCodeAt(0))].m_carry){
+
+                const obj = r.item.new_thing();
+                obj.location = d.PACK_M;	
+	            tp.t_pack = r.attach(tp.t_pack, obj);//r.item.new_thing());
+            }
 
         r.UI.comment(".give_pack");
         return tp;

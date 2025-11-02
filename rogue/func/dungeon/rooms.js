@@ -139,6 +139,7 @@ function rooms_f(r, dg){
 				gold.o_flags = d.ISMANY;
 				gold.o_group = d.GOLDGRP;
 				gold.o_type = d.GOLD;
+				gold.location = d.LVLOBJ;
 				lvl_obj = r.attach(lvl_obj, gold);
 			}
 			/*

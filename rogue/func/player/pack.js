@@ -94,7 +94,7 @@ function packf(r){
 			}
 			from_floor = true;
 		}
-
+		
 		/*
 		* Check for and deal with scare monster scrolls
 		*/
@@ -221,10 +221,11 @@ function packf(r){
 			let ms = "";
 			if (!terse)
 				ms = "you now have ";//r.UI.addmsg("you now have ");
+			obj.location = d.PACK_P;
 			r.UI.msg(`${ms}${r.item.inv_name(obj, !terse)}`);// (${obj.o_packch}`);
 		}
 
-
+		obj.location = d.PACK_P;
 		r.UI.comment(".add_pack " + debugstr);
 	}
 

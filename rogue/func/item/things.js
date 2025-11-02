@@ -213,6 +213,7 @@ function thingsf(r){
 		/*
 		* Link it into the level object list
 		*/
+		obj.location = d.LVLOBJ;
 		r.dungeon.lvl_obj = r.attach(r.dungeon.lvl_obj, obj);
 		r.dungeon.places[hero.y][hero.x].p_ch = obj.o_type;
 		r.dungeon.places[hero.y][hero.x].p_flags |= d.F_DROPPED;

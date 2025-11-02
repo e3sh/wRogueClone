@@ -79,6 +79,10 @@ function miscf(r){
 		let pstats = r.player.get_pstat();//r.player.player.t_stats;
 		let max_stats = r.player.get_max_stats();
 
+		let cur_ring = [];
+		cur_ring[d.LEFT] = r.player.get_cur_ring(d.LEFT);
+		cur_ring[d.RIGHT] = r.player.get_cur_ring(d.RIGHT);
+
 		let comp;//auto str_t comp;
 
 		if (amt == 0)

@@ -530,6 +530,7 @@ function battle(r){
 				debugstr += ` ${damage}=ac${dplus}+d${proll}+aj${add_dam[att.s_str]}`;
 				def.s_hpt -= Math.max(0, damage);
 				//if (Math.max(0, damage) > 0)
+					r.UI.set_battledmg(Math.max(0, damage));
 					r.UI.addmsg(`hit:${Math.max(0, damage)}) `);//resthp:${def.s_hpt}`);
 					r.UI.comment(`${debugstr}`);
 				//console.log(`hp:${def.s_hpt} hit:${Math.max(0, damage)} ${debugstr}`);
@@ -724,6 +725,7 @@ function battle(r){
 					if (r.player.save(d.VS_MAGIC))
 						gold.o_goldval += GOLDCALC() + GOLDCALC()
 								+ GOLDCALC() + GOLDCALC();
+					gold.location = d.PACK_M;			
 					tp.t_pack = r.attach(tp.t_pack, gold);
 				}
 			}

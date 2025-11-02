@@ -391,7 +391,7 @@ function PlayerCharacter(r){
         }
         else
         if (quiet >= 3)
-            pstats.s_hpt += rnd(lv - 7) + 1;
+            pstats.s_hpt += r.rnd(lv - 7) + 1;
         if (ISRING(d.LEFT, d.R_REGEN))
             pstats.s_hpt++;
         if (ISRING(d.RIGHT, d.R_REGEN))

@@ -154,6 +154,7 @@ function weapons(r){
                 else
                     r.UI.mvaddch(fpos.y, fpos.x, obj.o_type);
             }
+            obj.location = d.LVLOBJ;
             r.attach(r.dungeon.lvl_obj, obj);
             return;
         }
@@ -182,8 +183,11 @@ function weapons(r){
 
         mp.y = y;
         mp.x = x;
-        r.UI.hitEffect(".",x, y);
-        return r.monster.battle.fight(mp, obj, true);
+        
+        let did_hit = r.monster.battle.fight(mp, obj, true);
+        if (did_hit) r.UI.hitEffect(".",x, y);
+        
+        return did_hit;
     }
 
     /*
