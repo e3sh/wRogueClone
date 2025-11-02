@@ -339,7 +339,7 @@ function MonsterManager(r){
 
         if ((prob = monsters[Number(tp.t_type.charCodeAt(0)) - Number('A'.charCodeAt(0))].m_carry) <= 0 || tp.t_room == proom
         || r.player.see_monst(tp))
-            return hero;
+            return {x:hero.x, y:hero.y};
         for (obj = r.dungeon.lvl_obj; obj != null; obj = next(obj))
         {
         if (obj.o_type == d.SCROLL && obj.o_which == d.S_SCARE)
@@ -351,10 +351,10 @@ function MonsterManager(r){
                 break;
                 if (!Boolean(obj.o_pos)) console.log("warn: wm");
             if (tp == null)
-                return obj.o_pos;
+                return {x:obj.o_pos.x, y:obj.o_pos.y};
         }
         }
-        return hero;
+        return {x:hero.x, y:hero.y};
     }
     /*
     * chase:
@@ -687,9 +687,9 @@ function MonsterManager(r){
                 if (!r.player.save(d.VS_MAGIC))
                 {
                     if (on(player, d.ISHUH))
-                        r.deamon.lengthen(r.player.unconfuse, spread(d.HUHDURATION));
+                        r.daemon.lengthen(r.player.unconfuse, spread(d.HUHDURATION));
                     else
-                        r.deamon.fuse(r.player.unconfuse, 0, spread(d.HUHDURATION), d.AFTER);
+                        r.daemon.fuse(r.player.unconfuse, 0, spread(d.HUHDURATION), d.AFTER);
                     player.t_flags |= d.ISHUH;
                     mname = r.monster.battle.set_mname(tp);
                     r.UI.msg(`${mname}${(mname != "it")?"'":""}s gaze has confused you`);

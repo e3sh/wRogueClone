@@ -364,6 +364,7 @@ function packf(r){
 	{
 		if (inpack <= 0) return;
 		if (r.UI.get_execItemuse()){
+			inverror_recover();
 			packch_sort(list, type);
 			r.UI.reset_execItemuse();
 		}
@@ -442,7 +443,22 @@ function packf(r){
 		for (let i in r.player.packf.pack_used)
 			if (r.player.packf.pack_used[i]) inpack++;
 	}
+	/*
+	* inventory error recovory
+	*/
+	function inverror_recover(){
 
+		for (let i in r.mobs){
+			let mb = r.mobs[i];
+			if (mb.location == d.PACK_P){
+				if (mb.o_packch == null) {
+					let pc = this.pack_char();
+					r.mobs[i] == pc;
+					r.UI.debug(`packp warn recover ${pc}`);
+				}
+			}
+		}
+	}
 	/*
 	* pick_up:
 	*	Add something to characters pack.

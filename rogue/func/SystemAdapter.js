@@ -71,28 +71,41 @@ function debug(r, g){
         g.console[4].clear();
         for (let i in r.mobs){
             const mc = r.mobs[i];
-            const state_i = mc.id;// (i != mc.id)?"!":"-";
-            const state_e = mc.enable   ?"o":"-";
+            const str = "  " + mc.id
+            const state_i = str.slice(str.length-2);
+            const state_e = mc.enable   ?".":"/";
             const st_tt   = (mc.t_type != null) ?mc.t_type:"";
             const st_ot   = (mc.o_type != null) ?mc.o_type:"";
             const st_opx  = (Boolean(mc.o_pos.x))?mc.o_pos.x:"";
             const st_opy  = (Boolean(mc.o_pos.y))?mc.o_pos.y:"";
             const st_tpx  = (Boolean(mc.t_pos.x))?mc.t_pos.x:"";
             const st_tpy  = (Boolean(mc.t_pos.y))?mc.t_pos.y:"";
-            const st_eq   = (mc.o_packch != null)?(r.player.equip_state_check(mc.o_packch)?"*":""):"?";
 
-            let st_pc   = (mc.o_packch != null)?`(${mc.o_packch})${st_eq}`:`[${st_opx}${st_tpx},${st_opy}${st_tpy}]`; 
-
-            let st_parm = ""; let st_tloc = (Boolean(mc.t_dest.x))?`x:${mc.t_dest.x} y:${mc.t_dest.y}`:".";
-
-            const sttype = {0:"Fre",1:"Mon",2:"Lvl",3:"Pp ",4:"Pm "}
-
-            let st_loc = sttype[mc.location];
-            if (mc.t_type != null) {st_parm = `hp:${mc.t_stats.s_hpt} ${st_tloc}`;}
+            let txt = "";
+            switch(mc.location){
+                case d.FREE:
+                    txt = `Free`;
+                    break;
+                case d.MLIST:
+                    txt = `Mon [${st_tpx},${st_tpy}]${(Boolean(mc.t_dest.x))?"*":" "}hp:${mc.t_stats.s_hpt}`;
+                    break;
+                case d.LVLOBJ:
+                    txt = `Lvl [${st_opx},${st_opy}]`;
+                    break;
+                case d.PACK_P:
+                    txt = `Ppl (${mc.o_packch})${r.player.equip_state_check(mc.o_packch)?"*":""}`;
+                    break;
+                case d.PACK_M:
+                    txt = `Pmo`;
+                    break;
+                default:
+                    txt = `Unknown`;
+            }
 
             if (sw) {
                 //g.screen[0].fill(0, 0, 32*6, 50*8, "Blue");   
-                g.console[4].mvprintw(`${state_i}${state_e} ${st_tt}${st_ot} ${st_loc}${st_pc} ${st_parm} `, 0, i);
+                //g.console[4].mvprintw(`${state_i}${state_e} ${st_tt}${st_ot} ${st_loc}${st_pc} ${st_parm} `, 0, i);
+                g.console[4].mvprintw(`${state_i}${state_e}${st_tt}${st_ot} ${txt}`, 0, i);
             }
             //    st += ((r.mobs[i].enable)?String.fromCharCode(Number("A".charCodeAt(0))+Number(i)):"_");
         }

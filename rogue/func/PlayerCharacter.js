@@ -279,6 +279,11 @@ function PlayerCharacter(r){
         this.packf.add_pack(obj, true);
         cur_weapon = obj;
         /*
+        * Init ring
+        */
+        cur_ring[d.LEFT]  = null;/* Which rings are being worn */
+        cur_ring[d.RIGHT] = null;/* Which rings are being worn */
+        /*
         * Now a +1 bow
         */
         obj = r.item.new_item();

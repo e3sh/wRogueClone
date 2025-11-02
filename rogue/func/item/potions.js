@@ -76,8 +76,9 @@ function potions(r){
 		let discardit = false;
 		let show, trip;
 
-		let pstats = r.player.get_pstats();
-		let max_hp = pstats.s_maxhp;	
+		const pstats = r.player.get_pstats();
+		
+		let max_hp = r.player.get_maxhp();	
 
 		//obj = get_item("quaff", POTION);
 		/*
@@ -121,8 +122,9 @@ function potions(r){
 		case d.P_HEALING:
 			pot_info[d.P_HEALING].oi_know = true;
 			pstats.s_hpt += r.roll(pstats.s_lvl, 4);
-			if (pstats.s_hpt > pstats.s_maxhp){//;//max_hp){
-				pstats.s_hpt = ++pstats.s_maxhp;
+			if (pstats.s_hpt > max_hp){//;//max_hp){
+				pstats.s_hpt = ++max_hp;
+				r.player.set_maxhp(max_hp);
 			}
 			r.player.sight();
 			r.UI.msg("you begin to feel better");
@@ -210,6 +212,7 @@ function potions(r){
 				if (pstats.s_hpt > max_hp + pstats.s_lvl + 1)
 					++max_hp;
 				pstats.s_hpt = ++max_hp;
+				r.player.set_maxhp(max_hp);
 			}
 			r.player.sight();
 			r.player.come_down();

@@ -100,6 +100,8 @@ function DaemonScheduler(r){
                     dev.d_func(dev.d_arg);
                 } else {
                     console.log(dev.d_func);
+                    delete d_list[i]; 
+                    r.UI.debug("null function");
                 }
                 //dev.d_func(dev.d_arg);
                 //console.log(dev.d_func);
