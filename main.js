@@ -2,7 +2,7 @@
 //----------------------------------------------------------------------
 function main() {
 
-    const sysParam = { canvasId: "layer0", screen: [{ resolution: { w: 800, h: 480 , x:0, y:0 } }] 	};
+    const sysParam = { canvasId: "layer0", screen: [{ resolution: { w: 640, h: 480 , x:0, y:0 } }] 	};
 	const game = new GameCore( sysParam );
 
 	//Game Asset Setup

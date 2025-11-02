@@ -338,7 +338,7 @@ function packf(r){
 	*	Return the next unused pack character.
 	* 次の未使用のパック文字（'a'〜'z'）を返します
 	*/
-	this.pack_char = function()
+	this.pack_char = function() 
 	{
 		let bp = -1;
 		//for (bp = v.pack_used; bp; bp++)
@@ -372,6 +372,8 @@ function packf(r){
 		let inv_temp = "";// = [];//static char inv_temp[MAXSTR];
 
 		n_objs = 0;
+
+		r.UI.submsg("Inventory)",mode);
 
 		for (; list != null; list = list.l_next)
 		{
@@ -452,7 +454,7 @@ function packf(r){
 			let mb = r.mobs[i];
 			if (mb.location == d.PACK_P){
 				if (mb.o_packch == null) {
-					let pc = this.pack_char();
+					let pc = r.player.packf.pack_char();
 					r.mobs[i] == pc;
 					r.UI.debug(`packp warn recover ${pc}`);
 				}

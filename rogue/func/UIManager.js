@@ -475,20 +475,20 @@ function UIManager(r, g){
                 //r.after = false; inventory(pack, 0);
                 let st = r.player.get_invstat();
                 r.UI.setHomesub();
-                r.UI.setHomesub(mode);
+                r.UI.setHomesub(true);
                 r.UI.clear(3); //sideconsole 
                 r.UI.clear(6); //centerconsole
 
                 let io = g.task.read("io");
-                if (!io.debugview){
+                //if (!io.debugview){
                     for (let i in st){
                         r.UI.submsg(st[i]);
                     }
-                    r.UI.submsg(`inpack ${r.player.packf.read_inpack()} /cur:${r.player.packf.get_cur()}`);
-                }
+                    //r.UI.submsg(`inpack ${r.player.packf.read_inpack()} /cur:${r.player.packf.get_cur()}`);
+                //}
 
                 io.overlapview = mode;
-                r.player.packf.inventory(player.t_pack, 0, mode);
+                r.player.packf.inventory(player.t_pack, 0, true);
                 r.debug.mobslist();
             }
 

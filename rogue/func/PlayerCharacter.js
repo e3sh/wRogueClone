@@ -108,35 +108,48 @@ function PlayerCharacter(r){
         let str = [];
         
         //str.push(`pstats: ${pstats}`);
-        let wst = "";
-        for (let i in this.packf.pack_used)
-        {
-            if (this.packf.pack_used[i])
-                wst += String.fromCharCode(Number("a".charCodeAt(0)) + Number(i));//str.push(`pack${i}:${this.packf.pack_used[i]}`);
-        }
+        //let wst = "";
+        //for (let i in this.packf.pack_used)
+        //{
+        //    if (this.packf.pack_used[i])
+        //        wst += String.fromCharCode(Number("a".charCodeAt(0)) + Number(i));//str.push(`pack${i}:${this.packf.pack_used[i]}`);
+        //}
 
         //str.push(`maxhp:${pstats.s_maxhp} exp:${pstats.s_exp} dmg:${pstats.s_dmg}`);
 
         //str.push(`mobs:${r.mobs.length}`);
-        str.push(`pack:${wst}`);
+        //str.push(`pack:${wst}`);
         
         const eqc =(c)=>{
             if (!Boolean(c)) return "none_";
             return (c.o_packch == null)?"none":
-            `${(c.o_damage != "0x0")?c.o_damage:c.o_arm} (${c.o_packch})${r.item.things.inv_name(c, false)}`;
+            `${r.item.things.inv_name(c, false)} [${(c.o_damage != "0x0")?c.o_damage:c.o_arm}]`;
+            //`${(c.o_damage != "0x0")?c.o_damage:c.o_arm} (${c.o_packch})${r.item.things.inv_name(c, false)}`;
         }
 
-        str.push(`. ${eqc(cur_weapon)}`);
-        str.push(`. ${eqc(cur_armor)}`);
-        str.push(`R. ${eqc(cur_ring[0])}`);
-        str.push(`L. ${eqc(cur_ring[1])}`);
+        str.push(`Equiped)`);
+
+        str.push(`Weapon: ${eqc(cur_weapon)}`);
+        str.push(`Armor : ${eqc(cur_armor)}`);
+        str.push(`Ring-L: ${eqc(cur_ring[d.LEFT])}`);
+        str.push(`Ring-R: ${eqc(cur_ring[d.RIGHT])}`);
         str.push("");
         //str.push(`armor: ${r.item.things.inv_name(cur_armor, false)} ${cur_armor.o_arm} (${cur_armor.o_packch})`);
         //str.push(`weapon: ${r.item.things.inv_name(cur_weapon, false)} ${cur_weapon.o_damage} (${cur_weapon.o_packch})`);
         //str.push(`ring_R ${r.item.things.inv_name(cur_ring[0], false)} ${cur_ring[0].o_which} (${cur_ring[0].o_packch})`);
         //str.push(`ring_L ${r.item.things.inv_name(cur_ring[1], false)} ${cur_ring[1].o_which} (${cur_ring[1].o_packch})`);
-        str.push(`food_left ${food_left}`);
-        str.push("");
+        //str.push(`food_left ${food_left}`);
+        //str.push("");
+
+        let rt ="none";
+        for (let i in r.mobs){
+            if (r.mobs[i].o_packch == r.player.packf.get_cur()){
+                rt = r.item.things.inv_name(r.mobs[i], false)
+                break;
+            }
+        }
+        str.push(`Select> ${rt}`)// ${food_left}`);
+
         //str.push(`inpack ${inpack}`);
         //str.push(`amulet ${amulet}`);
 

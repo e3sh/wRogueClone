@@ -183,7 +183,7 @@ function GameManager(g){
 
         idcount = 0; //itemIDreset
 
-        g.console[1].printw(`Hello ${this.UI.whoami} , restart /just a moment while I dig the dungeon...`);
+        g.console[1].printw(`Hello ${this.UI.whoami} , just a moment Restart the dungeon...`);
 
         globalVariableInit(this);
         this.dungeon.set_level(1);
