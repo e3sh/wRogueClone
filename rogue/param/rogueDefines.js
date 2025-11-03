@@ -82,7 +82,7 @@ function rogueDefines(){
         LEFT        : 0,
         RIGHT       : 1,
         BOLT_LENGTH : 6,
-        LAMPDIST    : 50,
+        LAMPDIST    : 3,
         //#ifdef MASTER
         //#ifndef PASSWD
         //#define	PASSWD		"mTBellIQOsLNA"

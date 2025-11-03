@@ -601,6 +601,8 @@ function PlayerCharacter(r){
     */
     this.do_move = function(dy, dx)
     {
+        //let proom  = player.t_room // プレイヤーがいる部屋
+        //const hero   = player.t_pos; // (プレイヤー位置)
         
         if (hero.x + dx < 0 || hero.x + dx >= d.NUMCOLS || hero.y + dy <= 0 || hero.y + dy >= d.NUMLINES - 1){
             //console.log("overscreen do_move");
@@ -776,7 +778,8 @@ function PlayerCharacter(r){
                 * if you're leaving a maze room, so it is necessary to
                 * always recalculate proom.
                 */
-                proom = r.dungeon.roomin(hero);
+                //proom = r.dungeon.roomin(hero);
+                player.t_room = r.dungeon.roomin(hero);
                 move_stuff();
                 //console.log("passage");
                 break;

@@ -78,7 +78,7 @@ function rips(r){
 
 		//start_score();
 
-		if (flags >= 0 || wizard)
+		if (flags >= 0 || r.wizard)
 		{
 			r.UI.mvaddch(d.LINES - 1, 0 , "[Press return to continue]");
 			//refresh();

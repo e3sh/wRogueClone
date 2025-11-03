@@ -21,7 +21,7 @@ function DaemonScheduler(r){
     for (let i = 0; i<d.MAXDAEMONS+1 ;i++){
         d_list.push(new t.delayed_action());
     }
-    let between;
+    let between = 0;
 
     /*
     **関連する関数（提案されるメソッドの例）:**
@@ -68,8 +68,8 @@ function DaemonScheduler(r){
     this.kill_daemon = function(func)
     {
         let dev; //register struct delayed_action *dev;
-        dev = find_slot(func);
-        if (dev == null) return;
+        dev = this.find_slot(func);
+        if (dev == null) return; //; else alert(dev);
         /*
         * Take it out of the list
         */
@@ -128,7 +128,7 @@ function DaemonScheduler(r){
         wire.d_arg  = arg;
         wire.d_time = time;
 
-        //r.UI.comment("fuse");
+        r.UI.comment("fuse");
     }
 
     /*
@@ -221,7 +221,7 @@ function DaemonScheduler(r){
 
         for (let i in d_list){
             dev = d_list[i];
-            if (dev.d_type == d.EMPTY && func == dev.d_func) return dev;
+            if (dev.d_type != d.EMPTY && func == dev.d_func) return dev;
         }
         return null;
     }
@@ -252,13 +252,14 @@ function DaemonScheduler(r){
         if (r.roll(1, 6) == 4)
             {
                 r.monster.wanderer();
-                this.kill_daemon(this.rollwand);
-                this.fuse(this.swander, 0, d.WANDERTIME, d.BEFORE);
+                r.daemon.kill_daemon(r.daemon.rollwand);
+                r.daemon.fuse(r.daemon.swander, 0, d.WANDERTIME, d.BEFORE);
             }
             between = 0;
+            //r.UI.comment("d-rollwand_exec");
+
         }
         //r.UI.comment("d-rollwand");
-
     }
 
 

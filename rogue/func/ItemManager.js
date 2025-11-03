@@ -28,13 +28,13 @@ function ItemManager(r){
     */
     let total = 0;
 
-    let things    = v.things;   //(ランダムアイテム選択リスト)
-    let arm_info  = v.arm_info; 
-    let pot_info  = v.pot_info;
-    let ring_info = v.ring_info;
-    let scr_info  = v.scr_info;
-    let weap_info = v.weap_info;
-    let ws_info   = v.ws_info;
+    const things    = v.things;   //(ランダムアイテム選択リスト)
+    const arm_info  = v.arm_info; 
+    const pot_info  = v.pot_info;
+    const ring_info = v.ring_info;
+    const scr_info  = v.scr_info;
+    const weap_info = v.weap_info;
+    const ws_info   = v.ws_info;
 
     const a_class = [		/* Armor class for each armor type */
         8,	/* LEATHER */
@@ -50,11 +50,11 @@ function ItemManager(r){
 
     let inv_describe = true;		/* Say which way items are being used */
 
-    let p_colors = Array(d.MAXPOTIONS);		/* Colors of the potions */
-    let r_stones = Array(d.MAXRINGS);		/* Stone settings of the rings */
-    let s_names  = Array(d.MAXSCROLLS);		/* Names of the scrolls */
-    let ws_made  = Array(d.MAXSTICKS);		/* What sticks are made of */
-    let ws_type  = Array(d.MAXSTICKS);		/* Is it a wand or a staff */
+    const p_colors = Array(d.MAXPOTIONS);		/* Colors of the potions */
+    const r_stones = Array(d.MAXRINGS);		/* Stone settings of the rings */
+    const s_names  = Array(d.MAXSCROLLS);		/* Names of the scrolls */
+    const ws_made  = Array(d.MAXSTICKS);		/* What sticks are made of */
+    const ws_type  = Array(d.MAXSTICKS);		/* Is it a wand or a staff */
 
     let group = 2;
 

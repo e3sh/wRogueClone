@@ -166,15 +166,15 @@ function MonsterManager(r){
 
         rer = th.t_room;		/* Find room of chaser */
         if (on(th, d.ISGREED) && rer.r_goldval == 0)
-            th.t_dest = hero;	/* If gold has been taken, run after hero */
+            th.t_dest = r.player.player.t_pos;	/* If gold has been taken, run after hero */
         if (th.t_dest == hero)	/* Find room of chasee */
-            ree = proom;
+            ree = r.player.player.t_room;
         else
             ree = r.dungeon.roomin(th.t_dest);
         /*
         * We don't count doors as inside rooms for this routine
         */
-        door = (r.dungeon.chat(th.t_pos.y, th.t_pos.x) == d.DOOR);
+        door = (r.dungeon.chat(th.t_pos.y, th.t_pos.x) == d.DOOR)?true:false;
         /*
         * If the object of our desire is in a different room,
         * and we are not in a corridor, run to the door nearest to
@@ -498,7 +498,8 @@ function MonsterManager(r){
             return;
 
         sch = tp.t_oldch;
-        tp.t_oldch = r.dungeon.chat(cp.y, cp.x);//r.UI.mvinch(cp.y,cp.x);//String.fromCharCode( r.UI.mvinch(cp.y,cp.x) );
+        //tp.t_oldch = r.dungeon.chat(cp.y, cp.x);//r.UI.mvinch(cp.y,cp.x);//String.fromCharCode( r.UI.mvinch(cp.y,cp.x) );
+        tp.t_oldch = r.UI.mvinch(cp.y,cp.x);//String.fromCharCode( r.UI.mvinch(cp.y,cp.x) );
         //console.log(tp.t_oldch);
         if (!on(player, d.ISBLIND))
         {
@@ -616,14 +617,17 @@ function MonsterManager(r){
     */
     this.wanderer = function(){
         //let tp; //THING *tp;
+        const player = r.player.player;
+        const proom = player.t_room;
+
         let cp = {}; //static coord cp;
         const tp = r.new_item();
         do
         {
             r.dungeon.roomf.find_floor(null, cp, false, true);  // struct room *) NULL
-        } while (roomin(r.dungeon.roomf.get_find_floor_result()) == proom);
+        } while (r.dungeon.roomin(r.dungeon.roomf.get_findfloor_result()) == proom);
 
-        tp = this.new_monster(tp, this.randmonster(true), r.dungeon.roomf.get_find_floor_result());//cp);
+        this.new_monster(tp, this.randmonster(true), r.dungeon.roomf.get_findfloor_result());//cp);
 
         if (on(player, d.SEEMONST))
         {
@@ -635,7 +639,7 @@ function MonsterManager(r){
             //standend();
         }
         this.runto(tp.t_pos);
-        if (wizard)
+        if (r.wizard)
             r.UI.msg(`started a wandering ${monsters[Number(tp.t_type.charCodeAt(0))-Number('A'.charCodeAt(0))].m_name}`);
 
         r.UI.comment("wanderer");

@@ -623,8 +623,7 @@ function UIManager(r, g){
             if (ki.includes("KeyD")) dropItem(); 
             if (ki.includes("KeyR")) ;//read_scroll(); //auto_select
             if (ki.includes("KeyE")) ;//eat(); //auto_select
-            if (ki.includes("KeyW")) ;//wear(); //auto_select
-            if (ki.includes("KeyT")) ;//take_off(); //auto_select
+            if (ki.includes("KeyT")) ;//r.monster.wanderer();//take_off(); //auto_select
             if (ki.includes("KeyP")) ;//ring_on(); //auto_select
             if (ki.includes("KeyR")) ;//ring_off(); //auto_select
             if (ki.includes("KeyL")) ;//ring// select position L /
@@ -635,9 +634,15 @@ function UIManager(r, g){
                 r.UI.comment(`mv_on[${r.player.packf.move_on}]`);// ${r.after?"m":"s"}]`);
             }//search();
             //use potion function is quaff() (potions)
-            if (this.wait_for("KeyQ")) r.debug.mapcheckTest(); //debug command
-            if (this.wait_for("KeyA")) r.debug.monsterViewTest(); //debug command
-            if (this.wait_for("KeyZ")) r.dungeon.show_map(); //debug command
+            if (ki.includes("KeyW")) {
+                r.wizard = (r.wizard)?false:true;
+                this.setEffect((r.wizard)?"ON":"OFF", {x:hero.x,y:hero.y} ,{x: hero.x, y: hero.y-1},90);
+            }
+            if (r.wizard){
+                if (this.wait_for("KeyQ")) r.debug.mapcheckTest(); //debug command
+                if (this.wait_for("KeyA")) r.debug.monsterViewTest(); //debug command
+                if (this.wait_for("KeyZ")) r.dungeon.show_map(); //debug command
+            }
             //if (this.wait_for("ArrowDown")) r.debug.checkListsCount(); //debug command
 
             //} else {

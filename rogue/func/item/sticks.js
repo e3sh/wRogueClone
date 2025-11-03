@@ -142,7 +142,7 @@ function sticks(r){
 						oldch = tp.t_oldch;
 						delta.y = y;
 						delta.x = x;
-						r.monster.new_monster(tp, monster = (r.rnd(26) + 'A'.charCodeAt(0)), delta);
+						r.monster.new_monster(tp, monster = String.fromCharCode(r.rnd(26) + 'A'.charCodeAt(0)), delta);
 						if (r.player.see_monst(tp))
 							r.UI.mvaddch(y, x, monster);
 						tp.t_oldch = oldch;
@@ -174,7 +174,7 @@ function sticks(r){
 							new_pos.y = hero.y + delta.y;
 							new_pos.x = hero.x + delta.x;
 						}
-						tp.t_dest = hero;
+						tp.t_dest = {x:hero.x, y:hero.y};
 						tp.t_flags |= d.ISRUN;
 						r.monster.relocate(tp, new_pos);
 					}
