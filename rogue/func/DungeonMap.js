@@ -184,6 +184,7 @@ function DungeonMap(r){
                 sp = this.flat(stairs.y, stairs.x);
                 sp &= ~d.F_REAL;
                 sp |= r.rnd(d.NTRAPS);
+                places[stairs.y][stairs.x].p_flags = sp;
             }
         }
         /*
@@ -335,13 +336,29 @@ function DungeonMap(r){
             rp = rooms[i];
             if (cp.x <= rp.r_pos.x + rp.r_max.x && rp.r_pos.x <= cp.x
                 && cp.y <= rp.r_pos.y + rp.r_max.y && rp.r_pos.y <= cp.y)
-                return rp;
+                return rooms[i];
         }
         r.UI.msg(`in some bizarre place (x:${cp.x},y:${cp.y})`);
         //abort();
         return null;
 
         r.UI.comment("roomin");
+    }
+
+    this.roomnum = function(cp){
+
+        let fp = places[cp.y][cp.x].p_flags;
+        if (fp & d.F_PASS)
+            return (10 + (fp & d.F_PNUM));
+            //return passages[fp & d.F_PNUM];
+
+        for (let i in rooms){
+            rp = rooms[i];
+            if (cp.x <= rp.r_pos.x + rp.r_max.x && rp.r_pos.x <= cp.x
+                && cp.y <= rp.r_pos.y + rp.r_max.y && rp.r_pos.y <= cp.y)
+                return i;
+        }
+        return -1;
     }
 
     /* rnd_room:

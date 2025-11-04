@@ -266,7 +266,7 @@ function thingsf(r){
 			switch (Number(obj.o_which))
 			{
 				case d.R_ADDSTR:
-					player.misc.chg_str(-obj.o_arm);
+					r.player.misc.chg_str(-obj.o_arm);
 					break;
 				case d.R_SEEINVIS:
 					r.player.unsee();

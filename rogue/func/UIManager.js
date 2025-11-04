@@ -154,9 +154,9 @@ function UIManager(r, g){
         let cx = g.console[0].cursor.x;
         let cy = g.console[0].cursor.y;
 
-        let res = ' ';
-        if (buff.length <= cy){
-            if (buff[cy].length <= cx){
+        let res = ' '; 
+        if (buff.length >= cy){
+            if (buff[cy].length >= cx){
                 res = buff[cy].substring(cx,cx+1);
             }
         }
@@ -364,6 +364,8 @@ function UIManager(r, g){
             ki = this.readchar();
             r.UI.pause("[Press return to continue]");
             if (this.wait_for("Enter")||this.wait_for("NumpadEnter")){
+                let io = g.task.read("io");
+                io.overlapview = false;
                 r.pause = false;
                 r.restart();
             }
@@ -612,14 +614,21 @@ function UIManager(r, g){
                 );
                 viewInventry(true);
             }else
-                viewInventry();
+                ;//viewInventry();
             //if (ki.includes("NumpadAdd")) r.player.packf.set_cur(1);//r.UI.msg("+");
             //if (ki.includes("NumpadSubtract")) r.player.packf.set_cur(-1)//r.UI.msg("-");
             //if (ki.includes("Numpad0")) r.UI.msg("Zero");
 
             if (ki.includes("Numpad0")) useItem();
 
-            if (ki.includes("KeyI")) viewInventry();
+            if (ki.includes("KeyI")) {
+                let io = g.task.read("io");
+                if (!io.overlapview) 
+                    viewInventry(true)
+                else
+                    viewInventry();
+
+            }
             if (ki.includes("KeyD")) dropItem(); 
             if (ki.includes("KeyR")) ;//read_scroll(); //auto_select
             if (ki.includes("KeyE")) ;//eat(); //auto_select
@@ -698,7 +707,7 @@ function UIManager(r, g){
                     case d.STICK:  
                     case d.AMULET:
                         r.player.packf.pick_up(pr);
-                        viewInventry();
+                        //viewInventry();
                         //r.UI.msg(`GET ITEM:${pr}/mode${r.player.packf.move_on}`); 
                         break;  
                 }
@@ -713,11 +722,11 @@ function UIManager(r, g){
         if (ISRING(d.LEFT, d.R_SEARCH))
             search();
         else if (ISRING(d.LEFT, d.R_TELEPORT) && r.rnd(50) == 0)
-            teleport();
+            r.item.scroll.teleport();
         if (ISRING(d.RIGHT, d.R_SEARCH))
             search();
         else if (ISRING(d.RIGHT, d.R_TELEPORT) && r.rnd(50) == 0)
-            teleport();
+            r.item.scroll.teleport();
 
         this.look(true);
         r.UI.status();
@@ -740,8 +749,9 @@ function UIManager(r, g){
     {
         //const ce =(a,b)=>{((a).x == (b).x && (a).y == (b).y)}
 
-        const step_ok = r.dungeon.step_ok;
+        //r.UI.clear();
 
+        const step_ok = r.dungeon.step_ok;
 
         let player = r.player.player;
         let proom  = player.t_room
@@ -768,7 +778,7 @@ function UIManager(r, g){
             if (!((r.oldpos.x == hero.x) && (r.oldpos.y == hero.y)))
             {
                 r.UI.erase_lamp(r.oldpos, r.oldrp);
-                r.oldpos = hero;
+                r.oldpos = hero;//{x:hero.x, y:hero.y};
                 r.oldrp = rp;
             }
         }
@@ -781,7 +791,7 @@ function UIManager(r, g){
             sumhero = hero.y + hero.x;
             diffhero = hero.y - hero.x;
         }
-        pp = r.dungeon.INDEX(hero.y, hero.x);
+        pp = r.dungeon.places[hero.y][hero.x];//INDEX
         
         if (!Boolean(pp)) {
             r.UI.debug("LK outside?")   
@@ -803,7 +813,7 @@ function UIManager(r, g){
                         continue;
                 }
 
-                pp = r.dungeon.INDEX(y, x);
+                pp = r.dungeon.places[y][x];//r.dungeon.INDEX(y, x);
                 ch = pp.p_ch;
                 if (ch == ' ')		/* nothing need be done with a ' ' */
                     continue;
@@ -888,7 +898,7 @@ function UIManager(r, g){
                 break;
             default:
                 if (y != stairs.y || x != stairs.x || !seenstairs)
-                    ch = rnd_thing();
+                    ch = r.rnd_thing();
             break;
         }
         return ch;

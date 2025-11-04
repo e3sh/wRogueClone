@@ -210,7 +210,7 @@ function scroll(r){
 			for (y = 1; y < d.NUMLINES - 1; y++)
 			for (x = 0; x < d.NUMCOLS; x++)
 			{
-				pp = r.dungeon.INDEX(y, x);
+				pp = r.dungeon.places[y][x];//INDEX(y, x);
 				switch (ch = pp.p_ch)
 				{
 				case d.DOOR:
@@ -227,8 +227,10 @@ function scroll(r){
 					break;
 
 				case ' ':
-					if (pp.p_flags & d.F_REAL)
+					if (pp.p_flags & d.F_REAL){
 						def();//goto def;
+						break;
+					}
 					pp.p_flags |= d.F_REAL;
 					ch = pp.p_ch = d.PASSAGE;
 					/* FALLTHROUGH */
@@ -295,7 +297,7 @@ function scroll(r){
 			*/
 			{
 				cur_room = player.t_room;
-				teleport();
+				this.teleport();
 				if (cur_room != r.player.player.t_room)
 					scr_info[d.S_TELEP].oi_know = true;
 			}
@@ -387,7 +389,7 @@ function scroll(r){
 	*	Bamf the hero someplace else
 	*/
 	//void
-	function teleport()
+	this.teleport = function()
 	{
 		const player = r.player.player;
 		const hero = player.t_pos;

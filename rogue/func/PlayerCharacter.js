@@ -551,11 +551,15 @@ function PlayerCharacter(r){
             //console.log(`${dist(y, x, hero.y, hero.x)} < ${d.LAMPDIST}`);
             if (y != hero.y && x != hero.x &&
                 !step_ok(r.dungeon.chat(y, hero.x)) && !step_ok(r.dungeon.chat(hero.y, x)))
-                ;//return false; 
+                    return false; 
             return true;
         }
-        if (mp.t_room != player.t_room)
-            return false;
+        //if (mp.t_room != player.t_room)
+        //    return false;
+        let re = r.dungeon.roomnum(mp.t_pos);
+        let rp = r.dungeon.roomnum(player.t_pos);
+        if (re != rp) return false;
+
         return (!(mp.t_room.r_flags & d.ISDARK));
     }
 
@@ -732,8 +736,11 @@ function PlayerCharacter(r){
         {
             if (!on(player, d.ISLEVIT))
             {
-                r.dungeon.chat(nh.y, nh.x) = ch = d.TRAP;
-                r.dungeon.flat(nh.y, nh.x) |= d.F_REAL;
+                //r.dungeon.chat(nh.y, nh.x) = ch = d.TRAP;
+                //r.dungeon.flat(nh.y, nh.x) |= d.F_REAL;
+                ch = d.TRAP;
+                r.dungeon.places[nh.y][nh.x].p_ch = ch;
+                r.dungeon.places[nh.y][nh.x].p_flags |= d.F_REAL;
             }
         }
         else if (on(player, d.ISHELD) && ch != 'F')
@@ -766,7 +773,7 @@ function PlayerCharacter(r){
                 //console.log("door");
                 break;
             case d.TRAP:
-                ch = be_trapped(nh);
+                ch = this.be_trapped(nh);
                 if (ch == d.T_DOOR || ch == d.T_TELEP)
                     return;
                 move_stuff();
@@ -785,7 +792,7 @@ function PlayerCharacter(r){
                 break;
             case d.FLOOR:
                 if (!(fl & d.F_REAL))
-                be_trapped(hero);
+                this.be_trapped(hero);
                 move_stuff();
                 //console.log("floor");
                 break;
@@ -844,6 +851,7 @@ function PlayerCharacter(r){
     *	Decide whether to refresh at a passage turning or not
     * 通路の曲がり角での画面更新を決定します。
     */
+   //自動移動は未採用なので今のところは呼ばれない
     this.turnref = function()
     {
         let pp;//PLACE *pp;
@@ -887,6 +895,8 @@ function PlayerCharacter(r){
     */
     this.be_trapped = function(tc) //coord *tc)
     {
+        const rainbow = r.globalValiable.rainbow;
+
         let pp;//PLACE *pp;
         let arrow;//THING *arrow;
         let tr;
@@ -895,7 +905,7 @@ function PlayerCharacter(r){
             return d.T_RUST;	/* anything that's not a door or teleport */
         running = false;
         count = false;
-        pp = r.dungeon.INDEX(tc.y, tc.x);
+        pp = r.dungeon.places[tc.y][tc.x];//INDEX(tc.y, tc.x);
         pp.p_ch = d.TRAP;
         tr = pp.p_flags & d.F_TMASK;
         pp.p_flags |= d.F_SEEN;
@@ -915,16 +925,16 @@ function PlayerCharacter(r){
             switch(r.rnd(11))
             {
                 case 0: r.UI.msg("you are suddenly in a parallel dimension");    break;
-                case 1: r.UI.msg("the light in here suddenly seems %s", rainbow[rnd(cNCOLORS)]);break;
+                case 1: r.UI.msg(`the light in here suddenly seems ${rainbow[r.rnd(d.cNCOLORS)]}`);break;
                 case 2: r.UI.msg("you feel a sting in the side of your neck");   break;
                 case 3: r.UI.msg("multi-colored lines swirl around you, then fade"); break;
-                case 4: r.UI.msg("a %s light flashes in your eyes", rainbow[rnd(cNCOLORS)]); break;
+                case 4: r.UI.msg(`a ${rainbow[r.rnd(d.cNCOLORS)]} light flashes in your eyes`, ); break;
                 case 5: r.UI.msg("a spike shoots past your ear!");   break;
-                case 6: r.UI.msg("%s sparks dance across your armor", rainbow[rnd(cNCOLORS)]);break;
+                case 6: r.UI.msg(`${rainbow[r.rnd(d.cNCOLORS)]} sparks dance across your armor`);break;
                 case 7: r.UI.msg("you suddenly feel very thirsty");break;
                 case 8: r.UI.msg("you feel time speed up suddenly");break;
                 case 9: r.UI.msg("time now seems to be going slower");break;
-                case 10: r.UI.msg("you pack turns %s!", rainbow[rnd(cNCOLORS)]);break;
+                case 10: r.UI.msg(`you pack turns ${rainbow[r.rnd(d.cNCOLORS)]}!`);break;
             }
             break;
         case d.T_SLEEP:
@@ -933,24 +943,24 @@ function PlayerCharacter(r){
             r.UI.msg("a strange white mist envelops you and you fall asleep");
             break;
         case d.T_ARROW:
-            if (swing(pstats.s_lvl - 1, pstats.s_arm, 1))
+            if (r.monster.battle.swing(player.t_stats.s_lvl - 1, player.t_stats.s_arm, 1))
             {
-            pstats.s_hpt -= r.roll(1, 6);
-            if (pstats.s_hpt <= 0)
-            {
-                r.UI.msg("an arrow killed you");
-                r.death('a');
+                player.t_stats.s_hpt -= r.roll(1, 6);
+                if (player.t_stats.s_hpt <= 0)
+                {
+                    r.UI.msg("an arrow killed you");
+                    r.death('a');
+                }
+                else
+                    r.UI.msg("oh no! An arrow shot you");
             }
             else
-                r.UI.msg("oh no! An arrow shot you");
-            }
-            else
             {
-                arrow = new_item();
-                init_weapon(arrow, d.ARROW);
+                arrow = r.new_item();
+                r.item.init_weapon(arrow, d.ARROW);
                 arrow.o_count = 1;
                 arrow.o_pos = hero;
-                fall(arrow, false);
+                r.item.weapon.fall(arrow, false);
                 r.UI.msg("an arrow shoots past you");
             }
             break;
@@ -959,28 +969,28 @@ function PlayerCharacter(r){
             * since the hero's leaving, look() won't put a TRAP
             * down for us, so we have to do it ourself
             */
-            teleport();
-            mvaddch(tc.y, tc.x, d.TRAP);
+            r.item.scroll.teleport();
+            r.UI.mvaddch(tc.y, tc.x, d.TRAP);
             break;
         case d.T_DART:
-            if (!swing(pstats.s_lvl+1, pstats.s_arm, 1))
+            if (!r.monster.battle.swing(player.t_stats.s_lvl+1, player.t_stats.s_arm, 1))
                 r.UI.msg("a small dart whizzes by your ear and vanishes");
             else
             {
-            pstats.s_hpt -= r.roll(1, 4);
-            if (pstats.s_hpt <= 0)
-            {
-                r.UI.msg("a poisoned dart killed you");
-                r.death('d');
-            }
-            if (!ISWEARING(d.R_SUSTSTR) && !save(d.VS_POISON))
-                player.misc.chg_str(-1);
-            r.UI.msg("a small dart just hit you in the shoulder");
+                player.t_stats.s_hpt -= r.roll(1, 4);
+                if (player.t_stats.s_hpt <= 0)
+                {
+                    r.UI.msg("a poisoned dart killed you");
+                    r.death('d');
+                }
+                if (!ISWEARING(d.R_SUSTSTR) && !r.player.save(d.VS_POISON))
+                    r.player.misc.chg_str(-1);
+                r.UI.msg("a small dart just hit you in the shoulder");
             }
             break;
         case d.T_RUST:
             r.UI.msg("a gush of water hits you on the head");
-            rust_armor(cur_armor);
+            this.rust_armor(cur_armor);
             break;
         }
         //flush_type();

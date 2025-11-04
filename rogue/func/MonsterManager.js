@@ -265,7 +265,8 @@ function MonsterManager(r){
                     r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
                     obj.location = d.PACK_M;
                     th.t_pack = r.attach(th.t_pack, obj);
-                    r.dungeon.chat(obj.o_pos.y, obj.o_pos.x) =
+                    //r.dungeon.chat(obj.o_pos.y, obj.o_pos.x) =
+                    r.dungeon.places[obj.o_pos.y][obj.o_pos.x].p_ch =
                         (th.t_room.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
                     th.t_dest = r.monster.find_dest(th);
                     break;
@@ -741,32 +742,14 @@ function MonsterManager(r){
     *	See if a creature save against something
     */
     //int
-    function save_throw(which, tp)//THING tp)
-    {
-        let need;
-
-        need = 14 + which - tp.t_stats.s_lvl / 2;
-        return (r.roll(1, 20) >= need);
-    }
+    //r.player と　r.item.sticksにあり
 
     /*
     * save:
     *	See if he saves against various nasty things
     */
     //int
-    function save(which)
-    {
-        //r.player.save で作成（当クラス外ではそれを使う）
-
-        if (which == d.VS_MAGIC)
-        {
-        if (ISRING(d.LEFT, d.R_PROTECT))
-            which -= cur_ring[LEFT].o_arm;
-        if (ISRING(d.RIGHT, d.R_PROTECT))
-            which -= cur_ring[d.RIGHT].o_arm;
-        }
-        return save_throw(which, player);
-    }
+    //r.player.save で作成
 
     /*
     * runto:

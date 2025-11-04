@@ -71,7 +71,7 @@ function weapons(r){
 
         if (r.dungeon.moat(obj.o_pos.y, obj.o_pos.x) == null ||
         !this.hit_monster(obj.o_pos.y, obj.o_pos.x, obj))
-            fall(obj, true);
+            this.fall(obj, true);
     }
 
     /*
@@ -137,14 +137,14 @@ function weapons(r){
     *	Drop an item someplace around here.
     */
     //void
-    function fall(obj, pr)//THING *obj, bool pr)
+    this.fall = function(obj, pr)//THING *obj, bool pr)
     {
         let pp;     //PLACE *pp;
         let fpos = {};   //static coord fpos;
 
         if (fallpos(obj.o_pos, fpos))
         {
-            pp = r.dungeon.INDEX(fpos.y, fpos.x);
+            pp = r.dungeon.places[fpos.y][fpos.x];//INDEX(fpos.y, fpos.x);
             pp.p_ch = obj.o_type;
             obj.o_pos = fpos;
             if (r.player.cansee(fpos.y, fpos.x))

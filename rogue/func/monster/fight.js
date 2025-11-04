@@ -422,7 +422,7 @@ function battle(r){
 	*	Returns true if the swing hits
 	*/
 	//int
-	function swing(at_lvl, op_arm, wplus)//int at_lvl, int op_arm, int wplus)
+	this.swing = function(at_lvl, op_arm, wplus)//int at_lvl, int op_arm, int wplus)
 	{
 		let res = r.rnd(20); //int res = rnd(20);
 		let need = (20 - at_lvl) - op_arm;//int need = (20 - at_lvl) - op_arm;
@@ -516,7 +516,7 @@ function battle(r){
 			let dice = rolldmg[i].split("x");
 			ndice = Number(dice[0]);
 			nsides = Number(dice[1]);
-			if (swing(att.s_lvl, def_arm, hplus + str_plus[att.s_str]))
+			if (r.monster.battle.swing(att.s_lvl, def_arm, hplus + str_plus[att.s_str]))
 			{
 				let proll; //int proll;
 				proll = r.roll(ndice, nsides);
@@ -669,7 +669,7 @@ function battle(r){
 			obj.o_pos = tp.t_pos;
 			tp.t_pack = r.detach(tp.t_pack, obj);
 			if (waskill)
-				fall(obj, false);
+				r.item.weapon.fall(obj, false);
 			else
 				r.discard(obj);
 		}

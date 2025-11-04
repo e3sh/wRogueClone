@@ -283,7 +283,7 @@ function passages_f(r, dg){
     {
         let pp; //PLACE *pp;
 
-        pp = dg.INDEX(cp.y, cp.x);
+        pp = dg.places[cp.y][cp.x];//INDEX(cp.y, cp.x);
         pp.p_flags |= d.F_PASS;
         if (r.rnd(10) + 1 < level && r.rnd(40) == 0)
             pp.p_flags &= ~d.F_REAL;
@@ -307,14 +307,14 @@ function passages_f(r, dg){
         if (rm.r_flags & d.ISMAZE)
         return;
 
-        pp = dg.INDEX(cp.y, cp.x);
+        pp = dg.places[cp.y][cp.x];//INDEX(cp.y, cp.x);
         if (r.rnd(10) + 1 < level && r.rnd(5) == 0)
         {
-        if (cp.y == rm.r_pos.y || cp.y == rm.r_pos.y + rm.r_max.y - 1)
-            pp.p_ch = '-';
-        else
-            pp.p_ch = '|';
-        pp.p_flags &= ~d.F_REAL;
+            if (cp.y == rm.r_pos.y || cp.y == rm.r_pos.y + rm.r_max.y - 1)
+                pp.p_ch = '-';
+            else
+                pp.p_ch = '|';
+            pp.p_flags &= ~d.F_REAL;
         }
         else
         pp.p_ch = d.DOOR;
@@ -336,25 +336,25 @@ function passages_f(r, dg){
         for (y = 1; y < d.NUMLINES - 1; y++)
         for (x = 0; x < d.NUMCOLS; x++)
         {
-            pp = dg.INDEX(y, x);
+            pp = dg.places[y][x];//INDEX(y, x);
             if ((pp.p_flags & d.F_PASS) || pp.p_ch == d.DOOR ||
             (!(pp.p_flags&d.F_REAL) && (pp.p_ch == '|' || pp.p_ch == '-')))
             {
-            ch = pp.p_ch;
-            if (pp.p_flags & d.F_PASS)
-                ch = d.PASSAGE;
-            pp.p_flags |= d.F_SEEN;
-            r.UI.move(y, x);
-            if (pp.p_monst != null)
-                pp.p_monst.t_oldch = pp.p_ch;
-            else if (pp.p_flags & d.F_REAL)
-                r.UI.addch(ch);
-            else
-            {
-                //standout();反転表示
-                r.UI.addch((pp.p_flags & d.F_PASS) ? d.PASSAGE : d.DOOR);
-                //standend();
-            }
+                ch = pp.p_ch;
+                if (pp.p_flags & d.F_PASS)
+                    ch = d.PASSAGE;
+                pp.p_flags |= d.F_SEEN;
+                r.UI.move(y, x);
+                if (pp.p_monst != null)
+                    pp.p_monst.t_oldch = pp.p_ch;
+                else if (pp.p_flags & d.F_REAL)
+                    r.UI.addch(ch);
+                else
+                {
+                    //standout();反転表示
+                    r.UI.addch((pp.p_flags & d.F_PASS) ? d.PASSAGE : d.DOOR);
+                    //standend();
+                }
             }
         }
     }

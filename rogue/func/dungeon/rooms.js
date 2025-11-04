@@ -415,13 +415,13 @@ function rooms_f(r, dg){
 			{
 				tp = dg.moat(y, x);
 				ch = dg.chat(y, x);
-				if (tp == null)
-					if (r.UI.inch() != ch){
+				if (tp == null){
+					//if (r.UI.inch() != ch){
 						r.UI.move(y, x);
 						r.UI.addch(ch);
 					}
-					else
-						r.UI.move(y, x + 1);
+					//else
+					//	r.UI.move(y, x + 1);
 				else
 				{
 					tp.t_oldch = ch;
@@ -470,15 +470,18 @@ function rooms_f(r, dg){
 			floor = ' ';
 
 		player.t_room = dg.passages[dg.flat(cp.y, cp.x) & d.F_PNUM];
-		for (y = rp.r_pos.y; y < rp.r_max.y + rp.r_pos.y; y++)
-			for (x = rp.r_pos.x; x < rp.r_max.x + rp.r_pos.x; x++)
+		for (y = rp.r_pos.y+1; y < rp.r_max.y + rp.r_pos.y-1; y++)
+			for (x = rp.r_pos.x+1; x < rp.r_max.x + rp.r_pos.x-1; x++)
 			{
 				r.UI.move(y, x);
-				switch ( ch = r.UI.inch() )
+				ch = r.UI.inch();//console.log(ch);
+				switch (ch)
 				{
 				case d.FLOOR:
 					if (floor == ' ' && ch != ' ')
 						r.UI.addch(' ');
+					break;
+				case d.STAIRS:
 					break;
 				default:
 					/*
