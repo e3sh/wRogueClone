@@ -182,7 +182,12 @@ function MonsterManager(r){
         */
         const over =()=>{
             let oc = 0;
-            if (rer != ree)
+            
+            let re = r.dungeon.roomnum(th.t_pos);
+            let rp = r.dungeon.roomnum(r.player.player.t_pos);
+
+            //if (rer != ree)
+            if (re != rp)
             {
                 //for (cp = rer.r_exit; cp < rer.r_exit[rer.r_nexits]; cp++)
                 for (let i = 0; i<=rer.r_nexits; i++)
@@ -340,22 +345,25 @@ function MonsterManager(r){
 
         if ((prob = monsters[Number(tp.t_type.charCodeAt(0)) - Number('A'.charCodeAt(0))].m_carry) <= 0 || tp.t_room == proom
         || r.player.see_monst(tp))
-            return {x:hero.x, y:hero.y};
+            return hero;//{x:hero.x, y:hero.y};
         for (obj = r.dungeon.lvl_obj; obj != null; obj = next(obj))
         {
-        if (obj.o_type == d.SCROLL && obj.o_which == d.S_SCARE)
-            continue;
-        if (r.dungeon.roomin(obj.o_pos) == tp.t_room && r.rnd(100) < prob)
-        {
-            for (tp = mlist; tp != null; tp = next(tp))
-            if (tp.t_dest == obj.o_pos)
-                break;
-                if (!Boolean(obj.o_pos)) console.log("warn: wm");
-            if (tp == null)
-                return {x:obj.o_pos.x, y:obj.o_pos.y};
+            if (obj.o_type == d.SCROLL && obj.o_which == d.S_SCARE)
+                continue;
+            let wo = r.dungeon.roomnum(obj.o_pos);
+            let wt = r.dungeon.roomnum(tp.t_pos);
+            //if (r.dungeon.roomin(obj.o_pos) == tp.t_room && r.rnd(100) < prob)
+            if (wo == wt && r.rnd(100) < prob)
+            {
+                for (tp = mlist; tp != null; tp = next(tp))
+                if (tp.t_dest == obj.o_pos)
+                    break;
+                    if (!Boolean(obj.o_pos)) console.log("warn: wm");
+                if (tp == null)
+                    return {x:obj.o_pos.x, y:obj.o_pos.y};
+            }
         }
-        }
-        return {x:hero.x, y:hero.y};
+        return hero;//{x:hero.x, y:hero.y};
     }
     /*
     * chase:
@@ -409,7 +417,7 @@ function MonsterManager(r){
             * If we can't find an empty spot, we stay where we are.
             */
             //console.log(er);
-                      if (!Boolean(ee) )console.log("warn: ee");
+                if (!Boolean(ee) )console.log("warn: ee");
             curdist = dist_cp(er, ee);
             ch_ret = er;
 

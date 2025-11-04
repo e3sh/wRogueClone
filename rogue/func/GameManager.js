@@ -170,8 +170,6 @@ function GameManager(g){
 
         //this.mapcheckTest();
         this.UI.status();
-
-        this.UI.status();
         this.UI.setHomesub();
         this.UI.clear(3); //inventry display
         this.player.packf.inventory(this.player.player.t_pack, 0);
@@ -192,6 +190,7 @@ function GameManager(g){
         this.player.init_player();			/* Set up initial player stats プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。*/
         this.dungeon.new_level();			/* Draw current level new_level.c*/
 
+        
         this.UI.status();
         this.UI.setHomesub();
         this.UI.clear(3); //inventry display

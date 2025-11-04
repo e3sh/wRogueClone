@@ -262,6 +262,7 @@ function PlayerCharacter(r){
         //pstats 
         player.t_stats.init(d.INIT_STATS);	/* The maximum for the player */
 
+        hungry_state = 0; 
         food_left = d.HUNGERTIME;
         /*
         * Give him some food
