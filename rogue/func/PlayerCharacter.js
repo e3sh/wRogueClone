@@ -747,10 +747,8 @@ function PlayerCharacter(r){
         else if (on(player, d.ISHELD) && ch != 'F')
         {
             r.UI.msg("you are being held");
-            //動作異常の為、解除
-            //return;
+            return;
         }
-        //現状移動系の状態変化/異常は無効とする(混乱/高速移動/浮遊/拘束)2025/11/01
 
         switch (ch)
         {
@@ -1108,6 +1106,8 @@ function PlayerCharacter(r){
     */
     this.unconfuse = function()
     {
+        const player = r.player.player
+
         player.t_flags &= ~d.ISHUH;
         r.UI.msg(`you feel less ${choose_str("trippy", "confused")} now`);
     }
@@ -1134,8 +1134,11 @@ function PlayerCharacter(r){
     //void
     this.sight = function()
     {
+        const player = r.player.player
+
         if (on(player, d.ISBLIND))
         {
+            let proom = player.t_room
             r.daemon.extinguish(this.sight);
             player.t_flags &= ~d.ISBLIND;
             if (!(proom.r_flags & d.ISGONE))
@@ -1203,6 +1206,8 @@ function PlayerCharacter(r){
     //void
     this.come_down = function()
     {
+        const player = r.player.player
+
         let tp;	//register THING *tp;
         let seemonst;	//register bool seemonst;
 
@@ -1287,7 +1292,16 @@ function PlayerCharacter(r){
         */
         tp.y = y;
         tp.x = x;
-        return ((rer = r.dungeon.roomin(tp)) == proom && !(rer.r_flags & d.ISDARK));	//(bool)
+
+        //let result = ((rer = r.dungeon.roomin(tp)) == proom && !(rer.r_flags & d.ISDARK));
+
+        rer = r.dungeon.roomin(tp);
+        let er = r.dungeon.roomnum(tp);
+        let pr = r.dungeon.roomnum(player.t_pos);
+
+        let result = ((er == pr) && !(rer.r_flags & d.ISDARK));
+
+        return result;//(bool)
     }
 
     /*

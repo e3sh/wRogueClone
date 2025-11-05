@@ -381,7 +381,7 @@ function UIManager(r, g){
         //let after = r.after;
         //let running = r.running;
 
-        let no_command = stat.nocmd;
+        let no_command = r.player.get_no_command();
         //let to_death = stat.death;
 
         let ch; //,ki;
@@ -390,6 +390,7 @@ function UIManager(r, g){
         let mp; //THING *mp;
         let countch, direction, newcount = false;
         let kvf = false;
+        let asleep = false;
 
         if (on(player, d.ISHASTE))
             ntimes++;
@@ -433,6 +434,7 @@ function UIManager(r, g){
             */
             //if (wizard)
             //    noscore = true;
+
             if (!no_command)
             {
                 if (running || to_death)
@@ -446,6 +448,7 @@ function UIManager(r, g){
                     if (mpos != 0)		/* Erase message if its there */
                         msg("");
                 }
+                asleep = false;
             }
             else
                 ch = '.';
@@ -457,6 +460,7 @@ function UIManager(r, g){
                     player.t_flags |= d.ISRUN;
                     r.UI.msg("you can move again");
                 }
+                asleep = true;
             }
             /*
             * execute a command
@@ -477,9 +481,7 @@ function UIManager(r, g){
                 //r.after = false; inventory(pack, 0);
                 let st = r.player.get_invstat();
                 r.UI.setHomesub();
-                r.UI.setHomesub(true);
                 r.UI.clear(3); //sideconsole 
-                r.UI.clear(6); //centerconsole
 
                 let io = g.task.read("io");
                 //if (!io.debugview){
@@ -488,9 +490,12 @@ function UIManager(r, g){
                     }
                     //r.UI.submsg(`inpack ${r.player.packf.read_inpack()} /cur:${r.player.packf.get_cur()}`);
                 //}
-
                 io.overlapview = mode;
-                r.player.packf.inventory(player.t_pack, 0, true);
+                if (mode){
+                    r.UI.setHomesub(true);
+                    r.UI.clear(6); //centerconsole
+                    r.player.packf.inventory(player.t_pack, 0, true);
+                } 
                 r.debug.mobslist();
             }
 
@@ -592,20 +597,24 @@ function UIManager(r, g){
             let opcmdf = false; //operation command flag
             //if (!ki.includes("Space")){            
 
-            if (ki.includes("Numpad4")) pr = r.player.do_move( 0,-1);
-            if (ki.includes("Numpad2")) pr = r.player.do_move( 1, 0);
-            if (ki.includes("Numpad8")) pr = r.player.do_move(-1, 0);
-            if (ki.includes("Numpad6")) pr = r.player.do_move( 0, 1);
-            if (ki.includes("Numpad7")) pr = r.player.do_move(-1,-1);
-            if (ki.includes("Numpad9")) pr = r.player.do_move(-1, 1);
-            if (ki.includes("Numpad1")) pr = r.player.do_move( 1,-1);
-            if (ki.includes("Numpad3")) pr = r.player.do_move( 1, 1);
+            if (!asleep){
+                if (ki.includes("Numpad4")) pr = r.player.do_move( 0,-1);
+                if (ki.includes("Numpad2")) pr = r.player.do_move( 1, 0);
+                if (ki.includes("Numpad8")) pr = r.player.do_move(-1, 0);
+                if (ki.includes("Numpad6")) pr = r.player.do_move( 0, 1);
+                if (ki.includes("Numpad7")) pr = r.player.do_move(-1,-1);
+                if (ki.includes("Numpad9")) pr = r.player.do_move(-1, 1);
+                if (ki.includes("Numpad1")) pr = r.player.do_move( 1,-1);
+                if (ki.includes("Numpad3")) pr = r.player.do_move( 1, 1);
 
-            if (ki.includes("Numpad5")) {
-                pr = r.player.do_move( 0, 0);
-                search();
-                opcmdf = true;
+                if (ki.includes("Numpad5")) {
+                    pr = r.player.do_move( 0, 0);
+                    search();
+                    opcmdf = true;
+                }
             }
+            if (ki.includes("Numpad0")) useItem();
+
             if (ki.includes("NumpadAdd")||ki.includes("NumpadSubtract")||
                 ki.includes("ArrowDown")||ki.includes("ArrowUp"))
             {
@@ -614,12 +623,11 @@ function UIManager(r, g){
                 );
                 viewInventry(true);
             }else
-                ;//viewInventry();
+                viewInventry();
             //if (ki.includes("NumpadAdd")) r.player.packf.set_cur(1);//r.UI.msg("+");
             //if (ki.includes("NumpadSubtract")) r.player.packf.set_cur(-1)//r.UI.msg("-");
             //if (ki.includes("Numpad0")) r.UI.msg("Zero");
 
-            if (ki.includes("Numpad0")) useItem();
 
             if (ki.includes("KeyI")) {
                 let io = g.task.read("io");
@@ -637,6 +645,7 @@ function UIManager(r, g){
             if (ki.includes("KeyR")) ;//ring_off(); //auto_select
             if (ki.includes("KeyL")) ;//ring// select position L /
             if (ki.includes("KeyS")) ;//search(); //no operation
+
             if (ki.includes("KeyM")) { //get item on/off
                 r.after = false;
                 r.player.packf.move_on = !(r.player.packf.move_on);
@@ -711,6 +720,7 @@ function UIManager(r, g){
                         //r.UI.msg(`GET ITEM:${pr}/mode${r.player.packf.move_on}`); 
                         break;  
                 }
+                pr = "";
             }
         }
 
@@ -734,6 +744,7 @@ function UIManager(r, g){
         let s = " ";
 		for (let i in ki){s += `${ki[i]},`}
         if (kvf) this.comment(`dir:${delta} input:${s}`);//[${pr} ${oldc}]`);
+    
     }
 
     /*

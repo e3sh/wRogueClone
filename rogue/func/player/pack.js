@@ -102,7 +102,7 @@ function packf(r){
 		if (obj.o_flags & d.ISFOUND)
 		{
 			r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
-			r.UI.mvaddch(hero.y, hero.x, this.floor_ch());
+			r.UI.mvaddch(hero.y, hero.x, r.player.floor_ch());
 			r.dungeon.places[hero.y][hero.x].p_ch = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
 			r.discard(obj);
 			r.UI.msg("the scroll turns to dust as you pick it up");
@@ -203,6 +203,10 @@ function packf(r){
 		}
 		obj.o_flags |= d.ISFOUND;
 
+		//console.log(obj.location);
+		obj.location = d.PACK_P;
+		//console.log(obj.location);
+
 		/*
 		* If this was the object of something's desire, that monster will
 		* get mad and run at the hero.
@@ -221,11 +225,8 @@ function packf(r){
 			let ms = "";
 			if (!terse)
 				ms = "you now have ";//r.UI.addmsg("you now have ");
-			obj.location = d.PACK_P;
 			r.UI.msg(`${ms}${r.item.inv_name(obj, !terse)}`);// (${obj.o_packch}`);
 		}
-
-		obj.location = d.PACK_P;
 		r.UI.comment(".add_pack " + debugstr);
 	}
 
@@ -240,7 +241,7 @@ function packf(r){
 		//console.log("ff" + from_floor);
 		let player = r.player.player;
 		let hero = player.t_pos;
-		let proom = player.t_room;
+		let proom = player.t_room;//r.dungeon.roomin(hero);//player.t_room;
 
 		if (++inpack > d.MAXPACK)
 		{
@@ -260,7 +261,7 @@ function packf(r){
 		{
 			//console.log("get item from_floor")
 			r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
-			r.UI.mvaddch(hero.y, hero.x, this.floor_ch());
+			r.UI.mvaddch(hero.y, hero.x, r.player.floor_ch());
 
 			//chat(hero.y, hero.x) = (proom.r_flags & ISGONE) ? PASSAGE : FLOOR;
 			r.dungeon.places[hero.y][hero.x].p_ch = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
@@ -297,6 +298,8 @@ function packf(r){
 			m.o_flags   = s.o_flags;
 			m.o_group   = s.o_group;
 			m.o_label   = s.o_label;
+			m.location  = s.location;
+
 			return m;
 		}
 
@@ -364,10 +367,12 @@ function packf(r){
 	{
 		if (inpack <= 0) return;
 		if (r.UI.get_execItemuse()){
-			inverror_recover();
+			//inverror_recover();
 			packch_sort(list, type);
 			r.UI.reset_execItemuse();
 		}
+		return this.new_inventory(list, type, mode);
+
 
 		let inv_temp = "";// = [];//static char inv_temp[MAXSTR];
 
@@ -385,7 +390,7 @@ function packf(r){
 			let equip = r.player.equip_state_check(list.o_packch)?"E":"-";
 			let cur = (list.o_packch == this.get_cur())?">":" ";
 
-			if (list.o_packch == null) continue;
+			//if (list.o_packch == null) continue;
 
 			inv_temp = `${equip}${cur}${list.o_packch}) `;// ${}`"%c) %%s", list.o_packch);
 			//msg_esc = true;
@@ -412,6 +417,63 @@ function packf(r){
 			return false;
 		}
 		//end_line();
+
+		return true;
+	}
+
+	/*
+	* inventory:
+	*/
+	this.new_inventory = function(list, type, mode)	//THING *list, int type)
+	{
+		if (inpack <= 0) return;
+		let inv_temp = "";
+
+		n_objs = 0;
+
+		r.UI.submsg("Inventory)",mode);
+
+		let itable = [];
+		for (let i in r.mobs)
+			if (r.mobs[i].location == d.PACK_P)
+				itable.push(r.mobs[i]);
+
+		for (let o of itable){
+			if (o.o_packch == null){
+				alert("lname null ");
+				inverror_recover();
+				return false;
+			}
+
+		}
+
+		let rtable = itable.sort((a,b)=>{return (Number(a.o_packch.charCodeAt(0)) - Number(b.o_packch.charCodeAt(0)))});
+
+		for (let i in rtable){
+			list = rtable[i];
+
+			if (type && type != list.o_type && !(type == d.CALLABLE &&
+				list.o_type != d.FOOD && list.o_type != d.AMULET) &&
+				!(type == d.R_OR_S && (list.o_type == d.RING || list.o_type == d.STICK)))
+					continue;
+			n_objs++;
+			let equip = r.player.equip_state_check(list.o_packch)?"E":"-";
+			let cur = (list.o_packch == this.get_cur())?">":" ";
+
+			inv_temp = `${equip}${cur}${list.o_packch}) `;
+			inv_temp += r.item.things.inv_name(list, false);
+			r.UI.submsg(inv_temp, mode);
+		}
+		if (n_objs == 0)
+		{
+			if (terse)
+				r.UI.msg(type == 0 ? "empty handed" :
+						"nothing appropriate");
+			else
+				r.UI.msg(type == 0 ? "you are empty handed" :
+						"you don't have anything appropriate");
+			return false;
+		}
 		return true;
 	}
 
@@ -455,7 +517,7 @@ function packf(r){
 			if (mb.location == d.PACK_P){
 				if (mb.o_packch == null) {
 					let pc = r.player.packf.pack_char();
-					r.mobs[i] == pc;
+					r.mobs[i].o_packch == pc;
 					r.UI.debug(`packp warn recover ${pc}`);
 				}
 			}
@@ -522,6 +584,8 @@ function packf(r){
 	*/
 	this.picky_inven = function(mch)
 	{
+		return new_picky_inven(mch);
+
 		let pack = r.player.player.t_pack;
 
 		let obj;//THING *obj;
@@ -556,9 +620,38 @@ function packf(r){
 	}
 
 	/*
+	* new_picky_inven:
+	*/
+	function new_picky_inven(mch){
+
+		let itable = [];
+		for (let i in r.mobs)
+			if (r.mobs[i].location == d.PACK_P)
+				itable.push(r.mobs[i]);
+
+		if (itable.length < 1) {
+			r.UI.msg("you aren't carrying anything");
+			return null;
+		}
+		else if (itable.length == 1){
+			return itable[0];
+		}
+		else
+		{
+			for (let i in itable){
+				if (mch == itable[i].o_packch)
+					return itable[i];
+			}
+			r.UI.msg(`'${mch}' not in pack`);
+			return null;
+		}
+	}
+
+	/*
 	* get_item:
 	*	Pick something out of a pack for a purpose
 	*/
+	//未使用function
 	this.get_item = function(purpose, typechar)// *purpose, int type)
 	{
 		let player = r.player.player;
@@ -634,7 +727,7 @@ function packf(r){
 		//console.log(value + " " + purse);
 
 		purse += value;
-		r.UI.mvaddch(hero.y, hero.x, this.floor_ch());
+		r.UI.mvaddch(hero.y, hero.x, r.player.floor_ch());
 		r.dungeon.places[hero.y][hero.x].p_ch = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
 		if (value > 0)
 		{
@@ -650,29 +743,14 @@ function packf(r){
 	* floor_ch:
 	*	Return the appropriate floor character for her room
 	*/
-	this.floor_ch = function()
-	{
-		let proom = r.player.player.t_room;
-
-		if (proom.r_flags & d.ISGONE)
-			return d.PASSAGE;
-		return (r.UI.show_floor() ? d.FLOOR : ' ');
-	}
+	//r.player.floor_chで定義
 
 	/*
 	* floor_at:
 	*	Return the character at hero's position, taking see_floor
 	*	into account
 	*/
-	this.floor_at = function()
-	{
-		let ch;
-
-		ch = chat(hero.y, hero.x);
-		if (ch == FLOOR)
-			ch = floor_ch();
-		return ch;
-	}
+	//r.player.floor_atで定義
 
 	/*
 	* reset_last:

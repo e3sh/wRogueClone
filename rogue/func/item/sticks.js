@@ -251,6 +251,7 @@ function sticks(r){
 			r.UI.msg("what a bizarre schtick!");
 		}
 		obj.o_charges--;
+		r.player.player = player;
 	}
 
 	/*
