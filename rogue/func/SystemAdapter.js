@@ -43,6 +43,8 @@ function debug(r, g){
 
     let sw = false;
 
+    this.wizard = new wizard(r, g);
+
     this.checkListsCount = function()
     {
         const mlist   = r.dungeon.mlist;  

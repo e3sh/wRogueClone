@@ -28,7 +28,7 @@ function PlayerCharacter(r){
     let player = new t.thing(); //(プレイヤーオブジェクト)
     player.t_stats = new t.stats(d.INIT_STATS);//[0,0,0,0,0,0,0]);
     let pstats = player.t_stats // (プレイヤーの統計情報) プレイヤーの統計情報 (Str, HPなど)
-    let pack   = player.t_pack  // (プレイヤーインベントリ) プレイヤーのインベントリリスト
+    //let pack   = player.t_pack  // (プレイヤーインベントリ) プレイヤーのインベントリリスト
     let proom  = player.t_room // プレイヤーがいる部屋
     let hero   = player.t_pos; // (プレイヤー位置)
     let maxhp  = player.t_stats.s_maxhp; //プレイヤーの最大HP
@@ -40,12 +40,12 @@ function PlayerCharacter(r){
     let no_command = 0;	/* Number of turns asleep  (行動不能ターン数)*/
     let no_move = 0;    /* Number of turns held in place (行動不能ターン数)*/		
     let purse = 0;  /* How much gold he has  (所持ゴールド)*/
-    let level = 1;  /* What level she is on (現在の階層)*/
+    //let level = 1;  /* What level she is on (現在の階層)*/
     let see_floor = true;	/* Show the lamp illuminated floor */
     let terse = false;		/* true if we should be short (メッセージ表示オプション)*/
     let to_death = false;	/* Fighting is to the death! (戦死フラグ)*/
     let kamikaze = false;			/* to_death really to DEATH */
-    let move_on = false;	/* Next move shouldn't pick up items */
+    //let move_on = false;	/* Next move shouldn't pick up items */
     
     let amulet = false; /* He found the amulet */ 
 
@@ -55,16 +55,16 @@ function PlayerCharacter(r){
     cur_ring[1] = null;//new t.thing();			/* Which rings are being worn */
     let cur_weapon = new t.thing();			/* Which weapon he is weilding  (装備品)*/
 
-    let inpack = 0;				/* Number of things in pack */
+    //let inpack = 0;				/* Number of things in pack */
     let pack_used = Array(27);  /* Is the character used in the pack?  (インベントリ文字の使用状況)*/
     pack_used.fill(false);
 
     let quiet = 0;				/* Number of quiet turns */
 
-    const GOLDCALC = (Math.floor(Math.random(50 + 10 * level)) + 2);
+    //const GOLDCALC = (Math.floor(Math.random(50 + 10 * level)) + 2);
     const ISRING = (h,r)=>  {cur_ring[h] != null && cur_ring[h].o_which == r} //指定した手に特定のリングを着用しているか
     const ISWEARING =(r)=>  {return (ISRING(d.LEFT, r) || ISRING(d.RIGHT, r))}
-    const ISMULT = (type)=> {return (type == d.POTION || type == d.SCROLL || type == d.FOOD)}
+    //const ISMULT = (type)=> {return (type == d.POTION || type == d.SCROLL || type == d.FOOD)}
 
     this.player = player;
     this.amulet = amulet;
@@ -238,6 +238,9 @@ function PlayerCharacter(r){
     this.get_no_command = ()=>{ return no_command;}
     this.set_no_command = (num)=>{ no_command = num;}
 
+    this.get_food_left = ()=>{return food_left;}
+    this.set_food_left = (num)=>{food_left = num;}
+
     //this.packf = new packf(r);
     //this.misc  = new miscf(r);
 
@@ -335,6 +338,7 @@ function PlayerCharacter(r){
         //daemon
         let oldfood; //register int oldfood;
         let orig_hungry = hungry_state;	//int orig_hungry = hungry_state;
+        let nc;
 
         if (food_left <= 0)
         {
@@ -343,9 +347,11 @@ function PlayerCharacter(r){
             /*
             * the hero is fainting
             */
-            if (no_command || r.rnd(5) != 0)
+            nc = r.player.get_no_command(); 
+            if (nc || r.rnd(5) != 0)
                 return;
-            no_command += r.rnd(8) + 4;
+            nc += r.rnd(8) + 4;
+            r.player.set_no_command(nc);
             hungry_state = 3;
             if (!terse)
                 r.UI.addmsg(choose_str("the munchies overpower your motor capabilities.  ",
@@ -378,6 +384,11 @@ function PlayerCharacter(r){
             r.running = false; 
             to_death = false; 
             count = 0; 
+            
+            let state_name = ["", "Hungry", "Weak", "Faint"];
+            let p = r.player.player.t_pos;
+
+            r.UI.setEffect(state_name[hungry_state], p,{x: p.x, y: p.y-1},90);
         } 
         //r.UI.comment("d-stomach");
     }
@@ -994,6 +1005,10 @@ function PlayerCharacter(r){
         }
         //flush_type();
 
+        r.UI.setEffect(`trap!`,
+             player.t_pos,{x: player.t_pos.x, y: player.t_pos.y-1},
+             90);
+
         r.UI.comment("be_trapped");
 
         return tr;
@@ -1165,7 +1180,7 @@ function PlayerCharacter(r){
 	*/
 	this.eat = function(obj) //
 	{
-		const fruit = "slime-mold";
+		const fruit = r.fruit;
 		//let obj; //THING *obj;
 
 		//if ((obj = r.player.packf.get_item("eat", d.FOOD)) == null)

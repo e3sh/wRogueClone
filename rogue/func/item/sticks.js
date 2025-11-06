@@ -54,7 +54,6 @@ function sticks(r){
 		let name;
 		let monster, oldch;
 		let bolt;	//static THING bolt;
-
 		//if ((obj = r.item.thingsf.get_item("zap with", d.STICK)) == null)
 		//	return;
 		if (obj.o_type != d.STICK)
@@ -69,7 +68,7 @@ function sticks(r){
 			return;
 		}
 
-		let delta = r.UI.get_delta();
+		let delta = r.UI.get_delta(r.UI.delta);
 
 		switch (Number(obj.o_which))
 		{
@@ -318,7 +317,7 @@ function sticks(r){
 	this.fire_bolt = function(start, dir, name)//coord *start, coord *dir, char *name)
 	{
 		const def =()=>{
-			if (!hit_hero && (tp = moat(pos.y, pos.x)) != null)
+			if (!hit_hero && (tp = r.dungeon.moat(pos.y, pos.x)) != null)
 			{
 				hit_hero = true;
 				changed = !changed;
@@ -341,10 +340,10 @@ function sticks(r){
 				{
 					if (start == hero)
 						r.monster.runto(pos);
-					if (terse)
-						r.UI.msg(`${name} misses`);
-					else
-						r.UI.msg(`the ${name} whizzes past ${set_mname(tp)}`);
+					//if (terse)
+					//	r.UI.msg(`${name} misses`);
+					//else
+						r.UI.msg(`the ${name} whizzes past ${r.monster.battle.set_mname(tp)}`);
 				}
 			}
 			else if (hit_hero && ce(pos, hero))
@@ -402,15 +401,22 @@ function sticks(r){
 			case -2: 
 				dirch = '\\';
 		}
-		pos = start;
+		pos = {x:start.x, y:start.y};
 		hit_hero = (start != hero);
 		used = false;
 		changed = false;
-		for (c1 = spotpos; c1 <= spotpos[d.BOLT_LENGTH-1] && !used; c1++)
+
+		for (let i=0; i<d.BOLT_LENGTH; i++){
+			spotpos[i] = {};
+		}
+
+		for (let i in spotpos)
+		//for (c1 = spotpos; c1 <= spotpos[d.BOLT_LENGTH-1] && !used; c1++)
 		{
+			if (used) break;
 			pos.y += dir.y;
 			pos.x += dir.x;
-			c1 = pos;
+			spotpos[i] = {x:pos.x, y:pos.y};
 			ch = r.dungeon.winat(pos.y, pos.x);
 			switch (ch)
 			{
@@ -431,19 +437,20 @@ function sticks(r){
 					changed = false;
 					dir.y = -dir.y;
 					dir.x = -dir.x;
-					c1--;
+					//c1--;
 					r.UI.msg(`he ${name} bounces`);
 					break;
 				default:
 		//def:	
 					def();		
 			}
-			r.UI.mvaddch(pos.y, pos.x, dirch);
+			r.UI.setEffect(`${dirch}`, {x: pos.x,y: pos.y} ,{x: pos.x, y: pos.y},i*30);
+			//r.UI.mvaddch(pos.y, pos.x, dirch);
 			//refresh();
 				
 		}
-		for (c2 = spotpos; c2 < c1; c2++)
-		r.UI.mvaddch(c2.y, c2.x, r.dungeon.chat(c2.y, c2.x));
+		//for (c2 = spotpos; c2 < c1; c2++)
+		//r.UI.mvaddch(c2.y, c2.x, r.dungeon.chat(c2.y, c2.x));
 	}
 
 	/*

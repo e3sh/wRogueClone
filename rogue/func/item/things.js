@@ -52,7 +52,7 @@ function thingsf(r){
 		const ring_info = res.RING;
 		const s_names 	= res.SC_NAME;
 
-		const fruit = "slime-mold";
+		const fruit = r.fruit;;
 
 		/*
 		* num:
@@ -302,7 +302,7 @@ function thingsf(r){
 		let disc_list;
 
 		do {
-			disc_list = FALSE;
+			disc_list = false;
 			if (!terse)
 				addmsg("for ");
 			addmsg("what type");
@@ -312,32 +312,32 @@ function thingsf(r){
 			ch = readchar();
 			switch (ch)
 			{
-			case ESCAPE:
+			case d.ESCAPE:
 				msg("");
 				return;
-			case POTION:
-			case SCROLL:
-			case RING:
-			case STICK:
+			case d.POTION:
+			case d.SCROLL:
+			case d.RING:
+			case d.STICK:
 			case '*':
-				disc_list = TRUE;
+				disc_list = true;
 				break;
 			default:
 				if (terse)
 					msg("Not a type");
 				else
-					msg("Please type one of %c%c%c%c (ESCAPE to quit)", POTION, SCROLL, RING, STICK);
+					msg("Please type one of %c%c%c%c (ESCAPE to quit)", d.POTION, d.SCROLL, d.RING, d.STICK);
 			}
 		} while (!disc_list);
 		if (ch == '*')
 		{
-			print_disc(POTION);
-			add_line("", NULL);
-			print_disc(SCROLL);
-			add_line("", NULL);
-			print_disc(RING);
-			add_line("", NULL);
-			print_disc(STICK);
+			print_disc(d.POTION);
+			add_line("", null);
+			print_disc(d.SCROLL);
+			add_line("", null);
+			print_disc(d.RING);
+			add_line("", null);
+			print_disc(d.STICK);
 			end_line();
 		}
 		else
@@ -356,27 +356,27 @@ function thingsf(r){
 	//void
 	function print_disc(type)
 	{
-		let info = NULL;//struct obj_info *info = NULL;
+		let info = null;//struct obj_info *info = NULL;
 		let i, maxnum = 0, num_found;
 		let obj;	//static THING obj;
 		let order = [];//static int order[MAX4(MAXSCROLLS, MAXPOTIONS, MAXRINGS, MAXSTICKS)];
 
 		switch (type)
 		{
-		case SCROLL:
-			maxnum = MAXSCROLLS;
+		case d.SCROLL:
+			maxnum = d.MAXSCROLLS;
 			info = scr_info;
 			break;
-		case POTION:
-			maxnum = MAXPOTIONS;
+		case d.POTION:
+			maxnum = d.MAXPOTIONS;
 			info = pot_info;
 			break;
 		case RING:
-			maxnum = MAXRINGS;
+			maxnum = d.MAXRINGS;
 			info = ring_info;
 			break;
-		case STICK:
-			maxnum = MAXSTICKS;
+		case d.STICK:
+			maxnum = d.MAXSTICKS;
 			info = ws_info;
 			break;
 		}
@@ -389,11 +389,11 @@ function thingsf(r){
 		{
 			obj.o_type = type;
 			obj.o_which = order[i];
-			add_line("%s", this.inv_name(obj, FALSE));
+			add_line("%s", this.inv_name(obj, false));
 			num_found++;
 		}
 		if (num_found == 0)
-		add_line(nothing(type), NULL);
+		add_line(nothing(type), null);
 	}
 
 	/*
@@ -447,14 +447,14 @@ function thingsf(r){
 		{
 			if (maxlen < 0)
 				maxlen = strlen(prompt);
-			if (line_cnt >= LINES - 1 || fmt == NULL)
+			if (line_cnt >= d.LINES - 1 || fmt == null)
 			{
-				if (inv_type == INV_OVER && fmt == NULL && !newpage)
+				if (inv_type == d.INV_OVER && fmt == null && !newpage)
 				{
 				msg("");
 				refresh();
-				tw = newwin(line_cnt + 1, maxlen + 2, 0, COLS - maxlen - 3);
-				sw = subwin(tw, line_cnt + 1, maxlen + 1, 0, COLS - maxlen - 2);
+				tw = newwin(line_cnt + 1, maxlen + 2, 0, d.COLS - maxlen - 3);
+				sw = subwin(tw, line_cnt + 1, maxlen + 1, 0, d.COLS - maxlen - 2);
 						for (y = 0; y <= line_cnt; y++) 
 						{ 
 							wmove(sw, y, 0); 
@@ -466,12 +466,12 @@ function thingsf(r){
 				/*
 				* if there are lines below, use 'em
 				*/
-				if (LINES > NUMLINES)
+				if (d.LINES > d.NUMLINES)
 				{
-					if (NUMLINES + line_cnt > LINES)
-					mvwin(tw, LINES - (line_cnt + 1), COLS - maxlen - 3);
+					if (d.NUMLINES + line_cnt > d.LINES)
+					mvwin(tw, d.LINES - (line_cnt + 1), d.COLS - maxlen - 3);
 					else
-					mvwin(tw, NUMLINES, 0);
+					mvwin(tw, d.NUMLINES, 0);
 				}
 				touchwin(tw);
 				wrefresh(tw);
@@ -479,7 +479,7 @@ function thingsf(r){
 						if (md_hasclreol())
 				{
 					werase(tw);
-					leaveok(tw, TRUE);
+					leaveok(tw, true);
 					wrefresh(tw);
 				}
 				delwin(tw);
@@ -487,19 +487,19 @@ function thingsf(r){
 				}
 				else
 				{
-				wmove(hw, LINES - 1, 0);
+				wmove(hw, d.LINES - 1, 0);
 				waddstr(hw, prompt);
 				wrefresh(hw);
 				wait_for(' ');
-				clearok(curscr, TRUE);
+				clearok(curscr, true);
 				wclear(hw);
 				touchwin(stdscr);
 				}
-				newpage = TRUE;
+				newpage = true;
 				line_cnt = 0;
 				maxlen = strlen(prompt);
 			}
-			if (fmt != NULL && !(line_cnt == 0 && fmt == '\0'))
+			if (fmt != null && !(line_cnt == 0 && fmt == '\0'))
 			{
 				mvwprintw(hw, line_cnt++, 0, fmt, arg);
 				getyx(hw, y, x);
@@ -519,7 +519,7 @@ function thingsf(r){
 	//void
 	function end_line()
 	{
-		if (inv_type != INV_SLOW)
+		if (inv_type != d.INV_SLOW)
 		{
 			if (line_cnt == 1 && !newpage)
 			{
@@ -527,10 +527,10 @@ function thingsf(r){
 				msg(lastfmt, lastarg);
 			}
 			else
-				add_line(NULL, NULL);
+				add_line(null, null);
 		}
 		line_cnt = 0;
-		newpage = FALSE;
+		newpage = false;
 	}
 
 	/*
@@ -540,7 +540,7 @@ function thingsf(r){
 	//char *
 	function nothing(type)
 	{
-		let sp, tystr = NULL;
+		let sp, tystr = null;
 
 		if (terse)
 			sprintf(prbuf, "Nothing");

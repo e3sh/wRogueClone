@@ -297,6 +297,18 @@ function rogueDefines(){
         LVLOBJ: 2,
         PACK_P: 3,
         PACK_M: 4,
+
+        //Scene
+        MAINR:  0,
+        WIZARD: 1,
+        INVSCE: 2,
+
+        //SelectInv after command
+        SIC_FREE: -1,
+        SIC_NOOP: 0,
+        SIC_USE:  1,
+        SIC_DROP: 2,
+
     }
     return d;
 }

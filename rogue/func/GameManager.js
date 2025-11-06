@@ -71,24 +71,24 @@ function GameManager(g){
 
     //int  noscore;				/* Was a wizard sometime */
     let playing = true;			/* true until he quits */
-    let q_comm = false;			/* Are we executing a 'Q' command? */
+    //let q_comm = false;			/* Are we executing a 'Q' command? */
     let pause = false;
 
     let after;				/* true if we want after daemons */
     //bool again;				/* Repeating the last command */
     let running = false;			/* true if player is running  (走行中フラグ)*/
-    let door_stop = false;			/* Stop running when we pass a door (ドア通過時停止フラグ)*/
-    let firstmove = false;			/* First move after setting door_stop */
+    //let door_stop = false;			/* Stop running when we pass a door (ドア通過時停止フラグ)*/
+    //let firstmove = false;			/* First move after setting door_stop */
     let jump = false;			/* Show running as series of jumps */
     let passgo = false;			/* Follow passages */
-    let tombstone = true;			/* Print out tombstone at end  (墓石表示オプション)*/
+    //let tombstone = true;			/* Print out tombstone at end  (墓石表示オプション)*/
 
     let oldpos; /* Position before last look() call */
     let oldrp;  /* Roomin(&oldpos) */
 
     let fruit =	"slime-mold";		/* Favorite fruit (好きな果物名)*/
 
-    let scoreboard = null;	/* File descriptor for score file */
+    //let scoreboard = null;	/* File descriptor for score file */
     let wizard = false;			/* true if allows wizard commands */
 
 
@@ -98,7 +98,7 @@ function GameManager(g){
 
     this.wizard = wizard;
     this.playing = playing;
-    this.pause;
+    this.pause = pause;
 
     this.after = after;
     this.running = running;
@@ -111,8 +111,20 @@ function GameManager(g){
 
     this.rips = new rips(this);
     this.death = this.rips.death;
- 
-    /* 
+
+    this.fruit = fruit;
+
+    /*
+    * sceneChange param initialize
+    */
+    const SceneList = {
+        0: this.UI.command,
+        1: this.debug.wizard.command,
+        2: this.UI.select_inv
+    }
+
+    let SceneFunc;// =  setthis.UI.command();/* Command execution */;
+      /* 
     **関連する関数（提案されるメソッドの例）:**
     *   `main()`, `playit()` (ゲーム開始とメインループ)。
     *   `init_check()` (初期環境チェック)。
@@ -131,6 +143,8 @@ function GameManager(g){
     // roguemain
     /* check for legal startup ゲーム開始時の実行環境チェックを行います。 */
     const init_check =()=>{
+        
+        this.setScene(d.MAINR);
         //leavepack;
         thingTable = [];
         this.mobs = thingTable;
@@ -251,14 +265,21 @@ function GameManager(g){
         }
         return dtotal;
     }
+
     //gameloop
     this.loopstep = function(g){
 
-        if (this.playing) {
-            this.UI.command();/* Command execution */
-        }else{
-            this.waitScene();
-        }
+        if (this.playing) SceneFunc();
+
+        //    this.UI.command();/* Command execution */
+        //}else{
+        //    this.waitScene();
+        //}
+    }
+
+    this.setScene = function(scene){
+
+        SceneFunc = SceneList[scene];
     }
 
     // Functions for dealing with linked lists of goodies

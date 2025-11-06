@@ -47,7 +47,7 @@ function rips(r){
 		"         ________)/\\\\_//(\\/(/\\)/\\//\\/|_)_______",
 	];
 
-	const tombstone = true;
+	//const tombstone = true;
 	const whoami = "Player";
 	const monsters = r.globalValiable.monsters;
 

@@ -440,7 +440,7 @@ function packf(r){
 
 		for (let o of itable){
 			if (o.o_packch == null){
-				alert("lname null ");
+				//alert("lname null ");
 				inverror_recover();
 				return false;
 			}
@@ -516,9 +516,11 @@ function packf(r){
 			let mb = r.mobs[i];
 			if (mb.location == d.PACK_P){
 				if (mb.o_packch == null) {
-					let pc = r.player.packf.pack_char();
-					r.mobs[i].o_packch == pc;
-					r.UI.debug(`packp warn recover ${pc}`);
+					r.player.player.t_pack = r.detach(r.player.player.t_pack, r.mobs[i]);
+					//let pc = r.player.packf.pack_char();
+					//r.mobs[i].o_packch == pc;
+					r.UI.debug(`packp warn recover`);// ${pc}`);
+					break;
 				}
 			}
 		}

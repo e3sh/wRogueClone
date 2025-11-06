@@ -33,7 +33,7 @@ function UIManager(r, g){
     //const stdscr = g.console;
     whoami = "player"; this.whoami = whoami;   /* //char whoami[MAXSTR];/* Name of player */
 
-    let msgbuf;
+    //let msgbuf;
     let mpos = 0;				/* Where cursor is on top line */
     //let newpos;
     //let huh;       			/* The last message printed */
@@ -52,7 +52,7 @@ function UIManager(r, g){
     let l_last_comm;    /* Last last_comm */
     let l_last_dir;     /* Last object picked in get_item() */
     let l_last_pick;    /* Last last_pick */
-    let msg_esc;
+    //let msg_esc;
     
     let after;				/* true if we want after daemons */
     let again;				/* Repeating the last command */
@@ -76,7 +76,7 @@ function UIManager(r, g){
     this.reset_execItemuse =()=>{exec_iu = false;}
 
     this.delta = delta;
-    this.get_delta =()=>{
+    this.get_delta =(delta)=>{
         let resd = {};
         switch (Number(delta))
         {
@@ -169,17 +169,18 @@ function UIManager(r, g){
     this.clear   = function(num){ if (isNaN(num)) num=0; g.console[num].clear(); }
     
     this.texwork = "";
-    this.msg    = function(text){
+    this.msg    =(text)=>{
         text = this.texwork + text;
         if (!Boolean(text)) return;
         if (text.length >0){ g.console[1].insertln(); g.console[1].printw(text);
         } 
         this.texwork = "";
     }
-    this.addmsg = function(text){ this.texwork += text;}
-    this.endmsg = function(){ this.msg("");};
-    this.doadd  = function(text){ this.texwork += text;}
-    
+    this.addmsg = (text)=>{ this.texwork += text;}
+    this.endmsg = ()=>{ this.msg("");};
+    this.doadd  = (text)=>{ this.texwork += text;}
+    this.msgbuf_reset =()=>{this.texwork ="";}
+
     this.debug  = function(text){      this.comment(`d: ${text}`); }
     this.comment = function(text){     g.console[2].insertln(); g.console[2].printw(text); }
 
@@ -352,400 +353,10 @@ function UIManager(r, g){
     * terse (メッセージ表示オプション), 
     * last_comm, l_last_comm, last_dir, l_last_dir, last_pick, l_last_pick (直前のコマンド情報)
     */
-    let pr;     //after bgchr
-    let oldc;   //before bgchr
+    const cmd = new command(r, g);
 
-    this.command = function()
-    {
-        let ki = this.readchar();
-
-        if (r.pause) {
-
-            ki = this.readchar();
-            r.UI.pause("[Press return to continue]");
-            if (this.wait_for("Enter")||this.wait_for("NumpadEnter")){
-                let io = g.task.read("io");
-                io.overlapview = false;
-                r.pause = false;
-                r.restart();
-            }
-            return;
-        } 
-
-        let player = r.player.player;
-        const stat = r.player.get_status();
-        const purse = stat.pur;
-        const hero = player.t_pos; 
-        const cur_ring = stat.ring;
-
-        //let after = r.after;
-        //let running = r.running;
-
-        let no_command = r.player.get_no_command();
-        //let to_death = stat.death;
-
-        let ch; //,ki;
-        let ntimes = 1;			/* Number of player moves */
-        let fp; //*fp
-        let mp; //THING *mp;
-        let countch, direction, newcount = false;
-        let kvf = false;
-        let asleep = false;
-
-        if (on(player, d.ISHASTE))
-            ntimes++;
-        /*
-        * Let the daemons start up
-        */
-        r.daemon.do_daemons(d.BEFORE);
-        r.daemon.do_fuses(d.BEFORE);
-
-        while (ntimes--)
-        {
-            again = false;
-            if (has_hit)
-            {
-                r.UI.endmsg("");
-                has_hit = false;
-            }
-            /*
-            * these are illegal things for the player to be, so if any are
-            * set, someone's been poking in memeory
-            */
-            if (on(player, d.ISSLOW|d.ISGREED|d.ISINVIS|d.ISREGEN|d.ISTARGET))
-            {
-                r.UI.debug("illegal thing for the player");         
-                //exit(1);
-            }
-
-            this.look(true);
-            if (!running)
-                door_stop = false;
-            r.UI.status();
-            lastscore = purse;
-            r.UI.move(hero.y, hero.x);
-            //if (!((running || count) && jump))
-            //    refresh();			/* Draw screen */
-            take = 0;
-            r.after = true;
-
-            /*
-            * Read command or continue run
-            */
-            //if (wizard)
-            //    noscore = true;
-
-            if (!no_command)
-            {
-                if (running || to_death)
-                    ch = runch;
-                else if (count)
-                    ch = countch;
-                else
-                {
-                    //ch = r.UI.readchar();
-                    move_on = false;
-                    if (mpos != 0)		/* Erase message if its there */
-                        msg("");
-                }
-                asleep = false;
-            }
-            else
-                ch = '.';
-            if (no_command)
-            {
-                r.player.set_no_command(--no_command);
-                if (no_command == 0)
-                {
-                    player.t_flags |= d.ISRUN;
-                    r.UI.msg("you can move again");
-                }
-                asleep = true;
-            }
-            /*
-            * execute a command
-            */
-            if (count && !running)
-            count--;
-            if (ch != 'a' && ch != d.ESCAPE && !(running || count || to_death))
-            {
-                //l_last_comm = last_comm;
-                //l_last_dir = last_dir;
-                //l_last_pick = last_pick;
-                //last_comm = ch;
-                //last_dir = '\0';
-                //last_pick = null;
-            }
-
-            const viewInventry = (mode)=>{
-                //r.after = false; inventory(pack, 0);
-                let st = r.player.get_invstat();
-                r.UI.setHomesub();
-                r.UI.clear(3); //sideconsole 
-
-                let io = g.task.read("io");
-                //if (!io.debugview){
-                    for (let i in st){
-                        r.UI.submsg(st[i]);
-                    }
-                    //r.UI.submsg(`inpack ${r.player.packf.read_inpack()} /cur:${r.player.packf.get_cur()}`);
-                //}
-                io.overlapview = mode;
-                if (mode){
-                    r.UI.setHomesub(true);
-                    r.UI.clear(6); //centerconsole
-                    r.player.packf.inventory(player.t_pack, 0, true);
-                } 
-                r.debug.mobslist();
-            }
-
-            const useItem = ()=>{
-                //let inkeyst = "";
-                //for (let i in ki){
-                //    if (ki[i].includes("Key")){
-                //        inkeyst = ki[i].substring(3).toLowerCase();
-                //        break;
-                //    }
-                // }
-                let inkeyst = r.player.packf.get_cur();
-
-                if (inkeyst != "") {
-                    //let cnum = inkeyst.charCodeAt(0);
-                    let ws = "";
-                    let useitem = r.player.packf.picky_inven(inkeyst);
-                    if (useitem != null){
-                        //ws = `Item type "${useitem.o_type}"`;
-                        r.after = false;
-
-                        switch(useitem.o_type)
-                        {
-                            case d.FOOD:
-                                ws = "food eat()";
-                                r.player.eat(useitem);
-                                break;
-                            case d.WEAPON:
-                                ws = "weapon wield()";
-                                if (r.player.equip_state_check(inkeyst)) ws += "*";
-                                r.item.weapon.wield(useitem);
-                                // wield()
-                                break;
-                            case d.ARMOR:
-                                ws = "armor wear()/takeoff()";
-                                if (r.player.equip_state_check(inkeyst)) ws += "*";
-                                r.item.armor.wear(useitem);/// takeoff()
-                                break;                            
-                            case d.RING:
-                                ws = "ring ring_on/ring_off()";
-                                if (r.player.equip_state_check(inkeyst)) ws += "*";
-                                r.item.rings.ring_on(useitem);// ring_off()
-                                break;                            
-                            case d.STICK:
-                                ws = "stick/wand do_zap()";
-                                r.item.sticks.do_zap(useitem)//do_zap()
-                                break;                            
-                            case d.POTION:
-                                ws = "potion quaff()";
-                                r.item.potions.quaff(useitem);
-                                break;                            
-                            case d.SCROLL:
-                                ws = "scroll read_scroll()";
-                                r.item.scroll.read_scroll(useitem);
-                                break;                            
-                            default:
-                                ws = "etc";
-                                //no operation
-                        }
-                        //r.UI.msg(`${ws} ${inkeyst})${r.item.things.inv_name(useitem, false)}`);//(${cnum})` );
-                    }
-                    r.UI.comment(`${ws} ${inkeyst})`);
-                    //r.UI.msg(`use Item ${inkeyst})${r.item.things.inv_name(obj, false)} ${ws}`);//(${cnum})` );
-                    r.player.packf.set_cur(0);
-                    exec_iu = true;
-                    viewInventry();
-                }
-                //selectしたキーのalphabetのitemがあるか？
-                //itemがあった場合はitemの種類を判定
-                //Foodだった場合はeat()を呼ぶ
-                //ringだった場合は？どうするか装備する指をどのように指定するべきか
-                //weaponだった場合は持ち替え
-                //armorだった場合は装備変更
-                //potion/scroll/staff/wand...thing.o_type DEFINE SYMBOL
-                // command:
-                // identify weild ware discoverd
-            }
-
-            const dropItem =()=>{
-
-                let inkeyst = r.player.packf.get_cur();
-                let dobj = r.player.packf.picky_inven(inkeyst);
-                if (!Boolean(dobj)) return;
-
-                if (dobj.o_type == d.WEAPON){
-                    let delta = this.get_delta();
-                    r.item.weapon.missile(dobj, delta.y, delta.x);
-                    //r.UI.msg(`throw ${inkeyst})${r.item.things.inv_name(dobj, false)} x${delta.x},y${delta.y}`);
-                }else{
-                    r.item.things.drop(dobj);
-                    //r.UI.msg(`drop ${inkeyst})${r.item.things.inv_name(dobj, false)}`);
-                }
-                r.player.packf.set_cur(0);
-                viewInventry();
-            }
-
-            //ki = this.readchar();
-            oldc = pr;
-            let opcmdf = false; //operation command flag
-            //if (!ki.includes("Space")){            
-
-            if (!asleep){
-                if (ki.includes("Numpad4")) pr = r.player.do_move( 0,-1);
-                if (ki.includes("Numpad2")) pr = r.player.do_move( 1, 0);
-                if (ki.includes("Numpad8")) pr = r.player.do_move(-1, 0);
-                if (ki.includes("Numpad6")) pr = r.player.do_move( 0, 1);
-                if (ki.includes("Numpad7")) pr = r.player.do_move(-1,-1);
-                if (ki.includes("Numpad9")) pr = r.player.do_move(-1, 1);
-                if (ki.includes("Numpad1")) pr = r.player.do_move( 1,-1);
-                if (ki.includes("Numpad3")) pr = r.player.do_move( 1, 1);
-
-                if (ki.includes("Numpad5")) {
-                    pr = r.player.do_move( 0, 0);
-                    search();
-                    opcmdf = true;
-                }
-            }
-            if (ki.includes("Numpad0")) useItem();
-
-            if (ki.includes("NumpadAdd")||ki.includes("NumpadSubtract")||
-                ki.includes("ArrowDown")||ki.includes("ArrowUp"))
-            {
-                r.player.packf.set_cur(
-                    (ki.includes("NumpadAdd")||ki.includes("ArrowDown"))?1:-1
-                );
-                viewInventry(true);
-            }else
-                viewInventry();
-            //if (ki.includes("NumpadAdd")) r.player.packf.set_cur(1);//r.UI.msg("+");
-            //if (ki.includes("NumpadSubtract")) r.player.packf.set_cur(-1)//r.UI.msg("-");
-            //if (ki.includes("Numpad0")) r.UI.msg("Zero");
-
-
-            if (ki.includes("KeyI")) {
-                let io = g.task.read("io");
-                if (!io.overlapview) 
-                    viewInventry(true)
-                else
-                    viewInventry();
-
-            }
-            if (ki.includes("KeyD")) dropItem(); 
-            if (ki.includes("KeyR")) ;//read_scroll(); //auto_select
-            if (ki.includes("KeyE")) ;//eat(); //auto_select
-            if (ki.includes("KeyT")) ;//r.monster.wanderer();//take_off(); //auto_select
-            if (ki.includes("KeyP")) ;//ring_on(); //auto_select
-            if (ki.includes("KeyR")) ;//ring_off(); //auto_select
-            if (ki.includes("KeyL")) ;//ring// select position L /
-            if (ki.includes("KeyS")) ;//search(); //no operation
-
-            if (ki.includes("KeyM")) { //get item on/off
-                r.after = false;
-                r.player.packf.move_on = !(r.player.packf.move_on);
-                r.UI.comment(`mv_on[${r.player.packf.move_on}]`);// ${r.after?"m":"s"}]`);
-            }//search();
-            //use potion function is quaff() (potions)
-            if (ki.includes("KeyW")) {
-                r.wizard = (r.wizard)?false:true;
-                this.setEffect((r.wizard)?"ON":"OFF", {x:hero.x,y:hero.y} ,{x: hero.x, y: hero.y-1},90);
-            }
-            if (r.wizard){
-                if (this.wait_for("KeyQ")) r.debug.mapcheckTest(); //debug command
-                if (this.wait_for("KeyA")) r.debug.monsterViewTest(); //debug command
-                if (this.wait_for("KeyZ")) r.dungeon.show_map(); //debug command
-            }
-            //if (this.wait_for("ArrowDown")) r.debug.checkListsCount(); //debug command
-
-            //} else {
-            //}
-            //set delta
-            for (let i in ki)
-                if (ki[i].includes("Numpad")){
-                    let cnum = Number(ki[i].substring(6));
-                    if (cnum >=1 && cnum <=9)    
-                    {
-                        //inkeyst = `direction: ${ki[i].substring(6).toLowerCase()}`;
-                        if (cnum !=5) {
-                            if (delta != cnum) kvf = true;
-                            delta = cnum;
-                            this.delta = delta;
-                        }
-                        break;
-                    }
-                }
-
-            if (r.after)
-            {
-                //r.UI.comment(`[${pr} ${oldc}`);// ${r.after?"m":"s"}]`);
-                switch (pr)
-                {
-                    case d.DOOR:
-                        //r.UI.msg(`DOOR:ROOM ${(oldc==d.PASSAGE)?"IN":"OUT"}`);
-                        if (oldc==d.PASSAGE) r.dungeon.roomf.enter_room(hero);
-                        if (oldc==d.FLOOR)   r.dungeon.roomf.leave_room(hero);
-                        break;
-                    case d.STAIRS: //r.UI.msg("STAIRS");
-                        if (opcmdf) 
-                            if (r.player.amulet){
-                                r.dungeon.u_level();
-                            }else{
-                                r.dungeon.d_level();
-                            }      
-                        else
-                            if (r.player.amulet){
-                                r.UI.msg(`you find up stairs.`);//(push[5] or pad(A)key next dungeon level)`);
-                            }else{
-                                r.UI.msg(`you find down stairs.`);//(push[5] or pad(A)key next dungeon level)`);
-                            }
-                        break;
-                    case d.GOLD:  
-                    case d.FOOD:  
-                    case d.POTION:
-                    case d.SCROLL:
-                    case d.WEAPON:
-                    case d.ARMOR:  
-                    case d.RING:   
-                    case d.MAGIC:  
-                    case d.STICK:  
-                    case d.AMULET:
-                        r.player.packf.pick_up(pr);
-                        //viewInventry();
-                        //r.UI.msg(`GET ITEM:${pr}/mode${r.player.packf.move_on}`); 
-                        break;  
-                }
-                pr = "";
-            }
-        }
-
-        r.daemon.do_daemons(d.AFTER);
-        r.daemon.do_fuses(d.AFTER);
-
-        const ISRING = (h,r)=>  {cur_ring[h] != null && cur_ring[h].o_which == r}
-
-        if (ISRING(d.LEFT, d.R_SEARCH))
-            search();
-        else if (ISRING(d.LEFT, d.R_TELEPORT) && r.rnd(50) == 0)
-            r.item.scroll.teleport();
-        if (ISRING(d.RIGHT, d.R_SEARCH))
-            search();
-        else if (ISRING(d.RIGHT, d.R_TELEPORT) && r.rnd(50) == 0)
-            r.item.scroll.teleport();
-
-        this.look(true);
-        r.UI.status();
-
-        let s = " ";
-		for (let i in ki){s += `${ki[i]},`}
-        if (kvf) this.comment(`dir:${delta} input:${s}`);//[${pr} ${oldc}]`);
-    
-    }
+    this.command = cmd.main;
+    this.select_inv = cmd.select_inv;
 
     /*
     * look:
@@ -967,7 +578,7 @@ function UIManager(r, g){
     *	player gropes about him to find hidden things.
     */
     //void
-    function search()
+    this.search = function()
     {
         let player = r.player.player;
         let hero   = player.t_pos;
@@ -1014,7 +625,7 @@ function UIManager(r, g){
                     case d.FLOOR:
                         if (r.rnd(2 + probinc) != 0)
                             break;
-                        r.dungeon.places[y][x].p_ch = TRAP;
+                        r.dungeon.places[y][x].p_ch = d.TRAP;
                         if (!terse)
                             r.UI.addmsg("you found ");
                         if (on(player, d.ISHALU))

@@ -9,7 +9,7 @@ function potions(r){
 	const pot_info = r.globalValiable.pot_info;
 
 	const player = r.player.player;
-	const fruit = r.globalValiable.fruit;
+	const fruit = r.fruit;
 
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
 	const ISRING = (h, wh)=>  {
