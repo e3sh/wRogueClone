@@ -368,7 +368,8 @@ function packf(r){
 		if (inpack <= 0) return;
 		if (r.UI.get_execItemuse()){
 			//inverror_recover();
-			packch_sort(list, type);
+			//packch_sort(list, type);
+			new_packch_sort();
 			r.UI.reset_execItemuse();
 		}
 		return this.new_inventory(list, type, mode);
@@ -438,15 +439,15 @@ function packf(r){
 			if (r.mobs[i].location == d.PACK_P)
 				itable.push(r.mobs[i]);
 
-		for (let o of itable){
-			if (o.o_packch == null){
-				//alert("lname null ");
-				inverror_recover();
-				return false;
-			}
+		//for (let o of itable){
+		//	if (o.o_packch == null){
+		//		//alert("lname null ");
+		//		inverror_recover();
+		//		return false;
+		//	}
+		//}
 
-		}
-
+		//sort on packch
 		let rtable = itable.sort((a,b)=>{return (Number(a.o_packch.charCodeAt(0)) - Number(b.o_packch.charCodeAt(0)))});
 
 		for (let i in rtable){
@@ -507,6 +508,35 @@ function packf(r){
 		for (let i in r.player.packf.pack_used)
 			if (r.player.packf.pack_used[i]) inpack++;
 	}
+	/*
+	* new packch sort
+	*/
+	function new_packch_sort(){
+
+		const order = [d.FOOD, d.ARMOR, d.WEAPON, d.RING, d.AMULET, d.STICK, d.SCROLL, d.POTION ];
+		
+		//itemtype sort
+		let itable = [];
+		for (let i in r.mobs)
+			if (r.mobs[i].location == d.PACK_P)
+				itable.push(r.mobs[i]);
+
+		let t_table = itable.sort((a,b)=>{return (order.indexOf(a.o_type) - order.indexOf(b.o_type))});
+
+		//pachch rename
+		for (let i in r.player.packf.pack_used) r.player.packf.pack_used[i] = false;
+
+		for (let i in t_table){
+			let pc = String.fromCharCode(Number("a".charCodeAt(0)) + Number(i));
+			t_table[i].o_packch = pc;
+			r.player.packf.pack_used[i] = true;
+		}
+
+		inpack = 0;
+		for (let i in r.player.packf.pack_used)
+			if (r.player.packf.pack_used[i]) inpack++;
+	}
+
 	/*
 	* inventory error recovory
 	*/

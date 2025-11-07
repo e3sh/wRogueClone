@@ -421,9 +421,9 @@ function GameManager(g){
         ];
 
         if (this.dungeon.level >= d.AMULETLEVEL)
-            i = this.rnd(thing_list.length + 1);
+            i = this.rnd(thing_list.length -1);
         else
-            i = this.rnd(thing_list.length + 1);
+            i = this.rnd(thing_list.length -2);
         return thing_list[i];
     }
     /*

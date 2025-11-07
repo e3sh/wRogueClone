@@ -450,7 +450,7 @@ function command(r, g)
             }
             r.UI.comment(`${ws} ${inkeyst})`);
             r.player.packf.set_cur(0);
-            exec_iu = true;
+            r.UI.set_execItemuse();
             viewInventry();
         }
     }
@@ -468,6 +468,7 @@ function command(r, g)
             r.item.things.drop(dobj);
         }
         r.player.packf.set_cur(0);
+        r.UI.set_execItemuse();
         viewInventry();
     }
 }
