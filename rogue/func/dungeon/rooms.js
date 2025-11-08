@@ -6,7 +6,7 @@ function rooms_f(r, dg){
     const d = r.define;
     const t = r.types;
 
-	const proom = r.player.player.t_room;
+	//const proom = r.player.player.t_room;
 	
 	const rooms = dg.rooms;
 	//const level = dg.level;

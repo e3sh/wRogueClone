@@ -292,6 +292,7 @@ function rogueDefines(){
         //#define CTRL(c)		(c & 037)
 
         //thing Location
+        PLOBJ : -1,
         FREE  : 0,
         MLIST : 1,
         LVLOBJ: 2,
@@ -302,6 +303,7 @@ function rogueDefines(){
         MAINR:  0,
         WIZARD: 1,
         INVSCE: 2,
+        WIZ_HELP: 3,
 
         //SelectInv after command
         SIC_FREE: -1,

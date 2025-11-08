@@ -25,15 +25,15 @@ function PlayerCharacter(r){
     **カプセル化する変数**: `pstats` (プレイヤーの統計情報), `pack` (持ち物リスト), `cur_weapon` (現在の武器), `cur_armor` (現在の防具), `cur_ring[]` (リング),
     *   `hero` (プレイヤーの座標), `proom` (プレイヤーがいる部屋) など。
     */
-    let player = new t.thing(); //(プレイヤーオブジェクト)
-    player.t_stats = new t.stats(d.INIT_STATS);//[0,0,0,0,0,0,0]);
-    let pstats = player.t_stats // (プレイヤーの統計情報) プレイヤーの統計情報 (Str, HPなど)
+    let player; //(プレイヤーオブジェクト) //init_playerで初期化
+    //player.t_stats = new t.stats(d.INIT_STATS);//[0,0,0,0,0,0,0]);
+    let pstats;// = player.t_stats // (プレイヤーの統計情報) プレイヤーの統計情報 (Str, HPなど)
     //let pack   = player.t_pack  // (プレイヤーインベントリ) プレイヤーのインベントリリスト
-    let proom  = player.t_room // プレイヤーがいる部屋
-    let hero   = player.t_pos; // (プレイヤー位置)
-    let maxhp  = player.t_stats.s_maxhp; //プレイヤーの最大HP
+    let proom;//  = player.t_room // プレイヤーがいる部屋
+    let hero;//   = player.t_pos; // (プレイヤー位置)
+    let maxhp;//  = player.t_stats.s_maxhp; //プレイヤーの最大HP
 
-    let max_stats  = new t.stats(d.INIT_STATS); 
+    let max_stats = new t.stats(d.INIT_STATS); 
 
     let food_left = 0;			/* Amount of food in hero's stomach (食料残量)*/
     let hungry_state = 0;   /* How hungry is he  (空腹状態)*/	
@@ -49,11 +49,11 @@ function PlayerCharacter(r){
     
     let amulet = false; /* He found the amulet */ 
 
-    let cur_armor = new t.thing(); 			/* What he is wearing (装備中の防具)*/
+    let cur_armor = null; //new t.thing(); 			/* What he is wearing (装備中の防具)*/
     let cur_ring = [];  // (装備中の指輪)
     cur_ring[0] = null;//new t.thing();			/* Which rings are being worn */
     cur_ring[1] = null;//new t.thing();			/* Which rings are being worn */
-    let cur_weapon = new t.thing();			/* Which weapon he is weilding  (装備品)*/
+    let cur_weapon = null; //new t.thing();			/* Which weapon he is weilding  (装備品)*/
 
     //let inpack = 0;				/* Number of things in pack */
     let pack_used = Array(27);  /* Is the character used in the pack?  (インベントリ文字の使用状況)*/
@@ -250,7 +250,8 @@ function PlayerCharacter(r){
 
         let obj; //THING *obj;
 
-        player = new t.thing(); 
+        player = r.new_item();//new t.thing();
+        player.location = d.PLOBJ; 
         player.t_stats = new t.stats(d.INIT_STATS);
         pstats = player.t_stats; 
         pack   = player.t_pack;

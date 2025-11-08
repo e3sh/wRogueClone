@@ -120,7 +120,8 @@ function GameManager(g){
     const SceneList = {
         0: this.UI.command,
         1: this.debug.wizard.command,
-        2: this.UI.select_inv
+        2: this.UI.select_inv,
+        3: this.debug.wizard.help_menu,
     }
 
     let SceneFunc;// =  setthis.UI.command();/* Command execution */;

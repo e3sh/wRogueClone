@@ -71,7 +71,7 @@ function command(r, g)
         r.daemon.do_fuses(d.BEFORE);
 
         if (sic_result != d.SIC_FREE){
-            r.UI.msg(`SIC ${sic_result}`);
+            //r.UI.msg(`SIC ${sic_result}`);
             sic_result = d.SIC_FREE;
         }
 
@@ -245,6 +245,7 @@ function command(r, g)
                 if (r.UI.wait_for("Digit5")) r.debug.mapcheckTest(); //debug command
                 if (r.UI.wait_for("Digit6")) r.debug.monsterViewTest(); //debug command
                 if (r.UI.wait_for("Digit7")) r.dungeon.show_map(); //debug command
+                if (r.UI.wait_for("Digit0")) {r.setScene(d.WIZ_HELP); break}//debug command
             }
             //if (this.wait_for("ArrowDown")) r.debug.checkListsCount(); //debug command
 

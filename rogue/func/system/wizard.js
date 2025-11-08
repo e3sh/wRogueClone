@@ -281,6 +281,50 @@ function wizard(r, g){
 		}
 	}
 
+	this.help_menu = function(){
+        let ki = r.UI.readchar();
+
+		//wizardmenu();
+		help_menu();
+
+		if (r.UI.wait_for("KeyQ")) {
+			let io = g.task.read("io");
+			io.overlapview = null;
+			col = 0;
+			curw = 0;
+			r.setScene(d.MAINR);
+		}
+	}
+
+
+	function help_menu(){
+
+		const menu = [
+			"wizard: Help",
+			"DigitKey information)",
+			"1: Create Object",
+			"2: hp_recovery (hp = max_hp)",
+			"3: food_supply (food_left = 1500)",
+			"4: inspectItem (selected item)",
+			"5: mapCheckTest",
+			"6: monsterViewTest",
+			"7: r.dungeon.show_map() (cls)",
+			"8:",
+			"9:",
+			"0: Help (this menu)",
+			"",
+			"Q:Quit",
+		]
+
+		let io = g.task.read("io");
+		io.overlapview = true;
+
+		r.UI.clear(6);
+		for (let i in menu){
+			r.UI.submvprintw(i, 0, `${menu[i]}`, true);
+		}
+	}
+
 	//selecttype
 
 

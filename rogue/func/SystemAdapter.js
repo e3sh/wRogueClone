@@ -85,6 +85,9 @@ function debug(r, g){
 
             let txt = "";
             switch(mc.location){
+                case d.PLOBJ:
+                    txt = `Player[${st_tpx},${st_tpy}] hp:${mc.t_stats.s_hpt}/${mc.t_stats.s_maxhp} `;
+                    break;
                 case d.FREE:
                     txt = `Free`;
                     break;
