@@ -62,30 +62,7 @@ function wizard(r, g){
 			r.setScene(d.MAINR);
 		}
  	}
-	//wizard command console
-	function wizardmenu(){
 
-		const menu = [
-			"MASTER wizard menu)",
-			"2: Hp recovory",
-			"3: Food supply",
-			"4: Identify",
-			"5: MapcheckTest",
-			"6: MonsterView",
-			"7: (r.dungeon.show_map)",
-			"Create Object",
-			"Q:Quit",
-			`${col} ${curw}`
-		]
-
-		let io = g.task.read("io");
-		io.overlapview = true;
-
-		r.UI.clear(6);
-		for (let i in menu){
-			r.UI.submvprintw(i, 0, `${(col == i)?">":" "} ${menu[i]}`, true);
-		}
-	}
 	/**
 	 * player hp recovory (wizard)
 	 */
@@ -98,7 +75,7 @@ function wizard(r, g){
 		msg("wizard: hp_recover");
 	}
 	/**
-	 * player hp recovory (wizard)
+	 * player food_supply (wizard)
 	 */
 	this.food_supply = function(){
 
@@ -296,9 +273,7 @@ function wizard(r, g){
 		}
 	}
 
-
 	function help_menu(){
-
 		const menu = [
 			"wizard: Help",
 			"DigitKey information)",
@@ -324,9 +299,4 @@ function wizard(r, g){
 			r.UI.submvprintw(i, 0, `${menu[i]}`, true);
 		}
 	}
-
-	//selecttype
-
-
-
 }
