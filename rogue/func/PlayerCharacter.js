@@ -912,6 +912,10 @@ function PlayerCharacter(r){
         let arrow;//THING *arrow;
         let tr;
 
+        r.UI.setEffect(`trap!`,
+        player.t_pos,{x: player.t_pos.x, y: player.t_pos.y-1},
+        90);
+
         if (on(player, d.ISLEVIT))
             return d.T_RUST;	/* anything that's not a door or teleport */
         running = false;
@@ -1005,11 +1009,6 @@ function PlayerCharacter(r){
             break;
         }
         //flush_type();
-
-        r.UI.setEffect(`trap!`,
-             player.t_pos,{x: player.t_pos.x, y: player.t_pos.y-1},
-             90);
-
         r.UI.comment("be_trapped");
 
         return tr;
