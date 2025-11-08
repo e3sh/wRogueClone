@@ -14,6 +14,8 @@ const w = [
     // Rogue 
     r + "GameManager.js",
         r + "manager/rip.js",
+        r + "manager/wizard.js",
+        //r.system.wizardだがGithubPageに何故か/systemフォルダが反映されない為こちらにも設置
     r + "PlayerCharacter.js",
         r + "player/pack.js",
         r + "player/misc.js",
@@ -36,7 +38,7 @@ const w = [
         r + "UI/moveEffect.js",
     r + "DaemonScheduler.js",
     r + "SystemAdapter.js",
-        r + "System/wizard.js",
+    //    r + "System/wizard.js",
     // Rogue Parameters
     p + "rogueDefines.js",
     p + "rogueTypes.js",
