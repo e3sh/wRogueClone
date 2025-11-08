@@ -397,7 +397,7 @@ function rooms_f(r, dg){
 	*/
 	this.enter_room = function(cp)//(coord *cp)
 	{
-		let player = r.player.player;
+		const player = r.player.player;
 		
 		let rp; //struct room *rp;
 		let tp; //THING *tp;
@@ -405,7 +405,7 @@ function rooms_f(r, dg){
 		let ch;
 
 		player.t_room = r.dungeon.roomin(cp);
-		rp = player.t_room;//proom;//r.dungeon.roomin(cp);
+		rp = player.t_room;//proom;//r.dungeon.roomin(cp); console.log(rp)
 		r.player.door_open(rp);
 		if (!(rp.r_flags & d.ISDARK) && !on(player, d.ISBLIND))
 		for (y = rp.r_pos.y; y < rp.r_max.y + rp.r_pos.y; y++)

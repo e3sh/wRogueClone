@@ -8,7 +8,7 @@ function potions(r){
 
 	const pot_info = r.globalValiable.pot_info;
 
-	const player = r.player.player;
+	//const player = r.player.player;
 	const fruit = r.fruit;
 
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
@@ -72,6 +72,8 @@ function potions(r){
 	//void
 	this.quaff = function(obj)
 	{
+		const player = r.player.player;
+
 		let tp, mp;//THING *obj, *tp, *mp;
 		let discardit = false;
 		let show, trip;
@@ -299,6 +301,7 @@ function potions(r){
 	//void
 	this.invis_on = function()
 	{
+		const player = r.player.player;
 		let mp;
 
 		player.t_flags |= d.CANSEE;
@@ -314,6 +317,8 @@ function potions(r){
 	//bool
 	function turn_see(turn_off)
 	{
+		const player = r.player.player;
+
 		let mp;//THING *mp;
 		let can_see, add_new;
 
@@ -358,6 +363,8 @@ function potions(r){
 	//bool
 	function seen_stairs()
 	{
+		const player = r.player.player;
+
 		let tp;//THING	*tp;
 		let hero = r.player.player.t_pos;
 		let stairs = r.dungeon.get_stairs();
@@ -408,6 +415,7 @@ function potions(r){
 	//void
 	function do_pot(type, knowit)//int type, bool knowit)
 	{
+		const player = r.player.player;
 		/*
 		* spread:
 		*	Give a spread around a given number (+/- 20%)?
@@ -444,6 +452,8 @@ function potions(r){
 	//char *
 	function choose_str(ts, ns)//har *ts, char *ns)
 	{
+		const player = r.player.player;
+
 		return (on(player, d.ISHALU) ? ts : ns);
 	}
 }

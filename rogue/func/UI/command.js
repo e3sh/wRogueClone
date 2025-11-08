@@ -153,7 +153,7 @@ function command(r, g)
             }
 
             //ki = this.readchar();
-            oldc = pr;
+            //oldc = pr;
             let opcmdf = false; //operation command flag
             //if (!ki.includes("Space")){            
             //moving
@@ -305,6 +305,7 @@ function command(r, g)
                         //r.UI.msg(`GET ITEM:${pr}/mode${r.player.packf.move_on}`); 
                         break;  
                 }
+                oldc = pr;
                 pr = "";
             }
         }
@@ -328,8 +329,7 @@ function command(r, g)
 
         let s = " ";
         for (let i in ki){s += `${ki[i]},`}
-        if (kvf) r.UI.comment(`dir:${r.UI.delta} input:${s}`);//[${pr} ${oldc}]`);
-
+        if (kvf) r.UI.comment(`dir:${r.UI.delta} input:${s}`); //[${pr} ${oldc}]`);
     }
 
     //command inventory

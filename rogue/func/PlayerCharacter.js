@@ -28,7 +28,7 @@ function PlayerCharacter(r){
     let player; //(プレイヤーオブジェクト) //init_playerで初期化
     //player.t_stats = new t.stats(d.INIT_STATS);//[0,0,0,0,0,0,0]);
     let pstats;// = player.t_stats // (プレイヤーの統計情報) プレイヤーの統計情報 (Str, HPなど)
-    //let pack   = player.t_pack  // (プレイヤーインベントリ) プレイヤーのインベントリリスト
+    let pack; //   = player.t_pack  // (プレイヤーインベントリ) プレイヤーのインベントリリスト
     let proom;//  = player.t_room // プレイヤーがいる部屋
     let hero;//   = player.t_pos; // (プレイヤー位置)
     let maxhp;//  = player.t_stats.s_maxhp; //プレイヤーの最大HP
@@ -1150,6 +1150,7 @@ function PlayerCharacter(r){
     this.sight = function()
     {
         const player = r.player.player
+        const hero = player.t_pos;
 
         if (on(player, d.ISBLIND))
         {
@@ -1157,7 +1158,7 @@ function PlayerCharacter(r){
             r.daemon.extinguish(this.sight);
             player.t_flags &= ~d.ISBLIND;
             if (!(proom.r_flags & d.ISGONE))
-                this.enter_room(hero);
+                r.player.enter_room(hero);
             r.UI.msg(choose_str("far out!  Everything is all cosmic again",
                     "the veil of darkness lifts"));
         }

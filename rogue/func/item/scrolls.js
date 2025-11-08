@@ -142,7 +142,7 @@ function scroll(r){
 				* Don't put a monster in top of the player.
 				*/
 				if (y == hero.y && x == hero.x)
-					continue;
+					continue
 				/*
 				* Or anything else nasty
 				*/
@@ -152,7 +152,7 @@ function scroll(r){
 					if (fo != null){
 						if (ch == d.SCROLL
 							&& fo.o_which == d.S_SCARE)
-							continue;
+							continue
 						else if (r.rnd(++i) == 0)
 						{
 							mp.y = y;
