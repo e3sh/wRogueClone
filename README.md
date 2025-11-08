@@ -4,10 +4,13 @@ Pure JS RogueClone (porting study)
 Base　Rogue5.4.4
 5ch-dnc-th16 2025.11.01 456
 ```
+* [wRogueClone](https://e3sh.github.io/wRogueClone/roguegcs.html)　playGame
+
 # References
 * [Rogue5.4](http://rogue.rogueforge.net/rogue-5-4/) original rogue source code
 * [wGCs](https://github.com/e3sh/WebGameCoreSystem) Display and Input Control
-        (https://e3sh.github.io/WebGameCoreSystem/documents/) Documents
+* [↑Document](https://e3sh.github.io/WebGameCoreSystem/documents/) Documents
+ 
 ```
 ##　移植による変更点
 * 移動・操作の簡略化
