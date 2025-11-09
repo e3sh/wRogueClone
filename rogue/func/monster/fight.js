@@ -228,7 +228,7 @@ function battle(r){
 					* The ice monster freezes you
 					*/
 					player.t_flags &= ~d.ISRUN;
-					if (!r.player.set_no_command())
+					if (r.player.get_no_command() != 0)
 					{
 						r.UI.addmsg("you are frozen");
 						//if (!terse)
@@ -236,8 +236,8 @@ function battle(r){
 						r.UI.endmsg("");
 					}
 					r.player.set_no_command(r.player.get_no_command()+ r.rnd(2) + 2);
-					if (r.player.set_no_command() > d.BORE_LEVEL)
-					r.death('h');
+					if (r.player.get_no_command() > d.BORE_LEVEL)
+						r.death('h');
 					break; 
 				case 'R':
 					/*

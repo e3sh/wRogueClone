@@ -219,7 +219,10 @@ function PlayerCharacter(r){
     this.set_purse =(value)=>{ purse = value;}
 
     this.get_maxhp =()=>{ return maxhp;}
-    this.set_maxhp =(value)=>{ maxhp = value;}
+    this.set_maxhp =(value)=>{
+        maxhp = value;
+        player.t_stats.s_maxhp = maxhp;
+    }
 
     this.get_pstat = ()=>{ return player.t_stats;}
     this.set_pstat = (stat)=>{player.t_stats = stat;}

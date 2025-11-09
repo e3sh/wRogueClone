@@ -89,6 +89,11 @@ function quick_storage(r){
                 r.UI.comment("param_load comp");
             }
 
+            for (let i in scr_info) scr_info[i].oi_know = insp.scr[i];
+            for (let i in pot_info) pot_info[i].oi_know = insp.pot[i];
+            for (let i in ws_info) ws_info[i].oi_know = insp.ws[i];
+            for (let i in ring_info) ring_info[i].oi_know = insp.ring[i];
+
             r.dungeon.set_level(insp.level);
             r.player.set_food_left(insp.food_left);
             r.player.set_purse(insp.purse);
