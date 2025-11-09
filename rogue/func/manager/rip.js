@@ -244,6 +244,7 @@ function rips(r){
 		r.UI.pause("[Press return to continue]");
 		r.pause = true;
 
+		r.quickstorage.reset();
 		r.player.reset_inventry();
 	}
 
@@ -392,6 +393,7 @@ function rips(r){
 
 		r.UI.pause("[Press return to continue]");
 		r.pause = true;
+		r.quickstorage.reset();
 		//my_exit(0);
 	}
 

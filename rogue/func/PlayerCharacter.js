@@ -204,6 +204,17 @@ function PlayerCharacter(r){
         }
     }
 
+    this.set_new_player = function(new_player){
+        player = new_player;
+        pstats = player.t_stats; 
+        pack   = player.t_pack;
+        proom  = player.t_room;
+        hero   = player.t_pos; 
+        maxhp  = player.t_stats.s_maxhp;
+
+        this.player = player;
+    }
+
     this.get_purse =()=>{ return purse;}
     this.set_purse =(value)=>{ purse = value;}
 

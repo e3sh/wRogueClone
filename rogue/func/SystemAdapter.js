@@ -161,26 +161,29 @@ function debug(r, g){
 
     let col = 0, curw = 0;
 	this.title = function(){
+
+  		title_menu();
+
         let ki = r.UI.readchar();
-
-
         if (ki.includes("ArrowDown")||ki.includes("ArrowUp")){
 			col +=((ki.includes("ArrowDown"))?1:-1);
 		}
-
         if (ki.includes("ArrowRight")||ki.includes("ArrowLeft")){
 			curw +=((ki.includes("ArrowRight"))?1:-1);
 		}
+        if (ki.includes("Numpad2")||ki.includes("Numpad8")){
+			col +=((ki.includes("Numpad2"))?1:-1);
+		}
 
-		//wizardmenu();
-		title_menu();
+        title_menu();
 
 		if (r.UI.wait_for("Enter")||r.UI.wait_for("NumpadEnter")){
 			let io = g.task.read("io");
 			io.overlapview = null;
-			col = 0;
-			curw = 0;
-			r.setScene(d.MAINR);
+            if (col == 3){
+                r.beginproc(true);
+            }
+            r.setScene(d.MAINR);
 		}
  	}
 

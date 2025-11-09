@@ -91,6 +91,8 @@ function GameManager(g){
     //let scoreboard = null;	/* File descriptor for score file */
     let wizard = false;			/* true if allows wizard commands */
 
+    let worm = false; //restart dungeon flag;
+
 
     let thingTable = [];    /* motionObject master Talbe item/monster(thing struct) */
     
@@ -113,6 +115,8 @@ function GameManager(g){
     this.death = this.rips.death;
 
     this.fruit = fruit;
+
+    this.quickstorage = new quick_storage(this);
 
     /*
     * sceneChange param initialize
@@ -145,12 +149,18 @@ function GameManager(g){
     // roguemain
     /* check for legal startup ゲーム開始時の実行環境チェックを行います。 */
     const init_check =()=>{
-        
-        this.setScene(d.MAINR);
+
+        if (this.quickstorage.check()){
+            this.setScene(d.TITLE);
+            this.beginproc();
+        } else {
+            this.setScene(d.MAINR);
+            this.beginproc();
+        }
         //this.setScene(d.TITLE);
         //leavepack;
-        thingTable = [];
-        this.mobs = thingTable;
+        //thingTable = [];
+        //this.mobs = thingTable;
         /*
         console.log(thingTable.length)
         for (let i in thingTable){
@@ -163,51 +173,52 @@ function GameManager(g){
     }
 
     this.start = function(){
+        init_check();
+        //call start
+    }
+    
+    //
+    this.beginproc = function(continuef){
+
+        idcount = 0; //itemIDreset
 
         g.console[1].printw(`Hello ${this.UI.whoami} , just a moment while I dig the dungeon...`);
-        init_check();
+
+        thingTable = [];
+        this.mobs = thingTable;
+
+        globalVariableInit(this);
+        this.dungeon.set_level(1);
+
+        //init_check();
         this.UI.comment("init_check");
 
-        this.item.init_probs();			/* Set up prob tables for objects init.c 全てのアイテムの出現確率を初期化します。*/
-        this.player.init_player();			/* Set up initial player stats プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。*/
+        this.item.init_probs();    		/* Set up prob tables for objects init.c 全てのアイテムの出現確率を初期化します。*/
+        //this.player.init_player();  	/* Set up initial player stats プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。*/
         this.item.init_names();			/* Set up names of scrolls スクロールの名前をランダムに生成します。*/
         this.item.init_colors();			/* Set up colors of potions ポーションの色をランダムに初期化します。*/
         this.item.init_stones();			/* Set up stone settings of rings リングの石の設定をランダムに初期化し、その価値に影響を与えます。*/
         this.item.init_materials();		/* Set up materials of wands ワンドとスタッフの素材をランダムに初期化します。*/
+
+        if (continuef){
+            this.quickstorage.load();
+        }else{
+            this.player.init_player(); 
+        }
 
         this.dungeon.new_level();			/* Draw current level new_level.c*/
 
         /*
         * Start up daemons and fuses
         */
-        this.daemon.start_daemon(this.monster.runners, 0, d.AFTER);
-        this.daemon.start_daemon(this.player.doctor, 0, d.AFTER);
-        this.daemon.fuse(this.daemon.swander, 0, d.WANDERTIME, d.AFTER);
-        this.daemon.start_daemon(this.player.stomach, 0, d.AFTER);
+        if (!worm){
+            this.daemon.start_daemon(this.monster.runners, 0, d.AFTER);
+            this.daemon.start_daemon(this.player.doctor, 0, d.AFTER);
+            this.daemon.fuse(this.daemon.swander, 0, d.WANDERTIME, d.AFTER);
+            this.daemon.start_daemon(this.player.stomach, 0, d.AFTER);
+        }
 
         //this.mapcheckTest();
-        this.UI.status();
-        this.UI.setHomesub();
-        this.UI.clear(3); //inventry display
-        this.player.packf.inventory(this.player.player.t_pack, 0);
-
-        this.playit(g); //ゲームのメインループです。オプションの解析とcommand()の呼び出しを行います。
-    }
-
-    this.restart = function(){
-
-        idcount = 0; //itemIDreset
-
-        g.console[1].printw(`Hello ${this.UI.whoami} , just a moment Restart the dungeon...`);
-
-        globalVariableInit(this);
-        this.dungeon.set_level(1);
-
-        init_check();
-        this.player.init_player();			/* Set up initial player stats プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。*/
-        this.dungeon.new_level();			/* Draw current level new_level.c*/
-
-        
         this.UI.status();
         this.UI.setHomesub();
         this.UI.clear(3); //inventry display
@@ -241,7 +252,7 @@ function GameManager(g){
         //    this.UI.submsg(st[i]);
         //}
         //this.player.packf.inventory(this.player.t_pack, 0);
-    
+        worm = true;
         this.UI.comment("play_it");
     
         playing = true;

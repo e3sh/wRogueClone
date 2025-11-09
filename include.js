@@ -16,6 +16,7 @@ const w = [
         r + "manager/rip.js",
         r + "manager/wizard.js",
         //r.system.wizardだがGithubPageに何故か/systemフォルダが反映されない為こちらにも設置
+        r + "manager/qs.js",
     r + "PlayerCharacter.js",
         r + "player/pack.js",
         r + "player/misc.js",

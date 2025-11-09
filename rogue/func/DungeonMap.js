@@ -502,6 +502,7 @@ function DungeonMap(r){
         else
         {
             level++;
+            r.quickstorage.save();
             //seenstairs = FALSE;
             this.new_level();
         }
@@ -522,6 +523,8 @@ function DungeonMap(r){
             if (r.player.amulet)
             {
                 level--;
+                r.quickstorage.save();
+
                 if (level == 0){
                     r.rips.total_winner();
                     return;

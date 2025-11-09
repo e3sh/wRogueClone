@@ -11,9 +11,10 @@ function moveEffect(g){
      * @param {coord} st 開始テキスト位置({x:､y:}) 
      * @param {coord} ed 終了位置
      */
-    function eftask(aschr, st, ed, lifetime){
+    function eftask(aschr, st, ed, lifetime, startdelay){
 
         if (isNaN(lifetime)) lifetime = 0;
+        if (isNaN(startdelay)) startdelay = 0;
 
         let living = true;
 
@@ -29,17 +30,20 @@ function moveEffect(g){
         let vy = ch / count;
 
         this.step = function(){
-            if (--count<0 ) {
-                if (--lifetime<0) living = false;
-            }else{
-                sx += vx;
-                sy += vy;
+            if (--startdelay < 0){
+                if (--count < 0) {
+                    if (--lifetime<0) living = false;
+                }else{
+                    sx += vx;
+                    sy += vy;
+                }
             }
-
             return living;
         }
         this.draw = function(g){
-            g.font["small"].putchr(aschr, sx, sy);            
+            if (startdelay <= 0)
+                g.font["small"].putchr(aschr, sx, sy);
+
         }
     }
 
@@ -49,9 +53,9 @@ function moveEffect(g){
      * @param {coord} st 開始テキスト位置({x:､y:}) 
      * @param {coord} ed 終了位置
      */
-    this.setEffect = function(ch, st, ed, lt){
+    this.setEffect = function(ch, st, ed, lt, sd){
 
-        const obj = new eftask(ch, st, ed, lt);
+        const obj = new eftask(ch, st, ed, lt, sd);
         elist.push(obj)
     }
 

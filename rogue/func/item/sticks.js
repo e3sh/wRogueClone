@@ -444,7 +444,7 @@ function sticks(r){
 		//def:	
 					def();		
 			}
-			r.UI.setEffect(`${dirch}`, {x: pos.x,y: pos.y} ,{x: pos.x, y: pos.y},i*30);
+			r.UI.setEffect(`${dirch}`, {x: pos.x,y: pos.y} ,{x: pos.x, y: pos.y},30, Number(i*20));
 			//r.UI.mvaddch(pos.y, pos.x, dirch);
 			//refresh();
 				

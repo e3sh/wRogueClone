@@ -15,7 +15,7 @@ class ioControl extends GameTask {
 			[80, 24,"std"	,["_" ," "], 8,16	,  0,  0], //0:printw, addch, move, clear
 			//[80, 24,"mini"	,["_" ," "], 4,6	,  0,  0], //0:printw, addch, move, clear
 			[60, 10,"small"	,["_" ," "], 6, 8	, 40,384],	//1:msg
-			[32, 20,"small"	,["_" ," "], 6, 8	,480, 16], //2:debug, comment
+			[32, 40,"small"	,["_" ," "], 6, 8	,480, 16], //2:debug, comment
 			[40, 32,"small"	,false ,	 6, 10	,400,384], //3:inventry
 			[32, 50,"mini"	,["_" ," "], 4, 6	,  0, 18], //4:mobslist
 			[80,  1,"std"	,false, 8,16,   0,368], //5:statusbar
