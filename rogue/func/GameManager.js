@@ -122,6 +122,7 @@ function GameManager(g){
         1: this.debug.wizard.command,
         2: this.UI.select_inv,
         3: this.debug.wizard.help_menu,
+        4: this.debug.title,
     }
 
     let SceneFunc;// =  setthis.UI.command();/* Command execution */;
@@ -146,6 +147,7 @@ function GameManager(g){
     const init_check =()=>{
         
         this.setScene(d.MAINR);
+        //this.setScene(d.TITLE);
         //leavepack;
         thingTable = [];
         this.mobs = thingTable;

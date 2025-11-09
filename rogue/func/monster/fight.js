@@ -403,7 +403,7 @@ function battle(r){
 		{
 			r.UI.move(tp.t_pos.y, tp.t_pos.x);
 			st = r.UI.inch();
-			//ch = st.charCodeAt(0); //toascii(inch());
+			ch = st.charCodeAt(0); //toascii(inch());
 			if (!isupper(st))//ch
 				ch = r.rnd(26);
 			else

@@ -262,7 +262,7 @@ function wizard(r, g){
         let ki = r.UI.readchar();
 
 		//wizardmenu();
-		help_menu();
+		help_menu_draw();
 
 		if (r.UI.wait_for("KeyQ")) {
 			let io = g.task.read("io");
@@ -273,7 +273,7 @@ function wizard(r, g){
 		}
 	}
 
-	function help_menu(){
+	function help_menu_draw(){
 		const menu = [
 			"wizard: Help",
 			"DigitKey information)",

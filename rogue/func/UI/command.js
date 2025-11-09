@@ -19,6 +19,8 @@ function command(r, g)
 
     let pr;     //after bgchr
     let oldc;   //before bgchr
+    let oldpos; //before_hero_pos;
+    let beginf = 0;
 
     let sic_result = d.SIC_NOOP;
 
@@ -37,6 +39,7 @@ function command(r, g)
                 let io = g.task.read("io");
                 io.overlapview = false;
                 r.pause = false;
+                beginf = true;
                 r.restart();
             }
             return;
@@ -75,6 +78,7 @@ function command(r, g)
             sic_result = d.SIC_FREE;
         }
 
+        let lroomf = false; 
         while (ntimes--)
         {
             again = false;
@@ -93,10 +97,10 @@ function command(r, g)
                 //exit(1);
             }
 
-            r.UI.look(true);
+            //r.UI.look(true);
             if (!r.running)
                 door_stop = false;
-            r.UI.status();
+            //r.UI.status();
             lastscore = purse;
             r.UI.move(hero.y, hero.x);
             //if (!((running || count) && jump))
@@ -266,15 +270,27 @@ function command(r, g)
                     }
                 }
 
+            r.UI.look(true);
             if (r.after)
             {
+                r.UI.look(true);
                 //r.UI.comment(`[${pr} ${oldc}`);// ${r.after?"m":"s"}]`);
                 switch (pr)
                 {
+                    //case d.PASSAGE:
+                        //if (oldc==d.DOOR)   r.dungeon.roomf.leave_room(oldpos);//hero);
+                        //break;
                     case d.DOOR:
                         //r.UI.msg(`DOOR:ROOM ${(oldc==d.PASSAGE)?"IN":"OUT"}`);
-                        if (oldc==d.PASSAGE) r.dungeon.roomf.enter_room(hero);
-                        if (oldc==d.FLOOR)   r.dungeon.roomf.leave_room(hero);
+                        if (oldc==d.PASSAGE) {
+                            r.dungeon.roomf.enter_room(hero);
+                            //r.UI.mvaddch(hero.y, hero.x, d.PLAYER);
+                        }
+                        oldpos = {x:hero.x, y:hero.y};
+                        if (oldc==d.FLOOR) {
+                            r.dungeon.roomf.leave_room(hero);
+                            lroomf = true;
+                        }
                         break;
                     case d.STAIRS: //r.UI.msg("STAIRS");
                         if (opcmdf) 
@@ -324,7 +340,14 @@ function command(r, g)
         else if (ISRING(d.RIGHT, d.R_TELEPORT) && r.rnd(50) == 0)
             r.item.scroll.teleport();
 
-        r.UI.look(true);
+        //r.UI.look(true);
+        if (!r.pause) {
+            if (!lroomf) 
+                r.UI.look(true);
+            else 
+                r.UI.mvaddch(hero.y, hero.x, d.PLAYER);
+        }
+        lroomf = false;
         r.UI.status();
 
         let s = " ";

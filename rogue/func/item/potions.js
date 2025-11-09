@@ -228,7 +228,9 @@ function potions(r){
 			break; 
 		case d.P_RESTORE:
 			let max_stats = r.player.get_max_stats();
-
+			let cur_ring = [];
+			cur_ring[d.LEFT]  = r.player.get_cur_ring(d.LEFT);
+			cur_ring[d.RIGHT] = r.player.get_cur_ring(d.RIGHT);
 
 			if (ISRING(d.LEFT, d.R_ADDSTR))
 				add_str(pstats.s_str, -cur_ring[d.LEFT].o_arm);

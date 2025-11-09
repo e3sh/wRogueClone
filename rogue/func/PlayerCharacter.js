@@ -450,8 +450,8 @@ function PlayerCharacter(r){
         * change the things
         */
         for (tp = r.dungeon.lvl_obj; tp != null; tp = tp.l_next)
-        if (cansee(tp.o_pos.y, tp.o_pos.x))
-            r.UI.mvaddch(tp.o_pos.y, tp.o_pos.x, rnd_thing());
+        if (r.player.cansee(tp.o_pos.y, tp.o_pos.x))
+            r.UI.mvaddch(tp.o_pos.y, tp.o_pos.x, r.rnd_thing());
 
         /*
         * change the stairs

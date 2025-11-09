@@ -29,8 +29,8 @@ function SystemAdapter(r){
     * `setupSignalHandlers()` (例: `onSignalAutosave()`), `sendTstpSignal()`, `resumeTstpSignal()`, 
     * `initCurses()`, `endCurses()` など、`mach_dep.c` および `main.c` の多くの関数を抽象化します。
     */
-} //` (シングルトンまたは依存性注入)
-
+    //` (シングルトンまたは依存性注入)
+} 
 /**
  * DEBUG ROUTINE
  * @param {GameManager} r GameManagerインスタンス
@@ -158,4 +158,63 @@ function debug(r, g){
             }
         }
     }
+
+    let col = 0, curw = 0;
+	this.title = function(){
+        let ki = r.UI.readchar();
+
+
+        if (ki.includes("ArrowDown")||ki.includes("ArrowUp")){
+			col +=((ki.includes("ArrowDown"))?1:-1);
+		}
+
+        if (ki.includes("ArrowRight")||ki.includes("ArrowLeft")){
+			curw +=((ki.includes("ArrowRight"))?1:-1);
+		}
+
+		//wizardmenu();
+		title_menu();
+
+		if (r.UI.wait_for("Enter")||r.UI.wait_for("NumpadEnter")){
+			let io = g.task.read("io");
+			io.overlapview = null;
+			col = 0;
+			curw = 0;
+			r.setScene(d.MAINR);
+		}
+ 	}
+
+	function title_menu(){
+
+		switch(col)
+		{
+			case 2:
+				// initPlayer
+				break;
+			case 3:
+				// load Web Storage
+				break;
+			default:
+				break;
+		}
+
+		if (col < 2) col = 2; else if (col >3) col = 3;
+
+		const menu = [
+			"Rogue: Exploring the Dungeons of Doom",
+			"",
+			`NEW GAME`,
+			`CONTINUE (AUTOSAVE) `,
+			"",
+			"Push ENTER to START",
+		]
+
+		let io = g.task.read("io");
+		io.overlapview = true;
+
+		r.UI.clear(6);
+		for (let i in menu){
+			r.UI.submvprintw(i, 0, `${(col == i && (col >=2 && col <=3))?">":" "} ${menu[i]}`, true);
+		}
+	}
 }
