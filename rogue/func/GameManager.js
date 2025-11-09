@@ -91,8 +91,7 @@ function GameManager(g){
     //let scoreboard = null;	/* File descriptor for score file */
     let wizard = false;			/* true if allows wizard commands */
 
-    let worm = false; //restart dungeon flag;
-
+    let cold = true; //coldstart dungeon flag;
 
     let thingTable = [];    /* motionObject master Talbe item/monster(thing struct) */
     
@@ -193,12 +192,14 @@ function GameManager(g){
         //init_check();
         this.UI.comment("init_check");
 
-        this.item.init_probs();    		/* Set up prob tables for objects init.c 全てのアイテムの出現確率を初期化します。*/
-        //this.player.init_player();  	/* Set up initial player stats プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。*/
-        this.item.init_names();			/* Set up names of scrolls スクロールの名前をランダムに生成します。*/
-        this.item.init_colors();			/* Set up colors of potions ポーションの色をランダムに初期化します。*/
-        this.item.init_stones();			/* Set up stone settings of rings リングの石の設定をランダムに初期化し、その価値に影響を与えます。*/
-        this.item.init_materials();		/* Set up materials of wands ワンドとスタッフの素材をランダムに初期化します。*/
+        if (cold) {
+            this.item.init_probs();    		/* Set up prob tables for objects init.c 全てのアイテムの出現確率を初期化します。*/
+            //this.player.init_player();  	/* Set up initial player stats プレイヤーの初期ステータス、食料、初期装備（リングメイル、食料、武器など）を設定します。*/
+            this.item.init_names();			/* Set up names of scrolls スクロールの名前をランダムに生成します。*/
+            this.item.init_colors();			/* Set up colors of potions ポーションの色をランダムに初期化します。*/
+            this.item.init_stones();			/* Set up stone settings of rings リングの石の設定をランダムに初期化し、その価値に影響を与えます。*/
+            this.item.init_materials();		/* Set up materials of wands ワンドとスタッフの素材をランダムに初期化します。*/
+        }
 
         if (continuef){
             this.quickstorage.load();
@@ -211,7 +212,7 @@ function GameManager(g){
         /*
         * Start up daemons and fuses
         */
-        if (!worm){
+        if (cold){
             this.daemon.start_daemon(this.monster.runners, 0, d.AFTER);
             this.daemon.start_daemon(this.player.doctor, 0, d.AFTER);
             this.daemon.fuse(this.daemon.swander, 0, d.WANDERTIME, d.AFTER);
@@ -252,7 +253,7 @@ function GameManager(g){
         //    this.UI.submsg(st[i]);
         //}
         //this.player.packf.inventory(this.player.t_pack, 0);
-        worm = true;
+        cold = false;
         this.UI.comment("play_it");
     
         playing = true;

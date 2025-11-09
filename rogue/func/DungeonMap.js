@@ -208,7 +208,7 @@ function DungeonMap(r){
         r.player.enter_room(hero); //hero = {x:0, y:0};
         r.UI.mvaddch(hero.y, hero.x, d.PLAYER);
         if (on(player, d.SEEMONST))
-            this.turn_see(false); 
+            turn_see(false); 
         if (on(player, d.ISHALU))
             r.player.visuals();
 
@@ -551,6 +551,52 @@ function DungeonMap(r){
         r.UI.msg("You can't.  You're floating off the ground!");
             return true;
     }
+
+    /*
+	* turn_see:
+	*	Put on or off seeing monsters on this level
+	*/
+	//bool
+	function turn_see(turn_off)
+	{
+		const player = r.player.player;
+
+		let mp;//THING *mp;
+		let can_see, add_new;
+
+		const mlist = r.dungeon.mlist;
+
+		add_new = false;
+		for (mp = mlist; mp != null; mp = mp.l_next)
+		{
+			r.UI.move(mp.t_pos.y, mp.t_pos.x);
+			can_see = r.player.see_monst(mp);
+			if (turn_off)
+			{
+				if (!can_see)
+					r.UI.addch(mp.t_oldch);
+			}
+			else
+			{
+				if (!can_see)
+					;//standout();
+				if (!on(player, d.ISHALU))
+					r.UI.addch(mp.t_type);
+				else
+					r.UI.addch(r.rnd(26) + 'A'.charCodeAt(0));
+				if (!can_see)
+				{
+					//standend();
+					add_new++;
+				}
+			}
+		}
+		if (turn_off)
+			player.t_flags &= ~d.SEEMONST;
+		else
+			player.t_flags |= d.SEEMONST;
+		return add_new;
+	}
 
     this.roomf = new rooms_f(r, this);
     this.passf = new passages_f(r, this);

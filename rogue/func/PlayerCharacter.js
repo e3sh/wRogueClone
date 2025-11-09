@@ -1253,7 +1253,7 @@ function PlayerCharacter(r){
         /*
         * undo the things
         */
-        for (tp = lvl_obj; tp != null; tp = tp.l_next )
+        for (tp = r.dungeon.lvl_obj; tp != null; tp = tp.l_next )
         if (this.cansee(tp.o_pos.y, tp.o_pos.x))
             r.UI.mvaddch(tp.o_pos.y, tp.o_pos.x, tp.o_type);
 

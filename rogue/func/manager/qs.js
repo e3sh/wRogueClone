@@ -60,6 +60,8 @@ function quick_storage(r){
     }
 
     this.reset = function(){
+        if (r.wizard) return;
+
         localStorage.removeItem("rogue.Save");
         localStorage.removeItem("rogue.PlayerObjects");
         localStorage.removeItem("rogue.ParamItems");

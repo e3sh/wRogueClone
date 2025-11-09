@@ -580,6 +580,9 @@ function UIManager(r, g){
     //void
     this.search = function()
     {
+
+        const tr_name = r.globalValiable.tr_name;
+
         let player = r.player.player;
         let hero   = player.t_pos;
 
