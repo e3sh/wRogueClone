@@ -613,6 +613,8 @@ function UIManager(r, g){
             {
                 if (y == hero.y && x == hero.x)
                     continue;
+                if (x < 0 || y < 0 || x >= d.MAXCOLS || y >= d.MAXLINES)
+                    continue;
                 fp = r.dungeon.flat(y, x);
                 if (!(fp & d.F_REAL))
                     switch (r.dungeon.chat(y, x))

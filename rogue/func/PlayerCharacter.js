@@ -1023,6 +1023,11 @@ function PlayerCharacter(r){
             r.UI.msg("a gush of water hits you on the head");
             this.rust_armor(cur_armor);
             break;
+        default:
+            //設定されているTrapの種類（8種類) 0-7
+            //生成されるTrap　NTRAPS:8, rnd(NTRAPS)：0-7
+            //効果未発生Trapがあるが、それがここに来るかどうかの確認用
+            r.UI.comment(`?trap ${tr}`);
         }
         //flush_type();
         r.UI.comment("be_trapped");

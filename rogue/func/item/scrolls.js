@@ -458,32 +458,36 @@ function scroll(r){
 		//	if (type && type != obj.o_type && 
 		//		!(type == d.R_OR_S && (obj.o_type == d.RING || obj.o_type == d.STICK)))
 		//			continue;
-		for ( let i in r.mobs){
-			if (r.mobs[i].location != d.PACK_P || r.mobs[i].o_type != type)
-				continue;
+		for (let i in r.mobs){
+			let obj = r.mobs[i];
+			if (obj.location != d.PACK_P)	continue;
 
-				let obj = r.mobs[i];
+			let selok = false; 
+			if (obj.o_type == type) selok = true; 
+			if ((obj.o_type == d.RING || obj.o_type == d.STICK) && (type == d.R_OR_S)) selok = true;
 
-				switch (obj.o_type)
-				{
-					case d.SCROLL:
-						set_know(obj, scr_info);
-						break; 
-					case d.POTION:
-						set_know(obj, pot_info);
-						break; 
-					case d.STICK:
-						set_know(obj, ws_info);
-						break; 
-					case d.WEAPON:
-					case d.ARMOR:
-						obj.o_flags |= d.ISKNOW;
-						break; 
-					case d.RING:
-						set_know(obj, ring_info);
-				}
-				n_objs++;
-				r.UI.msg(r.item.inv_name(obj, false));
+			if (!selok) continue;
+
+			switch (obj.o_type)
+			{
+				case d.SCROLL:
+					set_know(obj, scr_info);
+					break; 
+				case d.POTION:
+					set_know(obj, pot_info);
+					break; 
+				case d.STICK:
+					set_know(obj, ws_info);
+					break; 
+				case d.WEAPON:
+				case d.ARMOR:
+					obj.o_flags |= d.ISKNOW;
+					break; 
+				case d.RING:
+					set_know(obj, ring_info);
+			}
+			n_objs++;
+			r.UI.msg(r.item.inv_name(obj, false));
 		}
 
 		if (insist)
