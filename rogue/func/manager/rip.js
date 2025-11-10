@@ -53,6 +53,9 @@ function rips(r){
 
 	const startleft = 8;
 
+	let sclist;
+	let res_mode;
+
 	/*
 	* score:
 	*	Figure score and post it.
@@ -305,7 +308,8 @@ function rips(r){
 		//wait_for(' ');
 		//clear();
 		//mvaddstr(0, 0, "   Worth  Item\n");
-		let sclist = [];
+		sclist = [];
+		sclist.push("Result)");
 
 		let purse = r.player.get_purse();
 		oldpurse = purse;
@@ -386,15 +390,52 @@ function rips(r){
 			r.UI.move(Number(i)+5, 5);
 			r.UI.printw(cmes[i]);
 		}
-		r.UI.clear(3);
-		for (let i in sclist){
-			r.UI.submvprintw(i, 0 ,sclist[i]);
-		}
 
 		r.UI.pause("[Press return to continue]");
-		r.pause = true;
-		r.quickstorage.reset();
+
+		res_mode = false;
+		r.setScene(d.RESULT);
+
+		r.UI.clear(6);
+		//r.pause = true;
+		//r.quickstorage.reset();
 		//my_exit(0);
+	}
+
+	this.result = function(){
+		//res_mode
+		//sclist
+		for (let i in sclist){
+			r.UI.submvprintw(i, 0 ,sclist[i], true);
+		}
+
+		if (r.UI.wait_for("Enter")||r.UI.wait_for("NumpadEnter")){
+			r.UI.overlapview(true);
+			if (res_mode){
+				r.UI.overlapview(false);
+				r.setScene(d.TITLE);
+				//r.pause = true;//false;
+
+				//状態を維持して継続するセーブデータを作成
+				r.dungeon.set_level(1);//開始フロアを初期化
+				//Amulet を持ち物から削除
+				r.player.amulet = false;
+				for (let i in r.mobs){
+					if (r.mobs[i].o_type == d.AMULET){
+						r.discard(r.mobs[i]);
+					}
+				}
+				r.player.set_purse(r.player.get_purse() + 1000);//Amulet代のみ報酬で追加
+				r.quickstorage.save();
+
+				//r.quickstorage.reset();
+				r.player.reset_inventry();
+			}else{
+				res_mode = true;
+				r.UI.pause("[Press return to restart]");
+			}
+		}
+		return;
 	}
 
 	/*

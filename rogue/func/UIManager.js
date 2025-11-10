@@ -119,6 +119,10 @@ function UIManager(r, g){
         this.setEffect(`${battledmg}`, {x:x,y:y} ,{x: x, y: y-1},90);
     } 
 
+    this.overlapview = (mode)=>{
+		let io = g.task.read("io");
+		io.overlapview = mode;
+    }
     /*
     **関連する関数（提案されるメソッドの例）:**
     *   `msg()`, `addmsg()`, `endmsg()`, `doadd()` (メッセージ表示)。

@@ -304,7 +304,8 @@ function rogueDefines(){
         WIZARD: 1,
         INVSCE: 2,
         WIZ_HELP: 3,
-        TITLE: 4,
+        TITLE:  4,
+        RESULT: 5,
 
         //SelectInv after command
         SIC_FREE: -1,

@@ -32,6 +32,8 @@ function wizard(r, g){
 		{i_name:"potion", i_type:d.POTION, i_which:pot_info },
 		{i_name:"wand and staff", i_type:d.STICK, i_which:ws_info},
 		{i_name:"ring"  , i_type:d.RING  , i_which:ring_info},
+		{i_name:"food"  , i_type:d.FOOD  , i_which:[{oi_name: "none"}]},
+		{i_name:"amulet", i_type:d.AMULET, i_which:[{oi_name: "none"}]},
 	]
 
 	//command

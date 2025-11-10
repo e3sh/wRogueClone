@@ -126,6 +126,7 @@ function GameManager(g){
         2: this.UI.select_inv,
         3: this.debug.wizard.help_menu,
         4: this.debug.title,
+        5: this.rips.result,
     }
 
     let SceneFunc;// =  setthis.UI.command();/* Command execution */;

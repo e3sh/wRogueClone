@@ -88,26 +88,25 @@ function DungeonMap(r){
     */
     this.INDEX  = (y,x)=> {return (places[y][x]) };
     this.chat   = (y,x)=> {return (places[y][x].p_ch) }; //(y, x)座標のマップ文字
-    this.flat   = (y,x)=> {return (places[y][x].p_flags)}; //(y, x)座標のフラグ
-    this.moat   = (y,x)=> {
+    this.flat   = (y,x)=> { //(y, x)座標のフラグ
+        if (!Boolean(places[y][x])) {
+            console.log(`flat err:x${x},y${y}`);
+            console.trace("trace:");
+        }
+        return (places[y][x].p_flags)
+    }; 
+    this.moat   = (y,x)=> { //(y, x)座標のモンスターポインタ
         let fl = false;
         for (let i in r.mobs){
-            if (r.mobs[i].t_pos.x == x && r.mobs[i].t_pos.y == y){
-                fl = true;
-                break;
-            }
+            if (r.mobs[i].t_pos.x == x && r.mobs[i].t_pos.y == y){ fl = true; break; }
         }
         let tst = places[y][x].p_monst != null ? places[y][x].p_monst.t_disguise : this.chat(y,x);
-        if (!Boolean(tst)) console.log(`moat:x${x},y${y} ${fl} ${places[y][x].p_monst} ${tst}`);
-        //if (!Boolean((places[y][x].p_monst))) console.log("?");
-
+        if (!Boolean(tst)) console.log(`moat err:x${x},y${y} ${fl} ${places[y][x].p_monst} ${tst}`);
         return (places[y][x].p_monst)
-    }; //(y, x)座標のモンスターポインタ
+    }; 
     this.winat  = (y,x)=> {
         let tst = this.moat(y,x) != null ? this.moat(y,x).t_disguise : this.chat(y,x)
-
-        if (!Boolean(tst)) console.log(`winat:x${x},y${y} ${this.moat(y,x)} ${tst}`);
-
+        if (!Boolean(tst)) console.log(`winat err:x${x},y${y} ${this.moat(y,x)} ${tst}`);
         return (this.moat(y,x) != null ? this.moat(y,x).t_disguise : this.chat(y,x))
     };
 
@@ -525,7 +524,7 @@ function DungeonMap(r){
                 level--;
                 r.quickstorage.save();
 
-                if (level == 0){
+                if (level <= 0){
                     r.rips.total_winner();
                     return;
                 }

@@ -8,6 +8,9 @@ function scroll(r){
 
 	const rainbow = r.globalValiable.rainbow;
 	const scr_info = r.globalValiable.scr_info;
+	const pot_info = r.globalValiable.pot_info;
+	const ws_info = r.globalValiable.ws_info;
+	const ring_info = r.globalValiable.ring_info;
 
 	const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
 	/*
@@ -450,33 +453,39 @@ function scroll(r){
 
 		n_objs = 0;
 
-		for (obj = pack; obj != null; obj = obj.l_next)
-		{
-			if (type && type != obj.o_type && 
-				!(type == d.R_OR_S && (obj.o_type == d.RING || obj.o_type == d.STICK)))
-					continue;
+		//for (obj = pack; obj != null; obj = obj.l_next)
+		//{
+		//	if (type && type != obj.o_type && 
+		//		!(type == d.R_OR_S && (obj.o_type == d.RING || obj.o_type == d.STICK)))
+		//			continue;
+		for ( let i in r.mobs){
+			if (r.mobs[i].location != d.PACK_P || r.mobs[i].o_type != type)
+				continue;
 
-			switch (obj.o_type)
-			{
-				case d.SCROLL:
-					set_know(obj, scr_info);
-					break; 
-				case d.POTION:
-					set_know(obj, v.pot_info);
-					break; 
-				case d.STICK:
-					set_know(obj, v.ws_info);
-					break; 
-				case d.WEAPON:
-				case d.ARMOR:
-					obj.o_flags |= d.ISKNOW;
-					break; 
-				case d.RING:
-					set_know(obj, v.ring_info);
-			}
-			n_objs++;
-			r.UI.msg(r.item.inv_name(obj, false));
+				let obj = r.mobs[i];
+
+				switch (obj.o_type)
+				{
+					case d.SCROLL:
+						set_know(obj, scr_info);
+						break; 
+					case d.POTION:
+						set_know(obj, pot_info);
+						break; 
+					case d.STICK:
+						set_know(obj, ws_info);
+						break; 
+					case d.WEAPON:
+					case d.ARMOR:
+						obj.o_flags |= d.ISKNOW;
+						break; 
+					case d.RING:
+						set_know(obj, ring_info);
+				}
+				n_objs++;
+				r.UI.msg(r.item.inv_name(obj, false));
 		}
+
 		if (insist)
 		{
 			if (n_objs == 0)

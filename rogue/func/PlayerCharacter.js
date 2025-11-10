@@ -215,7 +215,9 @@ function PlayerCharacter(r){
         this.player = player;
     }
 
-    this.get_purse =()=>{ return purse;}
+    this.get_purse =()=>{ 
+        if (isNaN(purse)) purse = 0;
+        return purse;}
     this.set_purse =(value)=>{ purse = value;}
 
     this.get_maxhp =()=>{ return maxhp;}
