@@ -106,8 +106,13 @@ function quick_storage(r){
                     let m = mobs[i];
                     pl.location = m.location;
                     pl.t_stats = m.t_stats;
-
                     r.player.set_new_player(pl);
+                     
+                    //playerの仮座標設定
+                    r.dungeon.roomf.find_floor(null, r.player.player.t_pos, false, false);
+                    r.player.player.t_pos = r.dungeon.roomf.get_findfloor_result();
+                    r.player.enter_room(r.player.player.t_pos); 
+
                     //r.UI.comment("PLOBJ setup"); 
                     break;
                 }

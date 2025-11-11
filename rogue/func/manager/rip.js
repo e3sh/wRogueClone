@@ -216,7 +216,6 @@ function rips(r){
 		//struct tm *localtime();
 		const SL = startleft;
 
-
 		let purse = r.player.get_purse();
 		purse -= purse / 10;
 

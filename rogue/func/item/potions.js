@@ -5,6 +5,7 @@ function potions(r){
 	
 	const d = r.define;
     const t = r.types;
+    const ms = r.messages;
 
 	const pot_info = r.globalValiable.pot_info;
 
@@ -41,16 +42,16 @@ function potions(r){
 
 	const p_actions = [];
 	p_actions.push(new PACT(d.ISHUH,	r.player.unconfuse,	d.HUHDURATION,	/* P_CONFUSE */
-			"what a tripy feeling!",
-			"wait, what's going on here. Huh? What? Who?" )),
+			ms.P_ACTION_1,
+			ms.P_ACTION_2 )),
 	p_actions.push(new PACT(d.ISHALU,	r.player.come_down,	d.SEEDURATION,	/* P_LSD */
-			"Oh, wow!  Everything seems so cosmic!",
-			"Oh, wow!  Everything seems so cosmic!" )),
+			ms.P_ACTION_3,
+			ms.P_ACTION_3 )),
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_POISON */
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_STRENGTH */
 	p_actions.push(new PACT(d.CANSEE,	r.player.unsee,	d.SEEDURATION,		/* P_SEEINVIS */
-			`this potion tastes like ${fruit} juice`,
-			`this potion tastes like ${fruit} juice`)),
+			ms.P_ACTION_4(fruit),
+			ms.P_ACTION_4(fruit) )),
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_HEALING */
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_MFIND */
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_TFIND  */
@@ -59,11 +60,11 @@ function potions(r){
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_HASTE */
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_RESTORE */
 	p_actions.push(new PACT(d.ISBLIND,	r.player.sight,	d.SEEDURATION,	/* P_BLIND */
-			"oh, bummer!  Everything is dark!  Help!",
-			"a cloak of darkness falls around you")),
+			ms.P_ACTION_5,
+			ms.P_ACTION_6 )),
 	p_actions.push(new PACT(d.ISLEVIT,	r.player.land,	d.HEALTIME,		/* P_LEVIT */
-			"oh, wow!  You're floating in the air!",
-			"you start to float in the air"  )),
+			ms.P_ACTION_7,
+			ms.P_ACTION_8  )),
 
 	/*
 	* quaff:
@@ -113,11 +114,11 @@ function potions(r){
 		case d.P_POISON:
 			pot_info[d.P_POISON].oi_know = true;
 			if (r.player.isWearing(d.R_SUSTSTR))
-				r.UI.msg("you feel momentarily sick");
+				r.UI.msg(ms.QUAFF_POISON_1);
 			else
 			{
 				r.player.misc.chg_str(-(r.rnd(3) + 1));
-				r.UI.msg("you feel very sick now");
+				r.UI.msg(ms.QUAFF_POISON_2);
 				r.player.come_down();
 			}
 			break; 
@@ -129,18 +130,18 @@ function potions(r){
 				r.player.set_maxhp(max_hp);
 			}
 			r.player.sight();
-			r.UI.msg("you begin to feel better");
+			r.UI.msg(ms.QUAFF_HEALING);
 			break; 
 		case d.P_STRENGTH:
 			pot_info[d.P_STRENGTH].oi_know = true;
 			r.player.misc.chg_str(1);
-			r.UI.msg("you feel stronger, now.  What bulging muscles!");
+			r.UI.msg(ms.QUAFF_STRENGTH);
 			break; 
 		case d.P_MFIND:
 			player.t_flags |= d.SEEMONST;
 			r.daemon.fuse(turn_see, true, d.HUHDURATION, d.AFTER);
 			if (!turn_see(false))
-				r.UI.msg(`you have a ${choose_str("normal", "strange")} feeling for a moment, then it passes`);
+				r.UI.msg(choose_str(ms.QUAFF_MFIND_1, ms.QUAFF_MFIND_2));
 			break; 
 		case d.P_TFIND:
 			/*
@@ -179,10 +180,10 @@ function potions(r){
 			if (show)
 			{
 				pot_info[d.P_TFIND].oi_know = true;
-				r.UI.msg("You sense the presence of magic on this level.");//--More--");
+				r.UI.msg(ms.QUAFF_TFIND);//--More--");
 			}
 			else
-				r.UI.msg(`you have a ${choose_str("normal", "strange")} feeling for a moment, then it passes`);
+				r.UI.msg(choose_str(ms.QUAFF_MFIND_1, ms.QUAFF_MFIND_2));
 			break; 
 		case d.P_LSD:
 			if (!trip)
@@ -204,7 +205,7 @@ function potions(r){
 			break; 
 		case d.P_RAISE:
 			pot_info[d.P_RAISE].oi_know = true;
-			r.UI.msg("you suddenly feel much more skillful");
+			r.UI.msg(ms.QUAFF_RAISE);
 			raise_level();
 			break; 
 		case d.P_XHEAL:
@@ -218,13 +219,13 @@ function potions(r){
 			}
 			r.player.sight();
 			r.player.come_down();
-			r.UI.msg("you begin to feel much better");
+			r.UI.msg(ms.QUAFF_XHEAL);
 			break; 
 		case d.P_HASTE:
 			pot_info[d.P_HASTE].oi_know = true;
 			after = false;
 			if (r.player.misc.add_haste(true))
-			r.UI.msg("you feel yourself moving much faster");
+			r.UI.msg(ms.QUAFF_HASTE);
 			break; 
 		case d.P_RESTORE:
 			let max_stats = r.player.get_max_stats();
@@ -244,7 +245,7 @@ function potions(r){
 				add_str(pstats.s_str, cur_ring[d.RIGHT].o_arm);
 
 			r.player.set_pstats(pstats);
-			r.UI.msg("hey, this tastes great.  It make you feel warm all over");
+			r.UI.msg(ms.QUAFF_RESTORE);
 			break; 
 		case d.P_BLIND:
 			do_pot(d.P_BLIND, true);
@@ -253,7 +254,7 @@ function potions(r){
 			do_pot(d.P_LEVIT, true);
 			break; 
 		default:
-			r.UI.msg("what an odd tasting potion!");
+			r.UI.msg(ms.QUAFF_ETC);
 			r.UI.debug(`potion_type: ${obj.o_which}`);
 			return;
 		}

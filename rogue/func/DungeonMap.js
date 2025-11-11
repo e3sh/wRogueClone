@@ -11,6 +11,8 @@ function DungeonMap(r){
     
     const d = r.define;
     const t = r.types;
+    const ms = r.messages;
+
     /*
     **カプセル化するグローバル変数（例）:**
     *   `level` (ゲーム全体の階層、プレイヤーの現在地を示すため `PlayerCharacter` とも関連するが、マップ生成のコンテキストでは `DungeonMap` の状態)。
@@ -214,7 +216,7 @@ function DungeonMap(r){
         if (level == 1) {
             //r.UI.move(0, 0);
             //r.UI.printw(`Welcome ${whoami}`);
-            r.UI.msg(`Welcome ${whoami}`);
+            r.UI.msg(ms.WELCOME);
         }else{
             r.UI.msg(`Dungeon level ${level}`);
         }

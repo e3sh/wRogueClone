@@ -6,6 +6,8 @@ function scroll(r){
 	const d = r.define;
     const t = r.types;
 
+	const ms = r.messages;
+
 	const rainbow = r.globalValiable.rainbow;
 	const scr_info = r.globalValiable.scr_info;
 	const pot_info = r.globalValiable.pot_info;
@@ -81,7 +83,7 @@ function scroll(r){
 			* Scroll of monster confusion.  Give him that power.
 			*/
 			player.t_flags |= d.CANHUH;
-			r.UI.msg(`your hands begin to glow ${pick_color("red")}`);
+			r.UI.msg(ms.READS_CONFUSE(pick_color("red")));
 			break; 
 		case d.S_ARMOR:
 			if (r.player.get_cur_armor() != null)
@@ -89,7 +91,7 @@ function scroll(r){
 				let cur_armor = r.player.get_cur_armor();
 				cur_armor.o_arm--;
 				cur_armor.o_flags &= ~d.ISCURSED;
-				r.UI.msg(`your armor glows ${pick_color("silver")} for a moment`);
+				r.UI.msg(ms.READS_ARMOR(pick_color("silver")));
 				r.player.set_cur_armor(cur_armor);
 			}
 			break; 
@@ -121,7 +123,7 @@ function scroll(r){
 				scr_info[d.S_HOLD].oi_know = true;
 			}
 			else
-				r.UI.msg("you feel a strange sense of loss");
+				r.UI.msg(ms.READS_HOLD);
 			break; 
 		case d.S_SLEEP:
 			/*
@@ -130,7 +132,7 @@ function scroll(r){
 			scr_info[d.S_SLEEP].oi_know = true;
 			r.player.set_no_command(r.player.get_no_command()+ r.rnd(d.SLEEPTIME) + 4);
 			player.t_flags &= ~d.ISRUN;
-			r.UI.msg("you fall asleep");
+			r.UI.msg(ms.READS_SLEEP);
 			break; 
 		case d.S_CREATE:
 			/*
@@ -164,7 +166,7 @@ function scroll(r){
 					}
 				}
 			if (i == 0)
-				r.UI.msg("you hear a faint cry of anguish in the distance");
+				r.UI.msg(ms.READS_CREATE);
 			else
 			{
 				obj = r.item.new_item();
@@ -184,7 +186,7 @@ function scroll(r){
 			* Identify, let him figure something out
 			*/
 			scr_info[obj.o_which].oi_know = true;
-			r.UI.msg(`this scroll is an ${scr_info[obj.o_which].oi_name} scroll`);
+			r.UI.msg(ms.READS_ID_ANY(scr_info[obj.o_which].oi_name));
 			whatis(true, id_type[obj.o_which]); //whatis identify commands
 		}
 		break; 
@@ -206,7 +208,7 @@ function scroll(r){
 			* Scroll of magic mapping.
 			*/
 			scr_info[d.S_MAP].oi_know = true;
-			r.UI.msg("oh, now this scroll has a map on it");
+			r.UI.msg(ms.READS_MAP);
 			/*
 			* take all the things we want to keep hidden out of the window
 			*/
@@ -288,10 +290,10 @@ function scroll(r){
 			if (ch)
 			{
 				scr_info[d.S_FDET].oi_know = true;
-				r.UI.msg("Your nose tingles and you smell food.");
+				r.UI.msg(ms.READS_FDET_1);
 			}
 			else
-				r.UI.msg("your nose tingles");
+				r.UI.msg(ms.READS_FDET_2);
 			break; 
 		case d.S_TELEP:
 			/*
@@ -310,7 +312,7 @@ function scroll(r){
 			const weap_info = r.globalValiable.weap_info
 
 			if (cur_weapon == null || cur_weapon.o_type != d.WEAPON)
-				r.UI.msg("you feel a strange sense of loss");
+				r.UI.msg(ms.READS_HOLD);
 			else
 			{
 				cur_weapon.o_flags &= ~d.ISCURSED;
@@ -318,7 +320,7 @@ function scroll(r){
 					cur_weapon.o_hplus++;
 				else
 					cur_weapon.o_dplus++;
-				r.UI.msg(`your ${weap_info[cur_weapon.o_which].oi_name} glows ${pick_color("blue")} for a moment`);
+				r.UI.msg(ms.READS_ENCH(weap_info[cur_weapon.o_which].oi_name, pick_color("blue")));
 				r.player.set_cur_weapon(cur_weapon);
 			}
 			break; 
@@ -327,7 +329,7 @@ function scroll(r){
 			* Reading it is a mistake and produces laughter at her
 			* poor boo boo.
 			*/
-			r.UI.msg("you hear maniacal laughter in the distance");
+			r.UI.msg(ms.READS_SCARE);
 			break; 
 		case d.S_REMOVE:
 			let car = r.player.get_cur_armor();
@@ -340,8 +342,7 @@ function scroll(r){
 			uncurse(crr);
 			uncurse(crl);
 
-			r.UI.msg(choose_str("you feel in touch with the Universal Onenes",
-				"you feel as if somebody is watching over you"));
+			r.UI.msg(choose_str(ms.READS_REMOVE_1, ms.READS_REMOVE_2));
 			break; 
 		case d.S_AGGR:
 			/*
@@ -349,7 +350,7 @@ function scroll(r){
 			* level and sets them running towards the hero
 			*/
 			r.monster.aggravate();
-			r.UI.msg("you hear a high pitched humming noise");
+			r.UI.msg(ms.READS_AGGR);
 			break; 
 		case d.S_PROTECT:
 			if (r.player.get_cur_armor() != null)
@@ -357,13 +358,13 @@ function scroll(r){
 				let arm = r.player.get_cur_armor();
 				arm.o_flags |= d.ISPROT;
 				r.player.set_cur_armor(arm);
-				r.UI.msg(`your armor is covered by a shimmering ${pick_color("gold")} shield`);
+				r.UI.msg(ms.READS_PROTECT(pick_color("gold")));
 			}
 			else
-				r.UI.msg("you feel a strange sense of loss");
+				r.UI.msg(ms.READS_HOLD);
 			break; 
 		default:
-			r.UI.msg("what a puzzling scroll!");
+			r.UI.msg(ms.READS_ETC);
 			return;
 		}
 		obj = orig_obj;
@@ -495,10 +496,10 @@ function scroll(r){
 			if (n_objs == 0)
 				return;
 			else if (obj == null)
-				r.UI.msg("you must identify something");
+				r.UI.msg(ms.WHATIS_1);
 			else if (type && obj.o_type != type &&
 			!(type == d.R_OR_S && (obj.o_type == d.RING || obj.o_type == d.STICK)) )
-				r.UI.msg(`you must identify a ${type_name(type)}`);
+				r.UI.msg(ms.WHATIS_2(type_name(type)));
 		}
 	}
 	/*
@@ -522,14 +523,14 @@ function scroll(r){
 	function type_name(type)
 	{
 		const tlist = [
-			{h_ch: d.POTION	, h_desc:"potion"	,h_print:false},
-			{h_ch: d.SCROLL	, h_desc:"scroll"	,h_print:false},
-			{h_ch: d.FOOD	, h_desc:"food"		,h_print:false},
-			{h_ch: d.R_OR_S	, h_desc:"ring, wand or staff",h_print:false},
-			{h_ch: d.RING	, h_desc:"ring"		,h_print:false},
-			{h_ch: d.STICK	, h_desc:"wand or staff",h_print:false},
-			{h_ch: d.WEAPON	, h_desc:"weapon"	,h_print:false},
-			{h_ch: d.ARMOR	, h_desc:"suit of armor",h_print:false},
+			{h_ch: d.POTION	, h_desc: ms.TYPENAME_POTION,h_print:false},
+			{h_ch: d.SCROLL	, h_desc: ms.TYPENAME_SCROLL,h_print:false},
+			{h_ch: d.FOOD	, h_desc: ms.TYPENAME_FOOD	,h_print:false},
+			{h_ch: d.R_OR_S	, h_desc: ms.TYPENAME_R_OR_S,h_print:false},
+			{h_ch: d.RING	, h_desc: ms.TYPENAME_RING	,h_print:false},
+			{h_ch: d.STICK	, h_desc: ms.TYPENAME_STICK	,h_print:false},
+			{h_ch: d.WEAPON	, h_desc: ms.TYPENAME_WEAPON,h_print:false},
+			{h_ch: d.ARMOR	, h_desc: ms.TYPENAME_ARMOR	,h_print:false},
 		];
 
 		for (let hp of tlist)

@@ -11,6 +11,8 @@ function PlayerCharacter(r){
     
     const d = r.define;
     const t = r.types;
+    const ms = r.messages;
+
     /*
     **カプセル化するグローバル変数（例）:**
     *   `player` 構造体全体（`pstats`, `t_flags`, `t_pack` (インベントリ), `t_room` (現在の部屋) を含む）。
@@ -371,9 +373,8 @@ function PlayerCharacter(r){
             r.player.set_no_command(nc);
             hungry_state = 3;
             if (!terse)
-                r.UI.addmsg(choose_str("the munchies overpower your motor capabilities.  ",
-                        "you feel too weak from lack of food.  "));
-            r.UI.msg(choose_str("You freak out", "You faint"));
+                r.UI.addmsg(choose_str(ms.STOMACH_3A, ms.STOMACH_3B));
+            r.UI.msg(choose_str(ms.STOMACH_3C, ms.STOMACH_3D));
         }
         else
         {
@@ -383,17 +384,15 @@ function PlayerCharacter(r){
             if (food_left < d.MORETIME && oldfood >= d.MORETIME)
             {
                 hungry_state = 2;
-                r.UI.msg(choose_str("the munchies are interfering with your motor capabilites",
-                    "you are starting to feel weak"));
+                r.UI.msg(choose_str(ms.STOMACH_2A, ms.STOMACH_2B));
             }
             else if (food_left < 2 * d.MORETIME && oldfood >= 2 * d.MORETIME)
             {
                 hungry_state = 1;
                 if (terse)
-                    r.UI.msg(choose_str("getting the munchies", "getting hungry"));
+                    r.UI.msg(choose_str(ms.STOMACH_1A, ms.STOMACH_1B));
                 else
-                    r.UI.msg(choose_str("you are getting the munchies",
-                        "you are starting to get hungry"));
+                    r.UI.msg(choose_str(ms.STOMACH_1C, ms.STOMACH_1D));
             }
         }
         if (hungry_state != orig_hungry) { 
@@ -516,6 +515,12 @@ function PlayerCharacter(r){
 	this.floor_ch = function()
 	{
         let proom = r.player.player.t_room;
+        if (proom == null){
+            return " ";
+            //console.log(player.player);
+            //r.player.player.t_room = r.dungeon.roomin(r.player.player.t_pos);
+        }
+
 		if (proom.r_flags & d.ISGONE)
 			return d.PASSAGE;
 		return (this.show_floor() ? d.FLOOR : ' ');
@@ -715,7 +720,7 @@ function PlayerCharacter(r){
         if (no_move)
         {
             no_move--;
-            r.UI.msg("you are still stuck in the bear trap");
+            r.UI.msg(ms.DO_MOVE_1);
             return;
         }
         /*
@@ -774,7 +779,7 @@ function PlayerCharacter(r){
         }
         else if (on(player, d.ISHELD) && ch != 'F')
         {
-            r.UI.msg("you are being held");
+            r.UI.msg(ms.DO_MOVE_2);
             return;
         }
 
@@ -946,32 +951,32 @@ function PlayerCharacter(r){
             let level = r.dungeon.get_level();
             r.dungeon.set_level(++level);
             r.dungeon.new_level();
-            r.UI.msg("you fell into a trap!");
+            r.UI.msg(ms.BE_TRAP_DOOR);
             break;
         case d.T_BEAR:
             no_move += d.BEARTIME;
-            r.UI.msg("you are caught in a bear trap");
+            r.UI.msg(ms.BE_TRAP_BEAR);
             break;
         case d.T_MYST:
             switch(r.rnd(11))
             {
-                case 0: r.UI.msg("you are suddenly in a parallel dimension");    break;
-                case 1: r.UI.msg(`the light in here suddenly seems ${rainbow[r.rnd(d.cNCOLORS)]}`);break;
-                case 2: r.UI.msg("you feel a sting in the side of your neck");   break;
-                case 3: r.UI.msg("multi-colored lines swirl around you, then fade"); break;
-                case 4: r.UI.msg(`a ${rainbow[r.rnd(d.cNCOLORS)]} light flashes in your eyes`, ); break;
-                case 5: r.UI.msg("a spike shoots past your ear!");   break;
-                case 6: r.UI.msg(`${rainbow[r.rnd(d.cNCOLORS)]} sparks dance across your armor`);break;
-                case 7: r.UI.msg("you suddenly feel very thirsty");break;
-                case 8: r.UI.msg("you feel time speed up suddenly");break;
-                case 9: r.UI.msg("time now seems to be going slower");break;
-                case 10: r.UI.msg(`you pack turns ${rainbow[r.rnd(d.cNCOLORS)]}!`);break;
+                case 0: r.UI.msg(ms.BE_TRAP_MIST_0);    break;
+                case 1: r.UI.msg(ms.BE_TRAP_MIST_1(rainbow[r.rnd(d.cNCOLORS)]));break;
+                case 2: r.UI.msg(ms.BE_TRAP_MIST_2);   break;
+                case 3: r.UI.msg(ms.BE_TRAP_MIST_3); break;
+                case 4: r.UI.msg(ms.BE_TRAP_MIST_4(rainbow[r.rnd(d.cNCOLORS)])); break;
+                case 5: r.UI.msg(ms.BE_TRAP_MIST_5);   break;
+                case 6: r.UI.msg(ms.BE_TRAP_MIST_6(rainbow[r.rnd(d.cNCOLORS)]));break;
+                case 7: r.UI.msg(ms.BE_TRAP_MIST_7);break;
+                case 8: r.UI.msg(ms.BE_TRAP_MIST_8);break;
+                case 9: r.UI.msg(ms.BE_TRAP_MIST_9);break;
+                case 10: r.UI.msg(ms.BE_TRAP_MIST_10(rainbow[r.rnd(d.cNCOLORS)]));break;
             }
             break;
         case d.T_SLEEP:
             no_command += d.SLEEPTIME;
             player.t_flags &= ~d.ISRUN;
-            r.UI.msg("a strange white mist envelops you and you fall asleep");
+            r.UI.msg(ms.BE_TRAP_SLEEP);
             break;
         case d.T_ARROW:
             if (r.monster.battle.swing(player.t_stats.s_lvl - 1, player.t_stats.s_arm, 1))
@@ -979,11 +984,11 @@ function PlayerCharacter(r){
                 player.t_stats.s_hpt -= r.roll(1, 6);
                 if (player.t_stats.s_hpt <= 0)
                 {
-                    r.UI.msg("an arrow killed you");
+                    r.UI.msg(ms.BE_TRAP_ARROW_1);
                     r.death('a');
                 }
                 else
-                    r.UI.msg("oh no! An arrow shot you");
+                    r.UI.msg(ms.BE_TRAP_ARROW_2);
             }
             else
             {
@@ -992,7 +997,7 @@ function PlayerCharacter(r){
                 arrow.o_count = 1;
                 arrow.o_pos = hero;
                 r.item.weapon.fall(arrow, false);
-                r.UI.msg("an arrow shoots past you");
+                r.UI.msg(ms.BE_TRAP_ARROW_3);
             }
             break;
         case d.T_TELEP:
@@ -1005,22 +1010,22 @@ function PlayerCharacter(r){
             break;
         case d.T_DART:
             if (!r.monster.battle.swing(player.t_stats.s_lvl+1, player.t_stats.s_arm, 1))
-                r.UI.msg("a small dart whizzes by your ear and vanishes");
+                r.UI.msg(ms.BE_TRAP_DART_1);
             else
             {
                 player.t_stats.s_hpt -= r.roll(1, 4);
                 if (player.t_stats.s_hpt <= 0)
                 {
-                    r.UI.msg("a poisoned dart killed you");
+                    r.UI.msg(ms.BE_TRAP_DART_2);
                     r.death('d');
                 }
                 if (!ISWEARING(d.R_SUSTSTR) && !r.player.save(d.VS_POISON))
                     r.player.misc.chg_str(-1);
-                r.UI.msg("a small dart just hit you in the shoulder");
+                r.UI.msg(ms.BE_TRAP_DART_3);
             }
             break;
         case d.T_RUST:
-            r.UI.msg("a gush of water hits you on the head");
+            r.UI.msg(ms.BE_TRAP_RUST);
             this.rust_armor(cur_armor);
             break;
         default:
@@ -1097,13 +1102,13 @@ function PlayerCharacter(r){
         if ((arm.o_flags & d.ISPROT) || ISWEARING(d.R_SUSTARM))
         {
             if (!to_death)
-                r.UI.msg("the rust vanishes instantly");
+                r.UI.msg(ms.RUST_ARMOR_1);
         }
         else
         {
             arm.o_arm++;
             //if (!terse)
-                r.UI.msg("your armor appears to be weaker now. Oh my!");
+                r.UI.msg(ms.RUST_ARMOR_2);
             //else
             //    msg("your armor weakens");
         }
@@ -1145,7 +1150,7 @@ function PlayerCharacter(r){
         const player = r.player.player
 
         player.t_flags &= ~d.ISHUH;
-        r.UI.msg(`you feel less ${choose_str("trippy", "confused")} now`);
+        r.UI.msg(choose_str(ms.UNCONFISE_1, ms.UNCONFISE_2));
     }
 
     /*
@@ -1180,8 +1185,7 @@ function PlayerCharacter(r){
             player.t_flags &= ~d.ISBLIND;
             if (!(proom.r_flags & d.ISGONE))
                 r.player.enter_room(hero);
-            r.UI.msg(choose_str("far out!  Everything is all cosmic again",
-                    "the veil of darkness lifts"));
+            r.UI.msg(choose_str(ms.SIGHT_1, ms.SIGHT_2));
         }
     }
 
@@ -1193,7 +1197,7 @@ function PlayerCharacter(r){
     this.nohaste = function()
     {
         player.t_flags &= ~d.ISHASTE;
-        r.UI.msg("you feel yourself slowing down");
+        r.UI.msg(ms.NOHASTE);
     }
 
 	/*
@@ -1210,9 +1214,9 @@ function PlayerCharacter(r){
 		if (obj.o_type != d.FOOD)
 		{
 			if (!terse)
-				r.UI.msg("ugh, you would get ill if you ate that");
+				r.UI.msg(ms.EAT_1);
 			else
-				r.UI.msg("that's Inedible!");
+				r.UI.msg(ms.EAT_2);
 			return;
 		}
 		if (food_left < 0)
@@ -1223,16 +1227,16 @@ function PlayerCharacter(r){
 		if (obj == cur_weapon)
 			cur_weapon = null;
 		if (obj.o_which == 1)
-			r.UI.msg(`my, that was a yummy ${fruit}`);
+			r.UI.msg(ms.EAT_3(fruit));
 		else
 		if (r.rnd(100) > 70)
 		{
 			pstats.s_exp++;
-			r.UI.msg(`${choose_str("bummer", "yuk")}, this food tastes awful`);
+			r.UI.msg(choose_str(ms.EAT_4, ms.EAT_5));
 			r.player.misc.check_level();
 		}
 		else
-			r.UI.msg(`${choose_str("oh, wow", "yum")}, that tasted good`);
+			r.UI.msg(choose_str(ms.EAT_6, ms.EAT_7));
 		r.player.packf.leave_pack(obj, false, false);
 	}
 
@@ -1283,7 +1287,7 @@ function PlayerCharacter(r){
             //standend();
         }
         }
-        r.UI.msg("Everything looks SO boring now.");
+        r.UI.msg(ms.COME_DOWN);
     }
 
     /*
@@ -1294,8 +1298,7 @@ function PlayerCharacter(r){
     this.land = function()
     {
         player.t_flags &= ~d.ISLEVIT;
-        r.UI.msg(choose_str("bummer!  You've hit the ground",
-            "you float gently to the ground"));
+        r.UI.msg(choose_str(ms.LAND1, ms.LAND_2));
     }
 
     /*

@@ -8,6 +8,7 @@ const p = "rogue/param/";
 const w = [
     // GameCore
     "https://e3sh.github.io/WebGameCoreSystem/coremin.js",
+    "jncurses.js",
     "main.js",
     "ioControl.js",
     "sceneControl.js",
@@ -44,6 +45,7 @@ const w = [
     p + "rogueDefines.js",
     p + "rogueTypes.js",
     p + "globalvInit.js",
+    p + "rogueMessage.js",
  ];
 
 for (let i in w) {

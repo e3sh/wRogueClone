@@ -20,6 +20,7 @@ function packf(r){
 
 	const d = r.define;
     const t = r.types;
+	const ms = r.messages;
 
 	const terse = false;
 
@@ -222,10 +223,7 @@ function packf(r){
 		*/
 		if (!silent)
 		{
-			let ms = "";
-			if (!terse)
-				ms = "you now have ";//r.UI.addmsg("you now have ");
-			r.UI.msg(`${ms}${r.item.inv_name(obj, !terse)}`);// (${obj.o_packch}`);
+			r.UI.msg(ms.PACK_ADD(r.item.inv_name(obj, !terse)));// (${obj.o_packch}`);
 		}
 		r.UI.comment(".add_pack " + debugstr);
 	}
@@ -604,10 +602,7 @@ function packf(r){
 	*/
 	this.move_msg = function(obj)//THING *obj)
 	{
-		let ms = ""
-		if (!terse)
-			ms = "you ";//r.UI.addmsg("you ");
-		r.UI.msg(`${ms}moved onto ${r.item.things.inv_name(obj, true)}`);
+		r.UI.msg(`you moved onto ${r.item.things.inv_name(obj, true)}`);
 	}
 
 	/*
@@ -763,10 +758,7 @@ function packf(r){
 		r.dungeon.places[hero.y][hero.x].p_ch = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
 		if (value > 0)
 		{
-			let ms = ""
-			if (!terse)
-				ms = "you found ";
-			r.UI.msg(`${ms}${value} gold pieces`);
+			r.UI.msg(ms.PACK_MONEY(value));
 		}
 		r.player.set_purse(purse);
 	}

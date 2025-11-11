@@ -14,7 +14,7 @@ class ioControl extends GameTask {
 			//fontID,prompt	,charw, linew, location x,y
 			[80, 24,"std"	,["_" ," "], 8,16	,  0,  0], //0:printw, addch, move, clear
 			//[80, 24,"mini"	,["_" ," "], 4,6	,  0,  0], //0:printw, addch, move, clear
-			[60, 10,"small"	,["_" ," "], 6, 8	, 40,384],	//1:msg
+			[60, 10,"small"	,["_" ," "], 6, 8	, 40,384, true],	//1:msg
 			[32, 40,"small"	,["_" ," "], 6, 8	,480, 16], //2:debug, comment
 			[40, 32,"small"	,false ,	 6, 10	,400,384], //3:inventry
 			[32, 50,"mini"	,["_" ," "], 4, 6	,  0, 18], //4:mobslist
@@ -26,12 +26,13 @@ class ioControl extends GameTask {
 		let layo = [];
 		for (let i in cp){
 			let p = cp[i];
-			let c = new textConsole(p[0], p[1]);
+			let c = new jncurses(p[0], p[1]);//new textConsole(p[0], p[1]);
 			c.setFontId(p[2]);
 			c.setPrompt(p[3]);
 			c.setCharwidth(p[4]);
 			c.setLinewidth(p[5]);
 			const l = {con:c, x:p[6], y:p[7]};
+			c.setUseUTF(Boolean(p[8]));
 
 			cnsl.push(c);
 			layo.push(l);

@@ -7,6 +7,8 @@ function sticks(r){
 	const d = r.define;
     const t = r.types;
 
+	const ms = r.messages;
+
 	const ws_info = r.globalValiable.ws_info;
 	const weap_info = r.globalValiable.weap_info;
 	
@@ -64,7 +66,7 @@ function sticks(r){
 		}
 		if (obj.o_charges == 0)
 		{
-			r.UI.msg("nothing happens");
+			r.UI.msg(ms.DOZAP_NOCHARGE);
 			return;
 		}
 
@@ -78,7 +80,7 @@ function sticks(r){
 			*/
 			ws_info[d.WS_LIGHT].oi_know = true;
 			if (proom.r_flags & d.ISGONE)
-				r.UI.msg("the corridor glows and then fades");
+				r.UI.msg(ms.DOZAP_LIGHT_1);
 			else
 			{
 				proom.r_flags &= ~d.ISDARK;
@@ -86,10 +88,7 @@ function sticks(r){
 				* Light the room and put the player back up
 				*/
 				r.player.enter_room(hero);
-				r.UI.addmsg("the room is lit");
-				//if (!terse)
-					r.UI.addmsg(` by a shimmering ${pick_color("blue")} light`);
-				r.UI.endmsg("");
+				r.UI.msg(ms.DOZAP_LIGHT_2(pick_color("blue")));
 			}
 			break; 
 		case d.WS_DRAIN:
@@ -100,7 +99,7 @@ function sticks(r){
 			*/
 			if (pstats.s_hpt < 2)
 			{
-				r.UI.msg("you are too weak to use it");
+				r.UI.msg(ms.DOZAP_DRAIN);
 				return;
 			}
 			else
@@ -198,7 +197,7 @@ function sticks(r){
 			//else if (terse)
 			//	r.UI.msg("missle vanishes");
 			else
-				r.UI.msg("the missle vanishes with a puff of smoke");
+				r.UI.msg(ms.DOZAP_MISSILE);
 			break; 
 		case d.WS_HASTE_M:
 		case d.WS_SLOW_M:
@@ -243,11 +242,11 @@ function sticks(r){
 			this.fire_bolt(hero, delta, name);
 			ws_info[obj.o_which].oi_know = true;
 			break; 
-		case WS_NOP:
-			r.UI.msg("no operation. what a bizarre schtick!");
+		case d.WS_NOP:
+			r.UI.msg(ms.DOZAP_NOP);
 			break;
 		default:
-			r.UI.msg("what a bizarre schtick!");
+			r.UI.msg(ms.DOZAP_ETC);
 		}
 		obj.o_charges--;
 		r.player.player = player;
@@ -290,7 +289,7 @@ function sticks(r){
 			}
 		if ((cnt = drainee.length) == 0)
 		{
-			r.UI.msg("you have a tingling feeling");
+			r.UI.msg(ms.DRAIN);
 			return;
 		}
 		dp = null;
@@ -328,10 +327,7 @@ function sticks(r){
 					used = true;
 					if (tp.t_type == 'D' && name == "flame") 
 					{
-						r.UI.addmsg("the flame bounces");
-						//if (!terse)
-						r.UI.addmsg(" off the dragon");
-						r.UI.endmsg("");
+						r.UI.msg(ms.FIREBOLT_1);
 					}
 					else
 						r.item.weapon.hit_monster(pos.y, pos.x, bolt);
@@ -343,7 +339,7 @@ function sticks(r){
 					//if (terse)
 					//	r.UI.msg(`${name} misses`);
 					//else
-						r.UI.msg(`the ${name} whizzes past ${r.monster.battle.set_mname(tp)}`);
+						r.UI.msg(ms.FIREBOLT_2(name, r.monster.battle.set_mname(tp)));
 				}
 			}
 			else if (hit_hero && ce(pos, hero))
@@ -363,10 +359,10 @@ function sticks(r){
 				//if (terse)
 				//	r.UI.msg(`the ${name} hits`);
 				//else
-					r.UI.msg(`you are hit by the ${name}`);
+					r.UI.msg(ms.FIREBOLT_3(name));
 				}
 				else
-					r.UI.msg(`the ${name} whizzes by you`);
+					r.UI.msg(ms.FIREBOLT_4(name));
 			}
 		}
 		const player = r.player.player;

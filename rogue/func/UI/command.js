@@ -12,6 +12,7 @@ function command(r, g)
 {
     const d = r.define;
     const t = r.types;
+    const ms = r.messages;
 
     let mpos = 0;				/* Where cursor is on top line */
     let again;
@@ -40,6 +41,9 @@ function command(r, g)
                 io.overlapview = false;
                 r.pause = false;
                 beginf = true;
+                r.UI.msg(" ");
+                r.UI.msg(" ");
+                r.UI.clear(1);
                 r.beginproc();
             }
             return;
@@ -137,7 +141,7 @@ function command(r, g)
                 if (no_command == 0)
                 {
                     player.t_flags |= d.ISRUN;
-                    r.UI.msg("you can move again");
+                    r.UI.msg(ms.CMDMAIN);
                 }
                 asleep = true;
             }
@@ -301,9 +305,9 @@ function command(r, g)
                             }      
                         else
                             if (r.player.amulet){
-                                r.UI.msg(`you find up stairs.`);//(push[5] or pad(A)key next dungeon level)`);
+                                r.UI.msg(ms.FIND_U_STAIR);//(push[5] or pad(A)key next dungeon level)`);
                             }else{
-                                r.UI.msg(`you find down stairs.`);//(push[5] or pad(A)key next dungeon level)`);
+                                r.UI.msg(ms.FIND_D_STAIR);//(push[5] or pad(A)key next dungeon level)`);
                             }
                         break;
                     case d.GOLD:  
@@ -378,7 +382,7 @@ function command(r, g)
 
         if (ki.includes("Numpad4") || ki.includes("Numpad6") || ki.includes("Numpad5") ||
             ki.includes("Numpad0") || ki.includes("KeyI") || ki.includes("KeyD") ||
-            ki.includes("KeyQ"))
+            ki.includes("KeyQ") || r.pause )
         {
             let st = r.player.get_invstat();
             r.UI.setHomesub();

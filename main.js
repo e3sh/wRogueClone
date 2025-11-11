@@ -11,6 +11,13 @@ function main() {
     game.asset.imageLoad("SMALL", p + "k12x8_jisx0201c.png");
     game.asset.imageLoad("MINIF", p + "font4x6.png");
     game.asset.imageLoad("ASCBG", p + "pdcfont_bg.png");
+    game.asset.imageLoad("SJISK", p + "k12x8_jisx0208c.png")
+
+    game.kanji = new fontPrintControl( game,
+        game.asset.image["SMALL"].img, 6, 8,
+        game.asset.image["SJISK"].img, 12, 8
+    );
+    game.kanji.useScreen(0);
 
 	const spfd = SpriteFontData();
 	for (let i in spfd) {

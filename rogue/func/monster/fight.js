@@ -4,29 +4,10 @@
 function battle(r){
 
 	const EQSTR = (a, b) => { return (a == b) };
+	const ms = r.messages;
 
-	const h_names = [		/* strings for hitting */
-		" scored an excellent hit on ",
-		" hit ",
-		" have injured ",
-		" swing and hit ",
-		" scored an excellent hit on ",
-		" hit ",
-		" has injured ",
-		" swings and hits "
-	];
-
-	const m_names = [		/* strings for missing */
-		" miss",
-		" swing and miss",
-		" barely miss",
-		" don't hit",
-		" misses",
-		" swings and misses",
-		" barely misses",
-		" doesn't hit",
-	];
-
+	const h_names = ms.H_NAMES;		/* strings for hitting */
+	const m_names = ms.M_NAMES;		/* strings for missing */
 	/*
 	* adjustments to hit probabilities due to strength
 	*/
@@ -120,8 +101,7 @@ function battle(r){
 				ch = String.fromCharCode(r.rnd(26) + Number('A'.charCodeAt(0)));
 				r.UI.mvaddch(tp.t_pos.y, tp.t_pos.x, ch);
 			}
-			r.UI.msg(choose_str("heavy!  That's a nasty critter!",
-					"wait!  That's a xeroc!"));
+			r.UI.msg(choose_str(ms.FIGHT_X1, ms.FIGHT_X2));
 			if (!thrown)
 				return false;
 		}
@@ -142,12 +122,12 @@ function battle(r){
 				player.t_flags &= ~d.CANHUH;
 				r.UI.endmsg("");
 				r.UI.has_hit = false;
-				r.UI.msg(`your hands stop glowing ${pick_color("red")}`);
+				r.UI.msg(ms.FIGHT_ROLL1(pick_color("red")));
 			}
 			if (tp.t_stats.s_hpt <= 0)
 				killed(tp, true);
 			else if (did_hit && !on(player, d.ISBLIND))
-				r.UI.msg(`${mname} appears confused`);
+				r.UI.msg(ms.FIGHT_ROLL2(mname));
 			did_hit = true;
 		}
 		else
@@ -204,8 +184,10 @@ function battle(r){
 				if (r.UI.has_hit)
 					r.UI.endmsg("");
 			r.UI.has_hit = false;
-			if (pstats.s_hpt <= 0)
+			if (pstats.s_hpt <= 0){
+				r.UI.msg("");
 				r.death(mp.t_type);	/* Bye bye life ... */
+			}
 			else if (!r.player.kamikaze)
 			{
 				oldhp -= pstats.s_hpt;
@@ -230,10 +212,7 @@ function battle(r){
 					player.t_flags &= ~d.ISRUN;
 					if (r.player.get_no_command() != 0)
 					{
-						r.UI.addmsg("you are frozen");
-						//if (!terse)
-							r.UI.addmsg(` by the ${mname}`);
-						r.UI.endmsg("");
+						r.UI.msg(ms.ATTACK_I(mname));
 					}
 					r.player.set_no_command(r.player.get_no_command()+ r.rnd(2) + 2);
 					if (r.player.get_no_command() > d.BORE_LEVEL)
@@ -249,14 +228,14 @@ function battle(r){
 					{
 						r.player.misc.chg_str(-1);
 						//if (!terse)
-						r.UI.msg("you feel a bite in your leg and now feel weaker");
+						r.UI.msg(ms.ATTACK_R1);
 						//else
 						//r.UI.msg("a bite has weakened you");
 					}
 					else if (!to_death)
 					{
 						//if (!terse)
-						r.UI.msg("a bite momentarily weakens you");
+						r.UI.msg(ms.ATTACK_R2);
 						//else
 						//r.UI.msg("bite has no effect");
 					}
@@ -293,7 +272,7 @@ function battle(r){
 							pstats.s_hpt = 1;
 						if (pstats.s_maxhp <= 0)
 							r.death(mp.t_type);
-						r.UI.msg("you suddenly feel weaker");
+						r.UI.msg(ms.ATTACK_WV);
 					}
 					break; 
 				case 'F':
@@ -322,7 +301,7 @@ function battle(r){
 					remove_mon(mp.t_pos, mp, false);
 					mp=null;
 					if (purse != lastpurse)
-						r.UI.msg("your purse feels lighter");
+						r.UI.msg(ms.ATTACK_L);
 					r.player.set_purse(purse);
 				}
 				break; 
@@ -346,7 +325,7 @@ function battle(r){
 						remove_mon(mp.t_pos, moat(mp.t_pos.y, mp.t_pos.x), false);
 									mp=null;
 						r.player.packf.leave_pack(steal, false, false);
-						r.UI.msg(`she stole ${r.item.inv_name(steal, true)}`);
+						r.UI.msg(ms.ms.ATTACK_N(r.item.inv_name(steal, true)));
 						r.discard(steal);
 					}
 				}
@@ -739,16 +718,14 @@ function battle(r){
 		{
 			if (r.UI.has_hit)
 			{
-				r.UI.addmsg(".  Defeated ");
+				r.UI.addmsg(". ");// Defeated ");
 				r.UI.has_hit = false;
 			}
 			else
-			{
-				if (!terse)
-					r.UI.addmsg("you have ");
-				r.UI.addmsg("defeated ");
-			}
-			r.UI.msg(mname);
+			//{
+			//	r.UI.addmsg(ms.KILLED);
+			//}
+			r.UI.msg(ms.KILLED(mname));
 		}
 		/*
 		* Do adjustments if he went up a level

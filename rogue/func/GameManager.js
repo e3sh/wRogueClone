@@ -21,11 +21,16 @@ function GameManager(g){
     const f = {}; //new rogueFuncs();
     const v = {}; //new rogueGlobals();
     const t = new rogueTypes();
+    
+    const LANG = "jp";
+    //LANG = "";
+    const ms = new rogueMessages(LANG);
 
     this.define = d;
     this.func   = f;
     this.globalValiable = v;
     this.types  = t;
+    this.messages = ms;
     
     globalVariableInit(this);
 
@@ -182,7 +187,7 @@ function GameManager(g){
 
         idcount = 0; //itemIDreset
 
-        g.console[1].printw(`Hello ${this.UI.whoami} , just a moment while I dig the dungeon...`);
+        g.console[1].printw(ms.INITAL);
 
         thingTable = [];
         this.mobs = thingTable;
