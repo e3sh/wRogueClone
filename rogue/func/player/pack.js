@@ -102,12 +102,14 @@ function packf(r){
 		if (obj.o_type == d.SCROLL && obj.o_which == d.S_SCARE)
 		if (obj.o_flags & d.ISFOUND)
 		{
-			r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
-			r.UI.mvaddch(hero.y, hero.x, r.player.floor_ch());
-			r.dungeon.places[hero.y][hero.x].p_ch = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
-			r.discard(obj);
-			r.UI.msg("the scroll turns to dust as you pick it up");
-			return;
+			if (Boolean(proom)){//continue時にここにくると止まるため回避策(playerが未設定の為
+				r.dungeon.lvl_obj = r.detach(r.dungeon.lvl_obj, obj);
+				r.UI.mvaddch(hero.y, hero.x, r.player.floor_ch());
+				r.dungeon.places[hero.y][hero.x].p_ch = (proom.r_flags & d.ISGONE) ? d.PASSAGE : d.FLOOR;
+				r.discard(obj);
+				r.UI.msg(ms.ADDPACK);
+				return;
+			}
 		}
 
 		if (pack == null)
@@ -243,12 +245,7 @@ function packf(r){
 
 		if (++inpack > d.MAXPACK)
 		{
-			if (!terse)
-				r.UI.addmsg("there's ");
-			r.UI.addmsg("no room");
-			if (!terse)
-				r.UI.addmsg(" in your pack");
-			r.UI.endmsg("");
+			r.UI.msg(ms.PACKROOM);
 			if (from_floor)
 				this.move_msg(obj);
 			inpack = d.MAXPACK;

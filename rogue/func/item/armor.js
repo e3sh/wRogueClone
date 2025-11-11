@@ -8,6 +8,7 @@ function armor(r){
     //const f = r.func;
     const t = r.types;
     //const v = r.globalValiable;
+    const ms = r.messages;
     
     /*
     * wear:
@@ -23,10 +24,7 @@ function armor(r){
         //    return;
         if (r.player.get_cur_armor() != null)
         {
-            r.UI.addmsg("you are already wearing some");
-            //if (!terse)
-                r.UI.addmsg(".  You'll have to take it off first");
-            r.UI.msg("");
+            r.UI.msg(ms.WEAR_1);
             take_off();
             r.after = false;
             return;
@@ -40,9 +38,7 @@ function armor(r){
         obj.o_flags |= d.ISKNOW;
         sp = r.item.things.inv_name(obj, true);
         r.player.set_cur_armor(obj);
-        //if (!terse)
-            r.UI.addmsg("you are now ");
-        r.UI.msg(`wearing ${sp}`);
+        r.UI.msg(ms.WEAR_2(sp));
     }
 
     /*
@@ -69,8 +65,8 @@ function armor(r){
         //if (terse)
         //    r.UI.addmsg("was");
         //else
-            r.UI.addmsg("you used to be");
-        r.UI.msg(` wearing ${obj.o_packch}) ${r.item.things.inv_name(obj, true)}`);
+        //    r.UI.addmsg("you used to be");
+        r.UI.msg(ms.TAKEOFF_1(obj.o_packch, r.item.things.inv_name(obj, true)));
     }
 
     /*

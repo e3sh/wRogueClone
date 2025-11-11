@@ -532,7 +532,7 @@ function battle(r){
 
 		tbuf = ' ';
 		if (mname == null)
-			tbuf = "you"; 
+			tbuf = ms.PRNAME; 
 		else
 			tbuf = mname;
 		if (upper)
@@ -551,12 +551,12 @@ function battle(r){
 		if (to_death)
 			return;
 		if (weap.o_type == d.WEAPON)
-			r.UI.addmsg(`the ${weap_info[weap.o_which].oi_name} hits ` );
+			r.UI.addmsg(ms.THUNK_1(weap_info[weap.o_which].oi_name));
 		else
-			r.UI.addmsg("you hit ");
-		r.UI.addmsg(`${mname}`);
+			r.UI.addmsg(ms.THUNK_2);
+		r.UI.addmsg(ms.THUNK_3(mname));
 		if (!noend)
-			r.UI.endmsg("");
+			r.UI.msg(ms.THUNK_4);
 	}
 
 	/*
@@ -572,7 +572,7 @@ function battle(r){
 
 		if (to_death)
 			return;
-		r.UI.addmsg(`${prname(er, false)}`);
+		r.UI.addmsg(ms.HIT_1(prname(er, false)));
 		if (terse)
 			s = " hit";
 		else
@@ -584,9 +584,9 @@ function battle(r){
 		}
 		r.UI.addmsg(s);
 		if (!terse)
-			r.UI.addmsg(`${prname(ee, false)}`);
+			r.UI.addmsg(ms.HIT_2(prname(ee, false)));
 		if (!noend)
-			r.UI.endmsg("");
+			r.UI.msg(ms.HIT_3);
 	}
 
 	/*
@@ -601,7 +601,7 @@ function battle(r){
 
 		if (r.to_death)
 			return;
-		r.UI.addmsg(`${prname(er, false)}`);
+		r.UI.addmsg(ms.MISS_1(prname(er, false)));
 		if (terse)
 			i = 0;
 		else
@@ -610,9 +610,9 @@ function battle(r){
 			i += 4;
 		r.UI.addmsg(m_names[i]);
 		if (!terse)
-			r.UI.addmsg(` ${prname(ee, false)}`);
+			r.UI.addmsg(ms.MISS_2(prname(ee, false)));
 		if (!noend)
-			r.UI.endmsg("");
+			r.UI.msg(ms.MISS_3);
 	}
 
 	/*
@@ -625,12 +625,12 @@ function battle(r){
 		if (to_death)
 			return;
 		if (weap.o_type == d.WEAPON)
-			r.UI.addmsg(`the ${weap_info[weap.o_which].oi_name} misses `);
+			r.UI.addmsg(ms.BOUNCE_1(weap_info[weap.o_which].oi_name));
 		else
-			r.UI.addmsg("you missed ");
+			r.UI.addmsg(ms.BOUNCE_2);
 		r.UI.addmsg(mname);
 		if (!noend)
-			r.UI.endmsg("");
+			r.UI.msg(ms.BOUNCE_3);
 	}
 
 	/*

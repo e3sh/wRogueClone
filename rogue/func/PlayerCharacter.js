@@ -286,6 +286,8 @@ function PlayerCharacter(r){
 
         hungry_state = 0; 
         food_left = d.HUNGERTIME;
+
+        no_command = 0;
         /*
         * Give him some food
         */

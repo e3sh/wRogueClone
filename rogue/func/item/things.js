@@ -7,6 +7,8 @@ function thingsf(r){
 	const d = r.define;
     const t = r.types;
 
+	const ms = r.messages;
+
 	const terse = false;
 	/*
 	* vowelstr:
@@ -202,7 +204,7 @@ function thingsf(r){
 		if (ch != d.FLOOR && ch != d.PASSAGE)
 		{
 			r.after = false;
-			r.UI.msg("there is something there already");
+			r.UI.msg(ms.DROP_1);
 			return;
 		}
 		if (obj == null)
@@ -221,7 +223,7 @@ function thingsf(r){
 
 		if (obj.o_type == d.AMULET)
 			r.player.amulet = false;
-		r.UI.msg(`dropped ${this.inv_name(obj, true)}`);
+		r.UI.msg(ms.DROP2(this.inv_name(obj, true)));
 	}
 
 	/*
@@ -244,7 +246,7 @@ function thingsf(r){
 			return true;
 		if (obj.o_flags & d.ISCURSED)
 		{
-			r.UI.msg("you can't.  It appears to be cursed");
+			r.UI.msg(ms.DROPCHECK);
 			return false;
 		}
 		if (obj == cur_weapon){

@@ -6,11 +6,14 @@ function rogueMessages(lang){
     if (lang == "jp"){
     const ms = {
 
-        INITAL: "ダンジョン準備中です、少しお待ちを",
+        INITAL: "ダンジョン準備中です、少しお待ちを...",
         WELCOME: `運命のダンジョンへようこそ`,
-        LEVIT_CHECK: "You can't.  You're floating off the ground!",
+        LEVIT_CHECK: "無理だよ。地面から浮いてるんだから！",
         PACK_ADD: (name)=>{return `${name} を手に入れた`},
         PACK_MONEY: (value)=>{return `${value} gold 拾った`},
+        
+        ADDPACK: "巻物は手に取ると塵と化した",
+        PACKROOM: "バックには空きがありません",
         //fight
         H_NAMES: [		/* strings for hitting */
             " 見事な一撃を放った",
@@ -45,6 +48,25 @@ function rogueMessages(lang){
         ATTACK_WV: "急に体がだるくなった",
         ATTACK_L: "財布が軽くなった気がする",
         ATTACK_N: (name)=>{return `彼女は${name}を盗んだ`},
+
+        PRNAME: "あなた",
+
+        THUNK_1: (name)=>{return `${name} 当たった`},
+        THUNK_2: "当たった ",
+        THUNK_3: (name)=>{return `${name}`},
+        THUNK_4: "",
+     
+        HIT_1: (name)=>{return `${name}の攻撃`},
+        HIT_2: (name)=>{return `-> ${name}`},
+        HIT_3: "",
+
+        MISS_1: (name)=>{return `${name}の攻撃`},
+        MISS_2: (name)=>{return ` -> ${name}`},
+        MISS_3: "",
+
+        BOUNCE_1: (name)=>{return `${name} 外れた`},
+        BOUNCE_2: "外した ",
+        BOUNCE_3: "",
 
         //potion
         P_ACTION_1: "なんてトリッピーな感覚なんだ！",
@@ -189,6 +211,23 @@ function rogueMessages(lang){
         LAND_2: "そっと地面に降り立った",
         
         CMDMAIN: "動けるようになった",
+
+        //weapon
+        FALL:(name)=>{return `${name} は地面にぶつかると消えた`},
+
+        WIELD_1: "鎧を装備することはできません",
+        WIELD_2: (name, ch)=>{ return `${name} (${ch}) を装備しました`},
+        //armor
+        WEAR_1: "すでに身につけています。まず外さなければなりません",
+        WEAR_2: (name)=>{return `${name} を着用しました`},
+
+        TAKEOFF_1: (ch, name)=>{return `${ch})${name} を脱ぎました`},
+
+        //things
+        DROP_1:"そこにはすでに何かがある",
+        DROP_2:(name)=>{return `${name} を捨てた`},
+
+        DROPCHECK:"できない。呪われているようだ",
     }
     return ms;
     }
@@ -202,6 +241,10 @@ function rogueMessages(lang){
         //pack
         PACK_ADD: (name)=>{return `you now have ${name}`},
         PACK_MONEY: (value)=>{return `you found ${value} gold pieces`},
+
+        ADDPACK: "the scroll turns to dust as you pick it up",
+        PACKROOM: "there's no room in your pack",
+
         //fight
         H_NAMES: [		/* strings for hitting */
             " scored an excellent hit on ",
@@ -236,6 +279,25 @@ function rogueMessages(lang){
         ATTACK_WV: "you suddenly feel weaker",
         ATTACK_L: "your purse feels lighter",
         ATTACK_N: (name)=>{return `she stole ${name}`},
+
+        PRNAME: "you",
+
+        THUNK_1: (name)=>{return `the ${name} hits `},
+        THUNK_2: "you hit ",
+        THUNK_3: (name)=>{return `${mname}`},
+        THUNK_4: "",
+     
+        HIT_1: (name)=>{return `${name}`},
+        HIT_2: (name)=>{return `${name}`},
+        HIT_3: "",
+
+        MISS_1: (name)=>{return `${name}`},
+        MISS_2: (name)=>{return ` ${name}`},
+        MISS_3: "",
+
+        BOUNCE_1: (name)=>{return `the ${name} misses `},
+        BOUNCE_2: "you missed ",
+        BOUNCE_3: "",
 
         //potion
         P_ACTION_1: "what a tripy feeling!",
@@ -380,6 +442,24 @@ function rogueMessages(lang){
         LAND_2: "you float gently to the ground",
 
         CMDMAIN: "you can move again",
+
+        //weapon
+        FALL:(name)=>{return `the ${name} vanishes as it hits the ground`},
+
+        WIELD_1: "you can't wield armor",
+        WIELD_2: (name, ch)=>{ return `you are now wielding ${name} (${ch})`},
+
+        //armor
+        WEAR_1: "you are already wearing some. You'll have to take it off first",
+        WEAR_2: (name)=>{return `you are now wearing ${name}`},
+
+        TAKEOFF_1: (ch, name)=>{return `you used to be wearing ${ch}) ${name}`},
+
+        //things
+        DROP_1:"there is something there already",
+        DROP_2:(name)=>{return `dropped ${name}`},
+
+        DROPCHECK:"you can't.  It appears to be cursed",
     }
     return ms;
 }

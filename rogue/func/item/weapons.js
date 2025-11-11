@@ -9,6 +9,8 @@ function weapons(r){
     const t = r.types;
     const v = r.globalValiable;
 
+    const ms = r.messages;
+
     const NO_WEAPON = -1;
 
     const ce = (a, b)=>{ return (a.x == b.x && a.y == b.y)};
@@ -165,7 +167,7 @@ function weapons(r){
                 r.UI.endmsg("");
                 r.UI.has_hit = false;
             }
-            r.UI.msg(`the ${weap_info[obj.o_which].oi_name} vanishes as it hits the ground`);
+            r.UI.msg(ms.FALL(weap_info[obj.o_which].oi_name));
         }
         r.discard(obj);
     }
@@ -233,7 +235,7 @@ function weapons(r){
 
         if (obj.o_type == d.ARMOR)
         {
-            r.UI.msg("you can't wield armor");
+            r.UI.msg(ms.WIELD_1);
             return;//goto bad;
         }
         if (is_current(obj))
@@ -241,9 +243,7 @@ function weapons(r){
 
         sp = r.item.things.inv_name(obj, true);
         r.player.set_cur_weapon(obj);
-        //if (!terse)
-            r.UI.addmsg("you are now ");
-        r.UI.msg(`wielding ${sp} (${obj.o_packch})`);//%s (%c)", sp, obj.o_packch);
+        r.UI.msg(ms.WIELD_2(sp, obj.o_packch));//%s (%c)", sp, obj.o_packch);
     }
 
     /*
