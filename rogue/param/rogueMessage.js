@@ -39,7 +39,7 @@ function rogueMessages(lang){
 
         FIGHT_X1: "重い！ なんて厄介な生き物だ！",
         FIGHT_X2: "待て！ あれは xeroc だ！",
-        FIGHT_ROLL1: (color)=>{return `手が${color}色に輝くのをやめた`},
+        FIGHT_ROLL1: (color)=>{return `手が${color}に輝くのをやめた`},
         FIGHT_ROLL2: (name)=>{return `${name}は混乱しているように見える`},
 
         ATTACK_I: (name)=>{return `${name}によって凍結された`},
@@ -163,8 +163,8 @@ function rogueMessages(lang){
         DO_MOVE_2: "拘束されています",
 
         //trap
-        BE_TRAP_DOOR: "罠にかかった！",
-        BE_TRAP_BEAR: "熊の罠にかかっている",
+        BE_TRAP_DOOR: "わなにかかった！",
+        BE_TRAP_BEAR: "熊のわなにかかっている",
 
         BE_TRAP_MIST_0: "突然、並行次元にいる",
         BE_TRAP_MIST_1: (color)=>{return `周りの明かりが急に ${color} になった`},

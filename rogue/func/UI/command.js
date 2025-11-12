@@ -60,7 +60,7 @@ function command(r, g)
         //let running = r.running;
 
         let no_command = r.player.get_no_command();
-        let to_death = r.player.death;
+        let to_death = r.player.to_death;
 
         let ch; //,ki;
         let ntimes = 1;			/* Number of player moves */
@@ -215,9 +215,9 @@ function command(r, g)
                 if (ki.includes("KeyE")) ;//eat(); //auto_select
                 if (ki.includes("KeyT")) ;//r.monster.wanderer();//take_off(); //auto_select
                 if (ki.includes("KeyP")) ;//ring_on(); //auto_select
-                if (ki.includes("KeyR")) r.quickstorage.reset();//ring_off(); //auto_select
-                if (ki.includes("KeyL")) r.quickstorage.load();//ring// select position L /
-                if (ki.includes("KeyS")) r.quickstorage.save();//search(); //no operation
+                if (ki.includes("KeyR")) ;r.quickstorage.reset();//ring_off(); //auto_select
+                if (ki.includes("KeyL")) ;r.quickstorage.load();//ring// select position L /
+                if (ki.includes("KeyS")) r.player.sight();//search(); //no operation
             }
             //if (ki.includes("KeyZ")) r.item.sticks.fire_bolt(hero,r.UI.get_delta(r.UI.delta),"fire");
 

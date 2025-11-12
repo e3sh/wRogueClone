@@ -33,7 +33,7 @@ function battle(r){
 	let fight_flush = false;
 	let max_hit = 0;
 
-	let to_death = false;
+	let to_death = r.player.to_death;
 
 	let vf_hit = 0;
 
@@ -111,7 +111,7 @@ function battle(r){
 		}
 		mname = this.set_mname(tp);
 		did_hit = false;
-		r.UI.has_hit = (terse && !r.to_death);
+		r.UI.has_hit = (terse && !r.player.to_death);
 		if (roll_em(player, tp, weap, thrown))
 		{
 			did_hit = false;
@@ -161,9 +161,9 @@ function battle(r){
 		running = false;
 		count = 0;
 		quiet = 0;
-		if (to_death && !on(mp, d.ISTARGET))
+		if (r.player.to_death && !on(mp, d.ISTARGET))
 		{
-			to_death = false;
+			r.player.to_death = false;
 			r.player.kamikaze = false;
 		}
 		if (mp.t_type == 'X' && mp.t_disguise != 'X' && !on(player, d.ISBLIND))
@@ -198,7 +198,7 @@ function battle(r){
 				if (oldhp > max_hit)
 					max_hit = oldhp;
 				if (pstats.s_hpt <= max_hit)
-					to_death = false;
+					r.player.to_death = false;
 			}
 			if (!on(mp, d.ISCANC))
 				switch (mp.t_type)
@@ -236,7 +236,7 @@ function battle(r){
 						//else
 						//r.UI.msg("a bite has weakened you");
 					}
-					else if (!to_death)
+					else if (!r.player.to_death)
 					{
 						//if (!terse)
 						r.UI.msg(ms.ATTACK_R2);
@@ -552,7 +552,7 @@ function battle(r){
 	//void
 	function thunk(weap, mname, noend)//THING *weap, char *mname, bool noend)
 	{
-		if (to_death)
+		if (r.player.to_death)
 			return;
 		if (weap.o_type == d.WEAPON)
 			r.UI.addmsg(ms.THUNK_1(weap_info[weap.o_which].oi_name));
@@ -574,7 +574,7 @@ function battle(r){
 		let s;
 		//h_names = []//extern char *h_names[];
 
-		if (to_death)
+		if (r.player.to_death)
 			return;
 		r.UI.addmsg(ms.HIT_1(prname(er, false)));
 
@@ -604,7 +604,7 @@ function battle(r){
 		let i;
 		//m_names = [];
 
-		if (r.to_death)
+		if (r.player.to_death)
 			return;
 		r.UI.addmsg(ms.MISS_1(prname(er, false)));
 
@@ -630,7 +630,7 @@ function battle(r){
 	//void
 	function bounce(weap, mname, noend)//THING *weap, char *mname, bool noend)
 	{
-		if (to_death)
+		if (r.player.to_death)
 			return;
 		if (weap.o_type == d.WEAPON)
 			r.UI.addmsg(ms.BOUNCE_1(weap_info[weap.o_which].oi_name));
@@ -667,7 +667,7 @@ function battle(r){
 		if (on(tp, d.ISTARGET))
 		{
 			r.player.kamikaze = false;
-			to_death = false;
+			r.player.to_death = false;
 			if (fight_flush)
 				flush_type();
 		}

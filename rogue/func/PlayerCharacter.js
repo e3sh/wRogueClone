@@ -1184,8 +1184,8 @@ function PlayerCharacter(r){
         if (on(player, d.ISBLIND))
         {
             let proom = player.t_room
-            r.daemon.extinguish(this.sight);
-            player.t_flags &= ~d.ISBLIND;
+            r.daemon.extinguish(r.player.sight);
+            r.player.player.t_flags &= ~d.ISBLIND;
             if (!(proom.r_flags & d.ISGONE))
                 r.player.enter_room(hero);
             r.UI.msg(choose_str(ms.SIGHT_1, ms.SIGHT_2));

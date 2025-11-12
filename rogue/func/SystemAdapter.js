@@ -110,11 +110,39 @@ function debug(r, g){
             if (sw) {
                 //g.screen[0].fill(0, 0, 32*6, 50*8, "Blue");   
                 //g.console[4].mvprintw(`${state_i}${state_e} ${st_tt}${st_ot} ${st_loc}${st_pc} ${st_parm} `, 0, i);
-                g.console[4].mvprintw(`${state_i}${state_e}${st_tt}${st_ot} ${txt}`, 0, i);
+                g.console[4].mvprintw(`${state_i}${state_e}${st_tt}${st_ot} ${txt}`, 0, Number(i)+1);
             }
             //    st += ((r.mobs[i].enable)?String.fromCharCode(Number("A".charCodeAt(0))+Number(i)):"_");
         }
         sw = true;//!sw
+        sysstate();
+    }
+
+    function sysstate(){
+
+        const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
+        const player = r.player.player;
+
+        if (!Boolean(player)) return;
+
+        let txt = [];
+
+        txt.push(`no_command:${r.player.get_no_command()}`);
+        txt.push(`food_left :${r.player.get_food_left()}`);
+        txt.push(`to_death:${r.player.to_death?"o":"_"}`);     
+        txt.push(`CANHUH :${on(player, d.CANHUH )?"o":"_"}`);
+        txt.push(`CANSEE :${on(player, d.CANSEE )?"o":"_"}`);
+        txt.push(`ISBLIND:${on(player, d.ISBLIND)?"o":"_"}`);
+        txt.push(`ISLEVIT:${on(player, d.ISLEVIT)?"o":"_"}`);
+        txt.push(`ISHASTE:${on(player, d.ISHASTE)?"o":"_"}`);
+        txt.push(`ISHELD :${on(player, d.ISHELD )?"o":"_"}`);
+        txt.push(`ISHUH  :${on(player, d.ISHUH  )?"o":"_"}`);
+        txt.push(`ISHALU :${on(player, d.ISHALU )?"o":"_"}`);
+
+        const sline = r.mobs.length +2;
+
+        for (let i in txt)
+            g.console[4].mvprintw(txt[i], 0, sline+Number(i));
     }
 
     //debug

@@ -9,7 +9,6 @@
         }
         function page_start(){
             document.getElementById("layer0").style.display = "";
-            document.getElementById("btn").style.display = "none";
             document.getElementById("memo").style.display = "none";
             main();
         }
@@ -27,7 +26,9 @@
     layer-0
     </canvas>
     <div id="memo">
-        <b>RogueClone</b> (5.4base javascript porting study)<br>
+        <b>RogueClone</b> (5.4base javascript porting study)
+        (<input type="checkbox" id="lang" checked = "true">:Lang:jp)     
+        <br>
         <br>
         5ch-dnc-th16 2025.11.01 >456<br>
         <hr>
@@ -44,8 +45,8 @@
         <li>　(level毎にautosave(一時保存)：エラー停止時の復帰対応/Gameoverで消去)</li>
         <!-- <li>　DEBUG:  [Q]mapdataview/[Z]clearmapview[End]debugstatus</li> -->
         </ul>
-        <hr>        
+        <hr>  
+        <input type="button" id="btn" value="GAME START" onclick="page_start()">     
     </div>
-    <input type="button" id="btn" value="GAME START" onclick="page_start()">
 </body>
 </html>
