@@ -5,6 +5,7 @@ function miscf(r){
 	    
     const d = r.define;
     const t = r.types;
+	const ms = r.messages;
 
 	//let player = r.player.player;
 
@@ -62,7 +63,7 @@ function miscf(r){
 			//max_hp += add;
 			//console.log(add);
 			pstats.s_hpt += add;
-			r.UI.msg(`levelup /welcome to level ${i} maxhp ${add} up`);
+			r.UI.msg(ms.CHECKLEVEL(i, add));
 		}
 		r.player.set_pstat(pstats);		
 	}
@@ -133,7 +134,7 @@ function miscf(r){
 			r.player.set_no_command(r.player.get_no_command() + r.rnd(8));
 			player.t_flags &= ~(d.ISRUN|d.ISHASTE);
 			r.daemon.extinguish(nohaste);
-			r.UI.msg("you faint from exhaustion");
+			r.UI.msg(ms.ADD_HASTE);
 			return false;
 		}
 		else

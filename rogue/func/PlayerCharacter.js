@@ -929,7 +929,7 @@ function PlayerCharacter(r){
     */
     this.be_trapped = function(tc) //coord *tc)
     {
-        const rainbow = r.globalValiable.rainbow;
+        const rainbow = ms.RAINBOW;//r.globalValiable.rainbow;
 
         let pp;//PLACE *pp;
         let arrow;//THING *arrow;
@@ -1274,7 +1274,7 @@ function PlayerCharacter(r){
         * undo the monsters
         */
         seemonst = on(player, d.SEEMONST);
-        for (tp = mlist; tp != null; tp = tp.l_next)
+        for (tp = r.dungeon.mlist; tp != null; tp = tp.l_next)
         {
         r.UI.move(tp.t_pos.y, tp.t_pos.x);
         if (this.cansee(tp.t_pos.y, tp.t_pos.x))

@@ -8,8 +8,9 @@
 /**
  * 
  * @param {GameCore} g GameCoreインスタンス
+ * @param {String} LANG "jp" 日本語指定/　他 Original
  */
-function GameManager(g){
+function GameManager(g, LANG){
 
     /* 
      * #define: 各種定数（MAXROOMS, MAXTHINGS, AMULETLEVELなど）、
@@ -21,9 +22,7 @@ function GameManager(g){
     const f = {}; //new rogueFuncs();
     const v = {}; //new rogueGlobals();
     const t = new rogueTypes();
-    
-    const LANG = "jp";
-    //LANG = "";
+
     const ms = new rogueMessages(LANG);
 
     this.define = d;
@@ -32,17 +31,6 @@ function GameManager(g){
     this.types  = t;
     this.messages = ms;
     
-    globalVariableInit(this);
-
-    this.player =  new PlayerCharacter(this); 
-    this.dungeon = new DungeonMap(this);
-    this.monster = new MonsterManager(this);
-    this.item   =  new ItemManager(this);
-    this.daemon =  new DaemonScheduler(this);
-    this.UI     =  new UIManager(this, g);
-    this.system =  new SystemAdapter(this)
-    this.debug  =  new debug(this, g);
-
     //this.player.packf = new packf(this);
     //this.player.misc =  new miscf(this);
 
@@ -115,12 +103,23 @@ function GameManager(g){
 
     this.passgo = passgo;
 
+    globalVariableInit(this); //ripsでv.monsters参照するのでそれより前に実行する必要がある
+
     this.rips = new rips(this);
     this.death = this.rips.death;
 
     this.fruit = fruit;
 
     this.quickstorage = new quick_storage(this);
+
+    this.player =  new PlayerCharacter(this); 
+    this.dungeon = new DungeonMap(this);
+    this.monster = new MonsterManager(this);
+    this.item   =  new ItemManager(this);
+    this.daemon =  new DaemonScheduler(this);
+    this.UI     =  new UIManager(this, g);
+    this.system =  new SystemAdapter(this)
+    this.debug  =  new debug(this, g);
 
     /*
     * sceneChange param initialize
@@ -135,7 +134,8 @@ function GameManager(g){
     }
 
     let SceneFunc;// =  setthis.UI.command();/* Command execution */;
-      /* 
+
+    /* 
     **関連する関数（提案されるメソッドの例）:**
     *   `main()`, `playit()` (ゲーム開始とメインループ)。
     *   `init_check()` (初期環境チェック)。

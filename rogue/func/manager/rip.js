@@ -8,6 +8,8 @@ function rips(r){
 	const d = r.define;
     const t = r.types;
 
+	const ms = r.messages;
+
 	/*
 	* vowelstr:
 	*      For printfs: if string starts with a vowel, return "n" for an
@@ -246,6 +248,8 @@ function rips(r){
 		r.UI.pause("[Press return to continue]");
 		r.pause = true;
 
+		killname(monst, true);
+
 		r.quickstorage.reset();
 		r.player.reset_inventry();
 	}
@@ -445,17 +449,17 @@ function rips(r){
 	function killname(monst, doart)
 	{
 		let hp;	//struct h_list *hp;
-		let sp;
+		let sp, sm;
 		let article;
 		//static struct h_list nlist[] = {
 		let prbuf;
 		
 		nlist = [
-			{ch:'a',	desc:"arrow", print:true},
-			{ch:'b',	desc:"bolt",	print:		true},
-			{ch:'d',	desc:"dart",	print:		true},
-			{ch:'h',	desc:"hypothermia",	print:	false},
-			{ch:'s',	desc:"starvation",	print:	false},
+			{ch:'a',desc:"arrow"		,ml_desc: ms.KILLNAME_1	, print: true},
+			{ch:'b',desc:"bolt"			,ml_desc: ms.KILLNAME_2	, print: true},
+			{ch:'d',desc:"dart"			,ml_desc: ms.KILLNAME_3	, print: true},
+			{ch:'h',desc:"hypothermia"	,ml_desc: ms.KILLNAME_4	, print: false},
+			{ch:'s',desc:"starvation"	,ml_desc: ms.KILLNAME_5	, print: false},
 			//{ch:'\0'}
 		];
 
@@ -465,16 +469,19 @@ function rips(r){
 				Number(monst.charCodeAt(0))-Number('A'.charCodeAt(0))
 				].m_name;
 			article = true;
+			sm = sp;
 		}
 		else
 		{
 			sp = "Wally the Wonder Badger";
+			sm = sp;
 			article = false;
 			for (let i in nlist)
 			//for (hp = nlist; hp.h_ch; hp++)
 				if (nlist[i].ch == monst)
 				{
 					sp = nlist[i].desc;
+					sm = nlist[i].ml_desc;
 					article = nlist[i].print;
 					break;
 				}
@@ -484,8 +491,17 @@ function rips(r){
 		else
 			prbuf = "";
 		prbuf += sp;
+
+		if (doart){
+			 if (article){
+				r.UI.msg(ms.KILLNAME_6(sm));
+			}else{
+				r.UI.msg(ms.KILLNAME_7(sm));
+			}
+		}
 		return prbuf;
 	}
+
 
 	/*
 	* death_monst:

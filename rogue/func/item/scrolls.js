@@ -8,7 +8,7 @@ function scroll(r){
 
 	const ms = r.messages;
 
-	const rainbow = r.globalValiable.rainbow;
+	const rainbow = ms.RAINBOW;//r.globalValiable.rainbow;
 	const scr_info = r.globalValiable.scr_info;
 	const pot_info = r.globalValiable.pot_info;
 	const ws_info = r.globalValiable.ws_info;
@@ -22,8 +22,10 @@ function scroll(r){
 	*/
 	const pick_color =(col)=>
 	{
-		//const rainbow = r.globalValiable.rainbow;
-		return (on(r.player.player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : col);
+		const rb_org = r.globalValiable.rainbow;
+		let cindex = rb_org.indexOf(col); 
+
+		return (on(r.player.player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : rainbow[cindex]);
 	}
 
     function choose_str(ts, ns)
@@ -274,6 +276,7 @@ function scroll(r){
 						r.UI.mvaddch(y, x, ch);
 				}
 			}
+		break;
 		case d.S_FDET:
 			/*
 			* Potion of gold detection

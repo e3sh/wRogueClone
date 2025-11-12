@@ -49,6 +49,8 @@ function rogueMessages(lang){
         ATTACK_L: "財布が軽くなった気がする",
         ATTACK_N: (name)=>{return `彼女は${name}を盗んだ`},
 
+        SETMNAME: "",
+
         PRNAME: "あなた",
 
         THUNK_1: (name)=>{return `${name} 当たった`},
@@ -228,8 +230,52 @@ function rogueMessages(lang){
         DROP_2:(name)=>{return `${name} を捨てた`},
 
         DROPCHECK:"できない。呪われているようだ",
+
+        //rips
+        KILLNAME_1:"arrow",
+        KILLNAME_2:"bolt",
+        KILLNAME_3:"dart",
+        KILLNAME_4:"低体温症",
+        KILLNAME_5:"空腹により飢餓",
+
+        KILLNAME_6:(name)=>{return `あなたは ${name} に殺された`},
+        KILLNAME_7:(name)=>{return `あなたは ${name} で死亡した`},
+
+        RAINBOW: [
+            "琥珀色",
+            "青緑色",
+            "黒色",
+            "青色",
+            "茶色",
+            "透明色",
+            "深紅色",
+            "空色",
+            "生成色",
+            "金色",
+            "緑色",
+            "灰色",
+            "赤紫色",
+            "橙色",
+            "桃色",
+            "格子柄",
+            "紫色",
+            "赤色",
+            "銀色",
+            "黄褐色",
+            "濃橙色",
+            "褐色",
+            "青空色",
+            "朱色",
+            "青紫色",
+            "白色",
+            "黄色",
+        ],
+        
+        //miscf
+        CHECKLEVEL: (lev, add)=>{return `経験レベル ${lev}になり、最大hpが ${add}増加した`},
+        ADD_HASTE: "疲れ果てて気を失った",
     }
-    return ms;
+     return ms;
     }
 
     //Normal Message (En)
@@ -279,6 +325,8 @@ function rogueMessages(lang){
         ATTACK_WV: "you suddenly feel weaker",
         ATTACK_L: "your purse feels lighter",
         ATTACK_N: (name)=>{return `she stole ${name}`},
+
+        SETMNAME: "the ",
 
         PRNAME: "you",
 
@@ -460,6 +508,50 @@ function rogueMessages(lang){
         DROP_2:(name)=>{return `dropped ${name}`},
 
         DROPCHECK:"you can't.  It appears to be cursed",
+
+        //rips
+        KILLNAME_1:"arrow",
+        KILLNAME_2:"bolt",
+        KILLNAME_3:"dart",
+        KILLNAME_4:"hypothermia",
+        KILLNAME_5:"starvation",
+
+        KILLNAME_6:(name)=>{return `You were killed by ${name}`},
+        KILLNAME_7:(name)=>{return `You died of ${name}`},
+
+        RAINBOW: [
+            "amber",
+            "aquamarine",
+            "black",
+            "blue",
+            "brown",
+            "clear",
+            "crimson",
+            "cyan",
+            "ecru",
+            "gold",
+            "green",
+            "grey",
+            "magenta",
+            "orange",
+            "pink",
+            "plaid",
+            "purple",
+            "red",
+            "silver",
+            "tan",
+            "tangerine",
+            "topaz",
+            "turquoise",
+            "vermilion",
+            "violet",
+            "white",
+            "yellow",
+        ],
+
+        //miscf
+        CHECKLEVEL: (lev, add)=>{return `exp levelup to explvl ${lev} maxhp ${add} up`},
+        ADD_HASTE: "you faint from exhaustion",
     }
     return ms;
 }

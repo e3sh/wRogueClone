@@ -12,10 +12,13 @@ function sticks(r){
 	const ws_info = r.globalValiable.ws_info;
 	const weap_info = r.globalValiable.weap_info;
 	
-	const rainbow = r.globalValiable.rainbow;
+	const rainbow = ms.RAINBOW;//r.globalValiable.rainbow;
 	const pick_color =(col)=>
 	{
-		return (on(r.player.player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : col);
+		const rb_org = r.globalValiable.rainbow;
+		let cindex = rb_org.indexOf(col); 
+
+		return (on(r.player.player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : rainbow[cindex]);
 	}
 
     const ce = (a, b)=>{ return (a.x == b.x && a.y == b.y)};

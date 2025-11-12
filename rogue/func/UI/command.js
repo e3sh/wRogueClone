@@ -227,7 +227,7 @@ function command(r, g)
             }
 
             //enter/leave wizard mode    
-            if (ki.includes("KeyW")) {
+            if (ki.includes("KeyW") && ki.includes("Space")) {
                 r.wizard = (r.wizard)?false:true;
                 r.UI.setEffect((r.wizard)?"ON":"OFF", {x:hero.x,y:hero.y} ,{x: hero.x, y: hero.y-1},90);
             }

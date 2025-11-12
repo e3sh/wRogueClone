@@ -44,10 +44,14 @@ function battle(r){
 	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
 	const GOLDCALC =()=> { return Math.floor(Math.random() * (50 + 10 * r.dungeon.get_level())) + 2};
 
-	const rainbow = r.globalValiable.rainbow;
+	const rainbow = ms.RAINBOW;//r.globalValiable.rainbow;
 	const pick_color =(col)=>
 	{
-		return (on(r.player.player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : col);
+		const rb_org = r.globalValiable.rainbow;
+		let cindex = rb_org.indexOf(col); 
+
+		return (on(r.player.player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : rainbow[cindex]);
+
 	}
 
 	const death =(en)=>{alert(`death ${en}`)};
@@ -374,10 +378,10 @@ function battle(r){
 		let st;
 		let mname;	//char *mname;
 		//static char tbuf[MAXSTR] = { 't', 'h', 'e', ' ' };
-		let tbuf = "the ";
+		let tbuf = ms.SETMNAME;//定冠詞
 
 		if (!r.player.see_monst(tp) && !on(player, d.SEEMONST))
-			return (terse ? "it" : "something");
+			return "something";
 		else if (on(player, d.ISHALU))
 		{
 			r.UI.move(tp.t_pos.y, tp.t_pos.x);

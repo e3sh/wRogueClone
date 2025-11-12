@@ -17,7 +17,7 @@ class sceneControl extends GameTask {
 			io = g.task.read("io");
 			this.moveEffect = new moveEffect(g);
 
-			const r = new GameManager(g); 
+			const r = new GameManager(g ,"jp"); 
 			g.rogue = r;
 
 			//roguemain(g);
