@@ -394,6 +394,12 @@ function rips(r){
 			r.UI.printw(cmes[i]);
 		}
 
+		r.UI.msg("");
+		r.UI.msg(ms.TOTALWIN_1);
+		r.UI.msg(ms.TOTALWIN_2);
+		r.UI.msg(" ");
+		r.UI.msg(" ");
+		
 		r.UI.pause("[Press return to continue]");
 
 		res_mode = false;

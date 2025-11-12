@@ -250,6 +250,9 @@ function rogueMessages(lang){
         KILLNAME_6:(name)=>{return `あなたは ${name} に殺された`},
         KILLNAME_7:(name)=>{return `あなたは ${name} で死亡した`},
 
+        TOTALWIN_1:"おめでとう、ついに日の光の下へたどり着いた！",
+        TOTALWIN_2:"やったね！",
+
         RAINBOW: [
             "琥珀色",
             "青緑色",
@@ -536,6 +539,9 @@ function rogueMessages(lang){
 
         KILLNAME_6:(name)=>{return `You were killed by ${name}`},
         KILLNAME_7:(name)=>{return `You died of ${name}`},
+        
+        TOTALWIN_1:"Congratulations, you have made it to the light of day!",
+        TOTALWIN_2:"You Made It!",
 
         RAINBOW: [
             "amber",
