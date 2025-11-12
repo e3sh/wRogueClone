@@ -6,6 +6,8 @@ function rings(r){
 
 	const d = r.define;
     const t = r.types;
+	
+	const ms = r.messages;
 
 	const is_current =(obj)=>//THING *obj)
 	{
@@ -14,9 +16,7 @@ function rings(r){
 		if (obj == r.player.get_cur_armor() || obj == r.player.get_cur_weapon() || obj == r.player.get_cur_ring(d.LEFT)
 		|| obj == r.player.get_cur_ring(d.RIGHT))
 		{
-			//if (!terse)
-				r.UI.addmsg("That's already ");
-			r.UI.msg("in use");
+			r.UI.msg(ms.RING_ISCUR);
 			return true;
 		}
 		return false;
@@ -42,20 +42,16 @@ function rings(r){
 			return;
 		if (obj.o_type != d.RING)
 		{
-			if (!terse)
-				r.UI.msg("it would be difficult to wrap that around a finger");
-			else
-				r.UI.msg("not a ring");
-			return;
+			r.UI.msg("it would be difficult to wrap that around a finger");
 		}
 		/*
 		* find out which hand to put it on
 		*/
-		if (is_current(obj))
+		if (is_current(obj)){
+			if (cur_ring[d.LEFT] == obj || cur_ring[d.RIGHT] == obj){
+				this.ring_off(obj);
+			}
 			return;
-
-		if (cur_ring[d.LEFT] == obj || cur_ring[d.RIGHT] == obj){
-			this.ring_off(obj);
 		}
 
 		if (cur_ring[d.LEFT] == null && cur_ring[d.RIGHT] == null)
@@ -70,10 +66,7 @@ function rings(r){
 			ring = d.RIGHT;
 		else
 		{
-			//if (!terse)
-				r.UI.addmsg("you already have a ring on each hand.");
-			//else
-				r.UI.msg("wearing two");
+			r.UI.msg(ms.RING_ON_1);
 			return;
 		}
 		r.player.set_cur_ring(ring, obj);
@@ -95,8 +88,7 @@ function rings(r){
 		}
 
 		//if (!terse)
-			r.UI.addmsg("you are now wearing ");
-		r.UI.msg(`${r.item.things.inv_name(obj, true)} (${obj.o_packch})`);
+		r.UI.msg(ms.RING_ON_2(r.item.things.inv_name(obj, true) ,obj.o_packch));
 	}
 
 	/*
@@ -142,8 +134,7 @@ function rings(r){
 			return;
 		}
 		if (r.item.things.dropcheck(obj)){
-			r.UI.msg(`${r.item.things.inv_name(obj, true)} (${obj.o_packch})`);
-			
+			r.UI.msg(ms.RING_OFF(r.item.things.inv_name(obj, true), obj.o_packch));
 		}
 	}
 

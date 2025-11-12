@@ -227,6 +227,13 @@ function rogueMessages(lang){
 
         TAKEOFF_1: (ch, name)=>{return `${ch})${name} を脱ぎました`},
 
+        //ring
+        RING_ISCUR: "",//それはすでに使用中です",
+        RING_ON_1: "すでに両手に指輪をはめている",
+        RING_ON_2: (name, ch)=>{return `${name} (${ch})を指にはめた`;},
+
+        RING_OFF: (name, ch)=>{return `${name} (${ch})を指から外しました`;},
+
         //things
         DROP_1:"そこにはすでに何かがある",
         DROP_2:(name)=>{return `${name} を捨てた`},
@@ -506,6 +513,13 @@ function rogueMessages(lang){
         WEAR_2: (name)=>{return `you are now wearing ${name}`},
 
         TAKEOFF_1: (ch, name)=>{return `you used to be wearing ${ch}) ${name}`},
+
+        //ring
+        RING_ISCUR: "That's already in use",
+        RING_ON_1: "you already have a ring on each hand. wearing two",
+        RING_ON_2: (name, ch)=>{return `you are now wearing ${name} (${ch})`;},
+
+        RING_OFF: (name, ch)=>{return `${name} (${ch})`;},
 
         //things
         DROP_1:"there is something there already",
