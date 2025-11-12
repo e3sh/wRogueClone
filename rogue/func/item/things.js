@@ -223,7 +223,7 @@ function thingsf(r){
 
 		if (obj.o_type == d.AMULET)
 			r.player.amulet = false;
-		r.UI.msg(ms.DROP2(this.inv_name(obj, true)));
+		r.UI.msg(ms.DROP_2(this.inv_name(obj, true)));
 	}
 
 	/*

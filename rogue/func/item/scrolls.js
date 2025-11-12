@@ -398,6 +398,8 @@ function scroll(r){
 	//void
 	this.teleport = function()
 	{
+		console.trace();
+
 		const player = r.player.player;
 		const hero = player.t_pos;
 		const proom = player.t_room;
@@ -406,18 +408,25 @@ function scroll(r){
 
 		r.UI.mvaddch(hero.y, hero.x, r.player.floor_at());
 		r.dungeon.roomf.find_floor(null, c, false, true);
+		c = r.dungeon.roomf.get_findfloor_result();
 		if (r.dungeon.roomin(c) != proom)
 		{
 			r.dungeon.roomf.leave_room(hero);
-			player.tpos = c; //hero;
+			player.t_pos = c; //hero;
+			r.player.player.t_pos = {x:c.x, y:c.y};
 			r.player.enter_room(hero);
 		}
 		else
 		{
-			player.tpos = c; //hero;
+			r.player.player.t_pos = {x:c.x, y:c.y}; //hero;
 			r.UI.look(true);
 		}
-		r.UI.mvaddch(hero.y, hero.x, d.PLAYER);
+		//r.UI.mvaddch(hero.y, hero.x, d.PLAYER);
+		let x = r.player.player.t_pos.x;
+		let y = r.player.player.t_pos.y;		
+		r.UI.mvaddch(y, x, "&");//\d.PLAYER);
+
+		//r.UI.mvaddch(hero.y, hero.x, "&");//\d.PLAYER);
 		/*
 		* turn off ISHELD in case teleportation was done while fighting
 		* a Flytrap

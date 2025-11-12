@@ -641,6 +641,7 @@ function PlayerCharacter(r){
     */
     this.do_move = function(dy, dx)
     {
+        hero  = player.t_pos;
         //let proom  = player.t_room // プレイヤーがいる部屋
         //const hero   = player.t_pos; // (プレイヤー位置)
         

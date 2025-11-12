@@ -55,6 +55,7 @@ function command(r, g)
         const hero = player.t_pos; 
         const cur_ring = stat.ring;
 
+        //console.log(hero);
         //let after = r.after;
         //let running = r.running;
 
@@ -183,7 +184,7 @@ function command(r, g)
                 }
             }
             //exec
-            if (ki.includes("Numpad0")) useItem();
+            if (ki.includes("Numpad0")) { useItem(); r.after = false;}
 
             //selectitem
             if (ki.includes("NumpadAdd")||ki.includes("NumpadSubtract")||
@@ -206,7 +207,7 @@ function command(r, g)
 
             }
             //drop/throw
-            if (ki.includes("KeyD")) dropItem(); 
+            if (ki.includes("KeyD")) { dropItem(); r.after = false;}
 
             //no operation (develop test operation)
             if (false){

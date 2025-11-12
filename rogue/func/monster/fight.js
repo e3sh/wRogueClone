@@ -378,10 +378,10 @@ function battle(r){
 		let st;
 		let mname;	//char *mname;
 		//static char tbuf[MAXSTR] = { 't', 'h', 'e', ' ' };
-		let tbuf = ms.SETMNAME;//定冠詞
+		let tbuf = ms.SETMNAME1;//定冠詞
 
 		if (!r.player.see_monst(tp) && !on(player, d.SEEMONST))
-			return "something";
+			return ms.SETMNAME2;
 		else if (on(player, d.ISHALU))
 		{
 			r.UI.move(tp.t_pos.y, tp.t_pos.x);
@@ -577,18 +577,19 @@ function battle(r){
 		if (to_death)
 			return;
 		r.UI.addmsg(ms.HIT_1(prname(er, false)));
-		if (terse)
-			s = " hit";
-		else
-		{
-			i = r.rnd(4);
-			if (er != null)
-				i += 4;
-			s = h_names[i];
-		}
-		r.UI.addmsg(s);
-		if (!terse)
+
+		i = r.rnd(4);
+		if (er != null)
+			i += 4;
+		s = h_names[i];
+
+		if (ms.HIT_VM){
 			r.UI.addmsg(ms.HIT_2(prname(ee, false)));
+			r.UI.addmsg(s);
+		}else{
+			r.UI.addmsg(s);
+			r.UI.addmsg(ms.HIT_2(prname(ee, false)));
+		}
 		if (!noend)
 			r.UI.msg(ms.HIT_3);
 	}
@@ -606,15 +607,18 @@ function battle(r){
 		if (r.to_death)
 			return;
 		r.UI.addmsg(ms.MISS_1(prname(er, false)));
-		if (terse)
-			i = 0;
-		else
-			i = r.rnd(4);
+
+		i = r.rnd(4);
 		if (er != null)
 			i += 4;
-		r.UI.addmsg(m_names[i]);
-		if (!terse)
+
+		if (ms.HIT_VM){
 			r.UI.addmsg(ms.MISS_2(prname(ee, false)));
+			r.UI.addmsg(m_names[i]);
+		}else{
+			r.UI.addmsg(m_names[i]);
+			r.UI.addmsg(ms.MISS_2(prname(ee, false)));
+		}
 		if (!noend)
 			r.UI.msg(ms.MISS_3);
 	}

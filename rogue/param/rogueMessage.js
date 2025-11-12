@@ -35,7 +35,7 @@ function rogueMessages(lang){
             " かすめた",
             " 当たらなかった",
     	],
-        KILLED: (name)=>{return `${name} を倒した `},
+        KILLED: (name)=>{return `${name} を倒した`},
 
         FIGHT_X1: "重い！ なんて厄介な生き物だ！",
         FIGHT_X2: "待て！ あれは xeroc だ！",
@@ -49,7 +49,8 @@ function rogueMessages(lang){
         ATTACK_L: "財布が軽くなった気がする",
         ATTACK_N: (name)=>{return `彼女は${name}を盗んだ`},
 
-        SETMNAME: "",
+        SETMNAME1: "",
+        SETMNAME2: "なにか",
 
         PRNAME: "あなた",
 
@@ -58,12 +59,13 @@ function rogueMessages(lang){
         THUNK_3: (name)=>{return `${name}`},
         THUNK_4: "",
      
-        HIT_1: (name)=>{return `${name}の攻撃`},
-        HIT_2: (name)=>{return `-> ${name}`},
+        HIT_VM: true,
+        HIT_1: (name)=>{return `${name}の攻撃 `},
+        HIT_2: (name)=>{return `${name}に`},
         HIT_3: "",
 
-        MISS_1: (name)=>{return `${name}の攻撃`},
-        MISS_2: (name)=>{return ` -> ${name}`},
+        MISS_1: (name)=>{return `${name}の攻撃 `},
+        MISS_2: (name)=>{return `${name}に`},
         MISS_3: "",
 
         BOUNCE_1: (name)=>{return `${name} 外れた`},
@@ -128,7 +130,7 @@ function rogueMessages(lang){
         DOZAP_LIGHT_1: "廊下が光り、そして消える",
         DOZAP_LIGHT_2: (color)=>{return `部屋はきらめく${color}色の光に照らされている`},
         DOZAP_DRAIN: "それを使うには弱すぎる",
-        DOZAP_WS_MISSILE: "ミサイルは煙の塊となって消えた",
+        DOZAP_MISSILE: "ミサイルは煙の塊となって消えた",
         DOZAP_NOP: "何もしない。なんて奇妙な芸当だ！",
         DOZAP_ETC: "なんという奇妙な芸当だ！",
 
@@ -326,7 +328,8 @@ function rogueMessages(lang){
         ATTACK_L: "your purse feels lighter",
         ATTACK_N: (name)=>{return `she stole ${name}`},
 
-        SETMNAME: "the ",
+        SETMNAME1: "the ",
+        SETMNAME2: "something",
 
         PRNAME: "you",
 
@@ -335,6 +338,7 @@ function rogueMessages(lang){
         THUNK_3: (name)=>{return `${mname}`},
         THUNK_4: "",
      
+        HIT_VM: false, //動詞と名詞順番　falseでオリジナルと同じ
         HIT_1: (name)=>{return `${name}`},
         HIT_2: (name)=>{return `${name}`},
         HIT_3: "",
@@ -405,7 +409,7 @@ function rogueMessages(lang){
         DOZAP_LIGHT_1: "the corridor glows and then fades",
         DOZAP_LIGHT_2: (color)=>{return `the room is lit by a shimmering ${color} light`},
         DOZAP_DRAIN: "you are too weak to use it",
-        DOZAP_WS_MISSILE: "the missle vanishes with a puff of smoke",
+        DOZAP_MISSILE: "the missle vanishes with a puff of smoke",
         DOZAP_NOP: "no operation. what a bizarre schtick!",
         DOZAP_ETC: "what a bizarre schtick!",
 
