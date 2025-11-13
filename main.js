@@ -50,7 +50,7 @@ function SpriteFontData() {
     }
     //6_8_font
     let s2 = [];
-    for (let i = 2; i < 8; i++) {
+    for (let i = 0; i < 16; i++) {
         for (j = 0; j <16; j++) {
             ptn = { x:  6 * j, y: 8 * i, w:  6, h: 8 }
             s2.push(ptn);
@@ -67,7 +67,7 @@ function SpriteFontData() {
     //↑↑
     return [
         { name: "std"   , id: "ASCII", pattern: sp, ucc: true },
-        { name: "small" , id: "SMALL", pattern: s2 },
+        { name: "small" , id: "SMALL", pattern: s2 ,ucc: true},
         { name: "mini"  , id: "MINIF", pattern: ss },
         { name: "stdbg" , id: "ASCBG", pattern: sp, ucc: true },
     ]

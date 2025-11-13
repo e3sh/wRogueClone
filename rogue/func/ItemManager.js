@@ -182,10 +182,11 @@ function ItemManager(r){
 
         for (let i = 0; i < d.MAXPOTIONS; i++)
         {
-            p_colors[i] = rainbow[colnum[i]];
+            p_colors[i] = `${String.fromCharCode(128+colnum[i])}${rainbow[colnum[i]]}`;
             //console.log(p_colors[i]);
         }
     };
+
 	/* Set up stone settings of rings リングの石の設定をランダムに初期化し、その価値に影響を与えます。*/
     this.init_stones = function(){
         let stype =[];

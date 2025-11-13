@@ -128,7 +128,7 @@ function rogueMessages(lang){
         //stick
         DOZAP_NOCHARGE: "何も起こらない",
         DOZAP_LIGHT_1: "廊下が光り、そして消える",
-        DOZAP_LIGHT_2: (color)=>{return `部屋はきらめく${color}色の光に照らされている`},
+        DOZAP_LIGHT_2: (color)=>{return `部屋はきらめく${color}の光に照らされている`},
         DOZAP_DRAIN: "それを使うには弱すぎる",
         DOZAP_MISSILE: "ミサイルは煙の塊となって消えた",
         DOZAP_NOP: "何もしない。なんて奇妙な芸当だ！",

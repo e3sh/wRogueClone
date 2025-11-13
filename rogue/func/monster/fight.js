@@ -50,8 +50,9 @@ function battle(r){
 		const rb_org = r.globalValiable.rainbow;
 		let cindex = rb_org.indexOf(col); 
 
-		return (on(r.player.player, d.ISHALU) ? rainbow[r.rnd(d.NCOLORS)] : rainbow[cindex]);
+		rcol = on(r.player.player, d.ISHALU) ? r.rnd(d.NCOLORS) : cindex;
 
+		return `${String.fromCharCode(rcol)}${rainbow[ rcol ]}`;
 	}
 
 	const death =(en)=>{alert(`death ${en}`)};
