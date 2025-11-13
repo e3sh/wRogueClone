@@ -932,6 +932,13 @@ function PlayerCharacter(r){
     {
         const rainbow = ms.RAINBOW;//r.globalValiable.rainbow;
 
+        const setColor =(col)=>
+        {
+            const rb_org = r.globalValiable.rainbow;
+            let rcol = r.rnd(d.NCOLORS); 
+            return `${String.fromCharCode(rcol+1)}${rainbow[ rcol ]}`;
+        }
+
         let pp;//PLACE *pp;
         let arrow;//THING *arrow;
         let tr;
@@ -963,17 +970,17 @@ function PlayerCharacter(r){
         case d.T_MYST:
             switch(r.rnd(11))
             {
-                case 0: r.UI.msg(ms.BE_TRAP_MIST_0);    break;
-                case 1: r.UI.msg(ms.BE_TRAP_MIST_1(rainbow[r.rnd(d.cNCOLORS)]));break;
+                case 0: r.UI.msg(ms.BE_TRAP_MIST_0); break;
+                case 1: r.UI.msg(ms.BE_TRAP_MIST_1( setColor() ));break;
                 case 2: r.UI.msg(ms.BE_TRAP_MIST_2);   break;
                 case 3: r.UI.msg(ms.BE_TRAP_MIST_3); break;
-                case 4: r.UI.msg(ms.BE_TRAP_MIST_4(rainbow[r.rnd(d.cNCOLORS)])); break;
+                case 4: r.UI.msg(ms.BE_TRAP_MIST_4( setColor() )); break;
                 case 5: r.UI.msg(ms.BE_TRAP_MIST_5);   break;
-                case 6: r.UI.msg(ms.BE_TRAP_MIST_6(rainbow[r.rnd(d.cNCOLORS)]));break;
+                case 6: r.UI.msg(ms.BE_TRAP_MIST_6( setColor() ));break;
                 case 7: r.UI.msg(ms.BE_TRAP_MIST_7);break;
                 case 8: r.UI.msg(ms.BE_TRAP_MIST_8);break;
                 case 9: r.UI.msg(ms.BE_TRAP_MIST_9);break;
-                case 10: r.UI.msg(ms.BE_TRAP_MIST_10(rainbow[r.rnd(d.cNCOLORS)]));break;
+                case 10: r.UI.msg(ms.BE_TRAP_MIST_10( setColor() ));break;
             }
             break;
         case d.T_SLEEP:
