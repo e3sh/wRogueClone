@@ -182,7 +182,7 @@ function ItemManager(r){
 
         for (let i = 0; i < d.MAXPOTIONS; i++)
         {
-            p_colors[i] = `${String.fromCharCode(128+colnum[i])}${rainbow[colnum[i]]}`;
+            p_colors[i] = `${String.fromCharCode(1+colnum[i])}${rainbow[colnum[i]]}`;
             //console.log(p_colors[i]);
         }
     };

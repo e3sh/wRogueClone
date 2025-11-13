@@ -20,7 +20,7 @@ function sticks(r){
 
 		rcol = on(r.player.player, d.ISHALU) ? r.rnd(d.NCOLORS) : cindex;
 
-		return `${String.fromCharCode(rcol)}${rainbow[ rcol ]}`;
+		return `${String.fromCharCode(rcol+1)}${rainbow[ rcol ]}`;
 	}
 
     const ce = (a, b)=>{ return (a.x == b.x && a.y == b.y)};
