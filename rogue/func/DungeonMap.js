@@ -549,7 +549,7 @@ function DungeonMap(r){
     {
         if (!on(r.player.player, d.ISLEVIT))
             return false;
-        r.UI.msg("You can't.  You're floating off the ground!");
+        r.UI.msg(ms.LEVIT_CHECK);
             return true;
     }
 
