@@ -475,7 +475,9 @@ function rips(r){
 				Number(monst.charCodeAt(0))-Number('A'.charCodeAt(0))
 				].m_name;
 			article = true;
-			sm = sp;
+			sm = ms.MONSTERNAME[
+				Number(monst.charCodeAt(0))-Number('A'.charCodeAt(0))
+			] 
 		}
 		else
 		{

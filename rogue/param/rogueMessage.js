@@ -5,6 +5,7 @@ function rogueMessages(lang){
 
     if (lang == "jp"){
     const ms = {
+        FRUIT: "粘菌",
 
         INITAL: "ダンジョン準備中です、少しお待ちを...",
         WELCOME: `運命のダンジョンへようこそ`,
@@ -143,7 +144,6 @@ function rogueMessages(lang){
         FIREBOLT_2: (bname, ename)=>{return `${bname}が${ename}のそばをビュッと通り過ぎる`},
         FIREBOLT_3: (bname)=>{return `${bname}に攻撃された`},
         FIREBOLT_4: (bname)=>{return `${bname}がそばをすっ飛んでいく`},
-
 
         //player
         FIND_U_STAIR:"上り階段を見つけた",
@@ -296,6 +296,38 @@ function rogueMessages(lang){
         //miscf
         CHECKLEVEL: (lev, add)=>{return `経験レベル ${lev}になり、最大hpが ${add}増加した`},
         ADD_HASTE: "疲れ果てて気を失った",
+
+        //monster
+        MONSTERNAME:[
+            "アクエイター",
+            "大こうもり",	
+            "ケンタウロス",
+            "ドラゴン",
+            "だちょう",
+            "ハエトリ草",
+            "グリフィン", 
+            "ホブゴブリン",
+            "氷の怪物",
+            "ジャバウォック",
+            "はやぶさ",
+            "レプラコーン",
+            "メデューサ",
+            "ニンフ",
+            "オーク",
+            "ファントム",
+            "クアッガ",
+            "ガラガラヘビ",
+            "大蛇",
+            "トロル",
+            "黒い一角獣",
+            "ヴァンパイア",
+            "レイス",
+            "ゼロック",
+            "イエティ",
+            "ゾンビ",
+        ],
+
+        WAKEMONST:(name, camma)=>{return `${name}の視線があなたを混乱させた`},
     }
      return ms;
     }
@@ -303,6 +335,8 @@ function rogueMessages(lang){
     //Normal Message (En)
     const whoami = "player";  
     const ms = {
+        FRUIT: "slime-mold",
+
         INITAL: `Hello ${whoami} , just a moment while I dig the dungeon...`,
         WELCOME: `Welcome ${whoami}`,
         LEVIT_CHECK: "You can't.  You're floating off the ground!",
@@ -596,6 +630,38 @@ function rogueMessages(lang){
         //miscf
         CHECKLEVEL: (lev, add)=>{return `exp levelup to explvl ${lev} maxhp ${add} up`},
         ADD_HASTE: "you faint from exhaustion",
+
+        //monster
+        MONSTERNAME:[
+            "aquator",
+            "bat",	
+            "centaur",
+            "dragon",
+            "emu",
+            "venus flytrap",
+            "griffin", 
+            "hobgoblin",
+            "ice monster",
+            "jabberwock",
+            "kestrel",
+            "leprechaun",
+            "medusa",
+            "nymph",
+            "orc",
+            "phantom",
+            "quagga",
+            "rattlesnake",
+            "snake",
+            "troll",
+            "black unicorn",
+            "vampire",
+            "wraith",
+            "xeroc",
+            "yeti",
+            "zombie",
+        ],
+
+        WAKEMONST:(name, camma)=>{return `${name}${camma}s gaze has confused you`},
     }
     return ms;
 }

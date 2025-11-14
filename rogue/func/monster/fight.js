@@ -392,10 +392,11 @@ function battle(r){
 				ch = r.rnd(26);
 			else
 				ch -= Number('A'.charCodeAt(0));
-			mname = monsters[ch].m_name;
+			mname = ms.MONSTERNAME[ch];// monsters[ch].m_name;
 		}
 		else
-			mname = monsters[Number(tp.t_type.charCodeAt(0)) - Number('A'.charCodeAt(0))].m_name;
+			mname = ms.MONSTERNAME[Number(tp.t_type.charCodeAt(0)) - Number('A'.charCodeAt(0))];
+			//mname = monsters[Number(tp.t_type.charCodeAt(0)) - Number('A'.charCodeAt(0))].m_name;
 		tbuf += mname;
 		//console.log(tbuf);
 		return tbuf;

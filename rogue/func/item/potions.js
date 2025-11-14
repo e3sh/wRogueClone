@@ -50,8 +50,8 @@ function potions(r){
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_POISON */
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_STRENGTH */
 	p_actions.push(new PACT(d.CANSEE,	r.player.unsee,	d.SEEDURATION,		/* P_SEEINVIS */
-			ms.P_ACTION_4(fruit),
-			ms.P_ACTION_4(fruit) )),
+			ms.P_ACTION_4(ms.FRUIT),
+			ms.P_ACTION_4(ms.FRUIT) )),
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_HEALING */
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_MFIND */
 	p_actions.push(new PACT(0,		null,	0 )),	/* P_TFIND  */

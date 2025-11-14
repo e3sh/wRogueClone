@@ -187,7 +187,8 @@ function GameManager(g, LANG){
 
         idcount = 0; //itemIDreset
 
-        g.console[1].printw(ms.INITAL);
+        //g.console[1].printw(ms.INITAL);
+        this.UI.msg(ms.INITAL);
 
         thingTable = [];
         this.mobs = thingTable;

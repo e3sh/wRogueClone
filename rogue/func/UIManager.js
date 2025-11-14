@@ -177,9 +177,17 @@ function UIManager(r, g){
         if (!Boolean(text)) {
             //console.trace(); //undefinedのメッセージが表示される場合の呼び出し元調査用
         }
-        text = this.texwork + text;
+        text = `${this.texwork + text}`;
         if (!Boolean(text)) return;
-        if (text.length >0){ g.console[1].insertln(); g.console[1].printw(text);
+        if (text.length >0){
+            g.console[1].move(0,0);
+            g.console[1].insertln(); g.console[1].printw(text);
+
+            let cl = 1;
+            for (let i=0; i<text.length; i++){
+                cl += (text.charCodeAt(i) < 128)?1:2;
+            }
+            g.console[1].move(cl, 0);
         } 
         this.texwork = "";
     }

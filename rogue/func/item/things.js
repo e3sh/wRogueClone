@@ -88,10 +88,10 @@ function thingsf(r){
 		switch (obj.o_type)
 		{
 			case d.POTION:
-				pb = nameit(obj, "potion", p_colors[which], pot_info[which], ()=>{return "";});
+				pb = nameit(obj, "potion ", p_colors[which], pot_info[which], ()=>{return "";});
 				break; 
 			case d.RING:
-				pb = nameit(obj, "ring", r_stones[which], ring_info[which], r.item.rings.ring_num);
+				pb = nameit(obj, "ring ", r_stones[which], ring_info[which], r.item.rings.ring_num);
 				break; 
 			case d.STICK:
 				pb = nameit(obj, ws_type[which], ws_made[which], ws_info[which], r.item.sticks.charge_str);//charge_str ,file :sticks

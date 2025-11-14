@@ -161,9 +161,9 @@ function rogueTypes(){
             this.o_which   = _o._o_which;
             this.o_hplus   = _o._o_hplus;
             this.o_dplus   = _o._o_dplus;
-            this.o_arm     = _o._o_arm;
-            this.o_charges = this.o_arm
-            this.o_goldval = this.o_arm
+            this.o_arm     = _o._o_arm; // share paramater
+            this.o_charges = _o._o_arm; //
+            this.o_goldval = _o._o_arm; //
             this.o_flags   = _o._o_flags;
             this.o_group   = _o._o_group;
             this.o_label   = _o._o_label;

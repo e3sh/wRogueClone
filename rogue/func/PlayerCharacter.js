@@ -123,7 +123,7 @@ function PlayerCharacter(r){
         //str.push(`pack:${wst}`);
         
         const eqc =(c)=>{
-            if (!Boolean(c)) return "none_";
+            if (!Boolean(c)) return "none";
             return (c.o_packch == null)?"none":
             `${r.item.things.inv_name(c, false)}`;// [${(c.o_damage != "0x0")?c.o_damage:c.o_arm}]`;
             //`${(c.o_damage != "0x0")?c.o_damage:c.o_arm} (${c.o_packch})${r.item.things.inv_name(c, false)}`;
@@ -1237,7 +1237,7 @@ function PlayerCharacter(r){
 		if (obj == cur_weapon)
 			cur_weapon = null;
 		if (obj.o_which == 1)
-			r.UI.msg(ms.EAT_3(fruit));
+			r.UI.msg(ms.EAT_3(ms.FRUIT));
 		else
 		if (r.rnd(100) > 70)
 		{

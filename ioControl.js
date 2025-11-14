@@ -14,12 +14,12 @@ class ioControl extends GameTask {
 			//fontID,prompt	,charw, linew, location x,y
 			[80, 24,"std"	,["_" ," "], 8,16	,  0,  0], //0:printw, addch, move, clear
 			//[80, 24,"mini"	,["_" ," "], 4,6	,  0,  0], //0:printw, addch, move, clear
-			[60, 10,"small"	,["_" ," "], 6, 8	, 40,384, true],	//1:msg
+			[60, 10,"small"	,[String.fromCharCode(26) ,"_"], 6, 8	, 24,384, true],	//1:msg
 			[32, 40,"small"	,["_" ," "], 6, 8	,480, 16], //2:debug, comment
 			[40, 32,"small"	,false ,	 6, 10	,400,384], //3:inventry
 			[32, 50,"mini"	,["_" ," "], 4, 6	,  0, 18], //4:mobslist
 			[80,  1,"std"	,false, 8,16,   0,368], //5:statusbar
-			[60, 27,"stdbg"	,false,	8,14, 160, 48]	//6:viewUpwindow
+			[60, 27,"stdbg"	,false,	8,14, 160, 48]	//6:viewUpwindow "stdbg"
 		]
 
 		let cnsl = [];

@@ -10,6 +10,8 @@ function MonsterManager(r){
     
     const d = r.define;
     const t = r.types;
+
+    const ms = r.messages;
     /*
     **カプセル化するグローバル変数（例）:**
     *   `monsters[]` (モンスターの静的情報)。
@@ -705,7 +707,7 @@ function MonsterManager(r){
                         r.daemon.fuse(r.player.unconfuse, 0, spread(d.HUHDURATION), d.AFTER);
                     player.t_flags |= d.ISHUH;
                     mname = r.monster.battle.set_mname(tp);
-                    r.UI.msg(`${mname}${(mname != "it")?"'":""}s gaze has confused you`);
+                    r.UI.msg(ms.WAKEMONST(mname, (mname != "it")?"'":""));
                 }
             }
         }
