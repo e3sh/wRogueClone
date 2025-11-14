@@ -187,10 +187,11 @@ class ioControl extends GameTask {
 //----------------------------------------------------------------------
 	draw(g){// this.visible が true時にループ毎に実行される。
 
-		let r = g.fpsload.result();
-		let dt = g.deltaTime().toString().substring(0,4);
-		g.font["small"].putchr(`FPS:${Math.floor(r.fps)}  delta:${dt}`,520, 0);
-
+		if (!this.debugview){
+			let r = g.fpsload.result();
+			let dt = g.deltaTime().toString().substring(0,4);
+			g.font["small"].putchr(`FPS:${Math.floor(r.fps)}  delta:${dt}`,520, 0);
+		}
 		//let dispf = [true, true, !this.debugview, !this.overlapview, !this.debugview, true, this.overlapview];
 		let dispf = [true, true, !this.debugview, true, !this.debugview, true, this.overlapview];
 

@@ -10,6 +10,9 @@ function thingsf(r){
 	const ms = r.messages;
 
 	const terse = false;
+	const isupper =(ch)=> { return ch === ch.toUpperCase() && ch !== ch.toLowerCase(); }
+	const islower =(ch)=> { return ch === ch.toLowerCase() && ch !== ch.toUpperCase(); }
+
 	/*
 	* vowelstr:
 	*      For printfs: if string starts with a vowel, return "n" for an
@@ -18,16 +21,17 @@ function thingsf(r){
 	//char *
 	const vowelstr =(str)=>
 	{
-		switch (str)
+		if (!ms.VOWELSTR) return "";
+		switch (str.substring(0,1))
 		{
 			case 'a': case 'A':
 			case 'e': case 'E':
 			case 'i': case 'I':
 			case 'o': case 'O':
 			case 'u': case 'U':
-				return "n";
+				return "n ";
 			default:
-				return "";
+				return " ";
 		}
 	}
 	/*
@@ -95,7 +99,7 @@ function thingsf(r){
 			case d.SCROLL:
 				if (obj.o_count == 1)
 				{
-					pb = "A scroll ";
+					pb = `${ms.INVNAME1}scroll `;
 				}
 				else
 				{
@@ -112,7 +116,7 @@ function thingsf(r){
 			case d.FOOD:
 				if (which == 1)
 					if (obj.o_count == 1)
-						pb = `A${vowelstr(fruit)} ${fruit}`;
+						pb = `${ms.INVNAME2}${vowelstr(fruit)}${fruit}`;
 					else
 						pb = `${obj.o_count} ${fruit}`;
 					else
@@ -126,7 +130,7 @@ function thingsf(r){
 					if (obj.o_count > 1)
 						pb = obj.o_count + " ";
 					else
-						pb = `A${vowelstr(sp)} `;
+						pb = `${ms.INVNAME2}${vowelstr(sp)}`;
 
 					if (obj.o_flags & d.ISKNOW)
 						pb = pb + `${num(obj.o_hplus,obj.o_dplus,d.WEAPON)} ${sp}`;
@@ -144,9 +148,8 @@ function thingsf(r){
 				if (obj.o_flags & d.ISKNOW)
 				{
 					pb = `${num(a_class[which] - obj.o_arm, 0, d.ARMOR)} ${sp}`;
-					if (!terse)
-						;//pb = pb + " protection ";
-					//pb = pb + `${10 - obj.o_arm}]`;
+					pb = pb + " [protection ";
+					pb = pb + `${10 - obj.o_arm}]`;
 				}
 				else
 					pb = pb + sp;
@@ -179,11 +182,14 @@ function thingsf(r){
 			else if (obj == cur_ring[d.RIGHT])
 				pb = pb + " (on right hand)";
 		}
-		//if (drop && isupper(prbuf[0]))
-		//	prbuf[0] = tolower(prbuf[0]);
-		//else if (!drop && islower(prbuf))
-		//	prbuf = toupper(prbuf);
-		//prbuf[MAXSTR-1] = '\0';
+		
+		if (ms.VOWLSTR){
+			let hcs = pb.substring(0,1);
+			if (drop && isupper(hcs))
+				pb = hcs.toLowerCase() + pb.substring(1);
+			else if (!drop && islower(hcs))
+				pb = pb.toUpperCase();
+		}
 		return pb;//prbuf;
 	}
 
@@ -576,7 +582,7 @@ function thingsf(r){
 		if (op.oi_know || op.oi_guess)
 		{
 			if (obj.o_count == 1)
-				pb = `A ${type}`;
+				pb = `${ms.NAMEIT1}${type}`;
 			else
 				pb = `${obj.o_count} ${type}`;
 			if (op.oi_know)
@@ -585,7 +591,7 @@ function thingsf(r){
 				pb = pb + `called ${op.oi_guess}${prfunc(obj)}(${which})`;
 		}
 		else if (obj.o_count == 1)
-				pb = `A${vowelstr(which)} ${which} ${type}`;
+				pb = `${ms.NAMEIT2}${vowelstr(which)}${which} ${type}`;
 			else
 				pb = `${obj.o_count} ${which} ${type}`;
 

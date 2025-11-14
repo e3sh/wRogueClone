@@ -125,7 +125,7 @@ function PlayerCharacter(r){
         const eqc =(c)=>{
             if (!Boolean(c)) return "none_";
             return (c.o_packch == null)?"none":
-            `${r.item.things.inv_name(c, false)} [${(c.o_damage != "0x0")?c.o_damage:c.o_arm}]`;
+            `${r.item.things.inv_name(c, false)}`;// [${(c.o_damage != "0x0")?c.o_damage:c.o_arm}]`;
             //`${(c.o_damage != "0x0")?c.o_damage:c.o_arm} (${c.o_packch})${r.item.things.inv_name(c, false)}`;
         }
 

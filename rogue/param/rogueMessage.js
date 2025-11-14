@@ -9,8 +9,11 @@ function rogueMessages(lang){
         INITAL: "ダンジョン準備中です、少しお待ちを...",
         WELCOME: `運命のダンジョンへようこそ`,
         LEVIT_CHECK: "無理だよ。地面から浮いてるんだから！",
-        PACK_ADD: (name)=>{return `${name} を手に入れた`},
+        PACK_ADD: (name)=>{return `${name} を持っている`},
         PACK_MONEY: (value)=>{return `${value} gold 拾った`},
+
+        //Item
+        INITCOLOR: true, //ポーション名にカラーマーカをつける
         
         ADDPACK: "巻物は手に取ると塵と化した",
         PACKROOM: "バックには空きがありません",
@@ -235,6 +238,13 @@ function rogueMessages(lang){
         RING_OFF: (name, ch)=>{return `${name} (${ch})を指から外しました`;},
 
         //things
+        VOWELSTR: false, //不定冠詞を使用しない
+        INVNAME1: "",
+        INVNAME2: "",
+
+        NAMEIT1: "",
+        NAMEIT2: "",
+
         DROP_1:"そこにはすでに何かがある",
         DROP_2:(name)=>{return `${name} を捨てた`},
 
@@ -299,6 +309,9 @@ function rogueMessages(lang){
         //pack
         PACK_ADD: (name)=>{return `you now have ${name}`},
         PACK_MONEY: (value)=>{return `you found ${value} gold pieces`},
+
+        //Item
+        INITCOLOR: false,
 
         ADDPACK: "the scroll turns to dust as you pick it up",
         PACKROOM: "there's no room in your pack",
@@ -525,6 +538,13 @@ function rogueMessages(lang){
         RING_OFF: (name, ch)=>{return `${name} (${ch})`;},
 
         //things
+        VOWELSTR: true,
+        INVNAME1: "A ",
+        INVNAME2: "A",
+
+        NAMEIT1: "A ",
+        NAMEIT2: "A",
+
         DROP_1:"there is something there already",
         DROP_2:(name)=>{return `dropped ${name}`},
 

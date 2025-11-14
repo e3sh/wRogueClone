@@ -13,6 +13,7 @@ function ItemManager(r){
     const v = r.globalValiable;
     const t = r.types;
 
+    const ms = r.messages;
     /*
     **カプセル化するグローバル変数（例）:**
     *   `obj_info` 系の配列 (`arm_info[]`, `pot_info[]`, `ring_info[]`, `scr_info[]`, `weap_info[]`, `ws_info[]`)。
@@ -182,7 +183,9 @@ function ItemManager(r){
 
         for (let i = 0; i < d.MAXPOTIONS; i++)
         {
-            p_colors[i] = `${String.fromCharCode(1+colnum[i])}${rainbow[colnum[i]]}`;
+            let colorchip = "";
+            if (ms.INITCOLOR) colorchip = String.fromCharCode(1+colnum[i]);
+            p_colors[i] = `${colorchip}${rainbow[colnum[i]]}`;
             //console.log(p_colors[i]);
         }
     };
