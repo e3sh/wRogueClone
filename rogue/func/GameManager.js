@@ -206,7 +206,10 @@ function GameManager(g, LANG){
             this.item.init_colors();			/* Set up colors of potions ポーションの色をランダムに初期化します。*/
             this.item.init_stones();			/* Set up stone settings of rings リングの石の設定をランダムに初期化し、その価値に影響を与えます。*/
             this.item.init_materials();		/* Set up materials of wands ワンドとスタッフの素材をランダムに初期化します。*/
+
+            this.item.init_aliasname();
         }
+
 
         if (continuef){
             this.quickstorage.load();

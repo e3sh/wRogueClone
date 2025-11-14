@@ -88,7 +88,7 @@ function rings(r){
 		}
 
 		//if (!terse)
-		r.UI.msg(ms.RING_ON_2(r.item.things.inv_name(obj, true) ,obj.o_packch));
+		r.UI.msg(ms.RING_ON_2(r.item.things.inv_name_alias(obj, true) ,obj.o_packch));
 	}
 
 	/*
@@ -134,7 +134,7 @@ function rings(r){
 			return;
 		}
 		if (r.item.things.dropcheck(obj)){
-			r.UI.msg(ms.RING_OFF(r.item.things.inv_name(obj, true), obj.o_packch));
+			r.UI.msg(ms.RING_OFF(r.item.things.inv_name_alias(obj, true), obj.o_packch));
 		}
 	}
 

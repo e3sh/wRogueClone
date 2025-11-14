@@ -57,6 +57,10 @@ function ItemManager(r){
     const ws_made  = Array(d.MAXSTICKS);		/* What sticks are made of */
     const ws_type  = Array(d.MAXSTICKS);		/* Is it a wand or a staff */
 
+    const p_colors_alias = Array(d.MAXPOTIONS);		/* Colors of the potions */
+    const r_stones_alias = Array(d.MAXRINGS);		/* Stone settings of the rings */
+    const ws_made_alias  = Array(d.MAXSTICKS);		/* What sticks are made of */
+
     let group = 2;
 
     const rainbow = v.rainbow;
@@ -115,12 +119,26 @@ function ItemManager(r){
             WEAPON: weap_info ,
             WANDSTAFF:  ws_info,
             AC: a_class,
-            P_COLOR:p_colors,
-            RING_ST:r_stones,
-            SC_NAME:s_names ,
-            WS_MADE:ws_made ,
-            WS_TYPE:ws_type ,
+            P_COLOR: p_colors,
+            RING_ST: r_stones,
+            SC_NAME: s_names ,
+            WS_MADE: ws_made ,
+            WS_TYPE: ws_type ,
+
+            ALIAS_COLOR: p_colors_alias,
+            ALIAS_STONE: r_stones_alias,
+            ALIAS_MADE: ws_made_alias ,
         }
+    }
+
+    this.init_aliasname = function(){
+
+        for (let i in weap_info) weap_info[i].oi_alias = ms.WEAP_NAME[i];
+        for (let i in arm_info)   arm_info[i].oi_alias = ms.ARM_NAME[i];
+        for (let i in scr_info)   scr_info[i].oi_alias = ms.SCR_NAME[i];
+        for (let i in pot_info)   pot_info[i].oi_alias = ms.POT_NAME[i];
+        for (let i in ring_info) ring_info[i].oi_alias = ms.RING_NAME[i];
+        for (let i in ws_info)     ws_info[i].oi_alias = ms.WANDS_NAME[i];
     }
 
     this.init_probs = function(){
@@ -186,6 +204,8 @@ function ItemManager(r){
             let colorchip = "";
             if (ms.INITCOLOR) colorchip = String.fromCharCode(1+colnum[i]);
             p_colors[i] = `${colorchip}${rainbow[colnum[i]]}`;
+            p_colors_alias[i] = `${colorchip}${ms.RAINBOW[colnum[i]]}`;
+
             //console.log(p_colors[i]);
         }
     };
@@ -201,13 +221,14 @@ function ItemManager(r){
         for (let i = 0; i < d.MAXRINGS; i++)
         {
             r_stones[i] = stones[stype[i]].name;
+            r_stones_alias[i] = ms.STONE_NAME[stype[i]];
             ring_info[i].oi_worth += stones[stype[i]].value;
             //console.log(`${r_stones[i]} ${ring_info[i].oi_worth}`);
         }
     };
     /* Set up materials of wands ワンドとスタッフの素材をランダムに初期化します。*/
     this.init_materials = function(){
-        let str;
+        let str, a_str;
         let metnum = [];//[cNMETAL];
         let woodnum = [];
 
@@ -225,13 +246,16 @@ function ItemManager(r){
             {
                 ws_type[i] = "wand";
                 str = metal[metnum[i]];
+                a_str = ms.METAL_NAME[metnum[i]];
             }
             else
             {
                 ws_type[i] = "staff";
                 str = wood[woodnum[i]];
+                a_str = ms.WOOD_NAME[woodnum[i]];
             }
             ws_made[i] = str;
+            ws_made_alias[i] = a_str;
             //console.log(ws_made[i]);
         }
     };

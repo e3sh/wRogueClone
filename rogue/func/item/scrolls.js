@@ -400,7 +400,7 @@ function scroll(r){
 	//void
 	this.teleport = function()
 	{
-		console.trace();
+		//console.trace();
 
 		const player = r.player.player;
 		const hero = player.t_pos;
@@ -502,7 +502,7 @@ function scroll(r){
 					set_know(obj, ring_info);
 			}
 			n_objs++;
-			r.UI.msg(r.item.inv_name(obj, false));
+			r.UI.msg(r.item.things.inv_name_alias(obj, false));
 		}
 
 		if (insist)

@@ -194,6 +194,149 @@ function thingsf(r){
 	}
 
 	/*
+	* inv_name:
+	*	Return the name of something as it would appear in an
+	*	inventory.
+	*/
+	this.inv_name_alias = function(obj, drop)//THING *obj, bool drop)
+	{
+		if (!Boolean(obj)) return "none";
+
+		res = r.item.get_itemparam();
+
+		const p_colors	= res.P_COLOR;
+		const r_stones	= res.RING_ST;
+		const ws_type	= res.WS_TYPE;
+		const ws_made	= res.WS_MADE;
+		const ws_info	= res.WANDSTAFF;
+		const scr_info	= res.SCROLL;
+		const weap_info = res.WEAPON;
+		const arm_info	= res.ARM;
+		const a_class	= res.AC;
+		const pot_info	= res.POD;
+		const ring_info = res.RING;
+		const s_names 	= res.SC_NAME;
+
+		const p_colors_alias = res.ALIAS_COLOR;
+		const r_stones_alias = res.ALIAS_STONE;
+		const ws_made_alias  = res.ALIAS_MADE;
+
+		const fruit = r.fruit;;
+
+		/*
+		* num:
+		*	Figure out the plus number for armor/weapons
+		*/
+		//char *
+		//const num =(int n1, int n2, char type)
+		const num =(n1, n2, type)=>
+		{
+			let numbuf;
+
+			numbuf = (n1 < 0) ? `${n1}` : `+${n1}`;
+			if (type == d.WEAPON)
+				numbuf += (n2 < 0) ? `,${n2}` : `,+${n2}`;
+
+			return numbuf;
+		}
+
+		let pb;
+		let op;	//struct obj_info *op;
+		let sp;
+		let which;
+
+		pb = "";
+
+		which = obj.o_which;
+		switch (obj.o_type)
+		{
+			case d.POTION:
+				pb = nameit_alias(obj, ms.INVNAME_AL_POT, p_colors_alias[which], pot_info[which], ()=>{return "";});
+				break; 
+			case d.RING:
+				pb = nameit_alias(obj, ms.INVNAME_AL_RING, r_stones_alias[which], ring_info[which], r.item.rings.ring_num);
+				break; 
+			case d.STICK:
+				pb = nameit_alias(obj, ws_type[which], ws_made_alias[which], ws_info[which], r.item.sticks.charge_str);//charge_str ,file :sticks
+				break; 
+			case d.SCROLL:
+				let shead, stype
+				if (obj.o_count == 1)
+				{
+					shead = ms.INVNAME1;
+					stype = ms.INVNAME_AL_SCR1;
+				}
+				else
+				{
+					shead = obj.o_count;
+					stype = ms.INVNAME_AL_SCR2;
+				}
+				op = scr_info[which];
+				if (op.oi_know)
+					pb = ms.INVNAME_AL_SCR0(shead, stype, ms.INVNAME_AL_SCR3(op.oi_alias));
+				else
+					pb = ms.INVNAME_AL_SCR0(shead, stype, ms.INVNAME_AL_SCR4(s_names[which]));
+				break; 
+			case d.FOOD:
+				if (which == 1)
+					if (obj.o_count == 1)
+						pb = `${ms.INVNAME2}${vowelstr(fruit)}${fruit}`;
+					else
+						pb = `${obj.o_count} ${fruit}`;
+					else
+					if (obj.o_count == 1)
+						pb = pb + ms.INVNAME_AL_FOOD1;
+					else
+						pb = pb + ms.INVNAME_AL_FOOD2(obj.o_count);
+				break; 
+			case d.WEAPON:
+					sp = weap_info[which].oi_alias;
+					if (obj.o_count > 1)
+						pb = obj.o_count + " ";
+					else
+						pb = `${ms.INVNAME2}${vowelstr(sp)}`;
+
+					if (obj.o_flags & d.ISKNOW)
+						pb = pb + `${num(obj.o_hplus,obj.o_dplus,d.WEAPON)} ${sp}`;
+					else
+						pb = pb + `${pb} ${sp}`;
+					if (obj.o_count > 1)
+						pb = pb + ms.INVNAME_AL_WEA;
+				break; 
+			case d.ARMOR:
+				sp = arm_info[which].oi_alias;
+				if (obj.o_flags & d.ISKNOW)
+				{
+					pb = `${num(a_class[which] - obj.o_arm, 0, d.ARMOR)} ${sp}`;
+					pb = pb + ms.INVNAME_AL_ARM(10 - obj.o_arm);;
+				}
+				else
+					pb = pb + sp;
+				break; 
+			case d.AMULET:
+				pb = ms.INVNAME_AL_AMU;
+				break; 
+			case d.GOLD:
+				pb = `${obj.o_goldval} Gold pieces`;
+	//#ifdef MASTER
+				break; 
+			default:
+				r.UI.debug(`Picked up something funny ${obj.o_type}`);
+				pb = ms.INVNAME_AL_DEF;//`Something bizarre ${obj.o_type}`;
+	//#endif
+		}
+		
+		if (ms.VOWLSTR){
+			let hcs = pb.substring(0,1);
+			if (drop && isupper(hcs))
+				pb = hcs.toLowerCase() + pb.substring(1);
+			else if (!drop && islower(hcs))
+				pb = pb.toUpperCase();
+		}
+		return pb;//prbuf;
+	}
+
+	/*
 	* drop:
 	*	Put something down
 	*/
@@ -229,7 +372,7 @@ function thingsf(r){
 
 		if (obj.o_type == d.AMULET)
 			r.player.amulet = false;
-		r.UI.msg(ms.DROP_2(this.inv_name(obj, true)));
+		r.UI.msg(ms.DROP_2(this.inv_name_alias(obj, true)));
 	}
 
 	/*
@@ -587,8 +730,8 @@ function thingsf(r){
 				pb = `${obj.o_count} ${type}`;
 			if (op.oi_know)
 				pb = pb + `of ${op.oi_name}${prfunc(obj)}(${which})`;
-			else if (op.oi_guess)
-				pb = pb + `called ${op.oi_guess}${prfunc(obj)}(${which})`;
+			//else if (op.oi_guess)
+			//	pb = pb + `called ${op.oi_guess}${prfunc(obj)}(${which})`;
 		}
 		else if (obj.o_count == 1)
 				pb = `${ms.NAMEIT2}${vowelstr(which)}${which} ${type}`;
@@ -597,6 +740,37 @@ function thingsf(r){
 
 		return pb;
 	}
+
+	/*
+	* nameit:
+	*	Give the proper name to a potion, stick, or ring
+	*/
+	//void
+	function nameit_alias(obj, type, which, op, prfunc)//THING *obj, char *type, char *which, struct obj_info *op,
+		//char *(*prfunc)(THING *))
+	{
+		let pb;
+
+		if (op.oi_know)
+		{
+			pb = ms.NAMEIT_AL1(
+				(obj.o_count == 1)?`${ms.NAMEIT1}`:`${obj.o_count} `,
+				type,
+				op.oi_alias,
+				`${prfunc(obj)}(${which})`
+			);
+			//else if (op.oi_guess)
+			//	pb = pb + `called ${op.oi_guess}${prfunc(obj)}(${which})`;
+		}
+		else if (obj.o_count == 1)
+				pb = ms.NAMEIT_AL2(`${ms.NAMEIT2}${vowelstr(which)}`,which, type);
+			else
+				pb = ms.NAMEIT_AL3(obj.o_count,which,type);
+
+		return pb;
+	}
+
+
 
 	/*
 	* nullstr:

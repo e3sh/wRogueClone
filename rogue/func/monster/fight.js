@@ -330,7 +330,7 @@ function battle(r){
 						remove_mon(mp.t_pos, moat(mp.t_pos.y, mp.t_pos.x), false);
 									mp=null;
 						r.player.packf.leave_pack(steal, false, false);
-						r.UI.msg(ms.ms.ATTACK_N(r.item.inv_name(steal, true)));
+						r.UI.msg(ms.ms.ATTACK_N(r.item.things.inv_name_alias(steal, true)));
 						r.discard(steal);
 					}
 				}

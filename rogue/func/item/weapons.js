@@ -241,7 +241,7 @@ function weapons(r){
         if (is_current(obj))
             ;//goto bad;
 
-        sp = r.item.things.inv_name(obj, true);
+        sp = r.item.things.inv_name_alias(obj, true);
         r.player.set_cur_weapon(obj);
         r.UI.msg(ms.WIELD_2(sp, obj.o_packch));//%s (%c)", sp, obj.o_packch);
     }

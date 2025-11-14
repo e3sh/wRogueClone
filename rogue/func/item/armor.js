@@ -36,7 +36,7 @@ function armor(r){
         }
         this.waste_time();
         obj.o_flags |= d.ISKNOW;
-        sp = r.item.things.inv_name(obj, true);
+        sp = r.item.things.inv_name_alias(obj, true);
         r.player.set_cur_armor(obj);
         r.UI.msg(ms.WEAR_2(sp));
     }
@@ -66,7 +66,7 @@ function armor(r){
         //    r.UI.addmsg("was");
         //else
         //    r.UI.addmsg("you used to be");
-        r.UI.msg(ms.TAKEOFF_1(obj.o_packch, r.item.things.inv_name(obj, true)));
+        r.UI.msg(ms.TAKEOFF_1(obj.o_packch, r.item.things.inv_name_alias(obj, true)));
     }
 
     /*

@@ -225,7 +225,7 @@ function packf(r){
 		*/
 		if (!silent)
 		{
-			r.UI.msg(ms.PACK_ADD(r.item.inv_name(obj, !terse)));// (${obj.o_packch}`);
+			r.UI.msg(ms.PACK_ADD(r.item.things.inv_name_alias(obj, !terse)));// (${obj.o_packch}`);
 		}
 		r.UI.comment(".add_pack " + debugstr);
 	}

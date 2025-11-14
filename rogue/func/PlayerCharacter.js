@@ -123,18 +123,18 @@ function PlayerCharacter(r){
         //str.push(`pack:${wst}`);
         
         const eqc =(c)=>{
-            if (!Boolean(c)) return "none";
-            return (c.o_packch == null)?"none":
-            `${r.item.things.inv_name(c, false)}`;// [${(c.o_damage != "0x0")?c.o_damage:c.o_arm}]`;
+            if (!Boolean(c)) return ms.GET_INV_NONE;
+            return (c.o_packch == null)? ms.GET_INV_NONE:
+            `${r.item.things.inv_name_alias(c, false)}`;// [${(c.o_damage != "0x0")?c.o_damage:c.o_arm}]`;
             //`${(c.o_damage != "0x0")?c.o_damage:c.o_arm} (${c.o_packch})${r.item.things.inv_name(c, false)}`;
         }
 
-        str.push(`Equiped)`);
+        str.push(ms.GET_INV_EQUIP);
 
-        str.push(`Weapon: ${eqc(cur_weapon)}`);
-        str.push(`Armor : ${eqc(cur_armor)}`);
-        str.push(`Ring-L: ${eqc(cur_ring[d.LEFT])}`);
-        str.push(`Ring-R: ${eqc(cur_ring[d.RIGHT])}`);
+        str.push(ms.GET_INV_WEAP(eqc(cur_weapon)));
+        str.push( ms.GET_INV_ARM(eqc(cur_armor)));
+        str.push(ms.GET_INV_RINGL(eqc(cur_ring[d.LEFT])));
+        str.push(ms.GET_INV_RINGR(eqc(cur_ring[d.RIGHT])));
         str.push("");
         //str.push(`armor: ${r.item.things.inv_name(cur_armor, false)} ${cur_armor.o_arm} (${cur_armor.o_packch})`);
         //str.push(`weapon: ${r.item.things.inv_name(cur_weapon, false)} ${cur_weapon.o_damage} (${cur_weapon.o_packch})`);
@@ -143,14 +143,14 @@ function PlayerCharacter(r){
         //str.push(`food_left ${food_left}`);
         //str.push("");
 
-        let rt ="none";
+        let rt = ms.GET_INV_NONE;
         for (let i in r.mobs){
             if (r.mobs[i].o_packch == r.player.packf.get_cur()){
-                rt = r.item.things.inv_name(r.mobs[i], false)
+                rt = r.item.things.inv_name_alias(r.mobs[i], false)
                 break;
             }
         }
-        str.push(`Select> ${rt}`)// ${food_left}`);
+        str.push(ms.GET_INV_SEL(rt))// ${food_left}`);
 
         //str.push(`inpack ${inpack}`);
         //str.push(`amulet ${amulet}`);
