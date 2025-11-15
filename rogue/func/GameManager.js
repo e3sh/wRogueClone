@@ -195,6 +195,7 @@ function GameManager(g, LANG){
 
         globalVariableInit(this);
         this.dungeon.set_level(1);
+        this.monster.battle.reset_vf_hit(); //VenusFlytrap damage init 
 
         //init_check();
         this.UI.comment("init_check");

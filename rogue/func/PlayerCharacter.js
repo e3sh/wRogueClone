@@ -707,6 +707,7 @@ function PlayerCharacter(r){
                 }
             }
         }
+
         const move_stuff =()=>{
             r.UI.mvaddch(hero.y, hero.x, this.floor_at());
             if ((fl & d.F_PASS) && r.dungeon.chat(r.oldpos.y, r.oldpos.x) == d.DOOR)
@@ -781,6 +782,11 @@ function PlayerCharacter(r){
         else if (on(player, d.ISHELD) && ch != 'F')
         {
             r.UI.msg(ms.DO_MOVE_2);
+            r.running = false;
+            r.after = false;
+
+            nh.y -= dy;
+            nh.x -= dx;
             return;
         }
 

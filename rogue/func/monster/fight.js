@@ -37,6 +37,8 @@ function battle(r){
 
 	let vf_hit = 0;
 
+	this.reset_vf_hit =()=>{ vf_hit = 0;}
+
 	const weap_info = r.globalValiable.weap_info;
 
 	const terse = false; //
@@ -285,9 +287,11 @@ function battle(r){
 					* Venus Flytrap stops the poor guy from moving
 					*/
 					player.t_flags |= d.ISHELD;
-					r.UI.msg(`${monsters['F'.charCodeAt(0)-'A'.charCodeAt(0)].m_stats.s_dmg} ${++vf_hit}x1`);
+					monsters['F'.charCodeAt(0)-'A'.charCodeAt(0)].m_stats.s_dmg = `${++vf_hit}x1`;
+					//sprintf(monsters['F'-'A'].m_stats.s_dmg,"%dx1", ++vf_hit);
+					//r.UI.msg(`${monsters['F'.charCodeAt(0)-'A'.charCodeAt(0)].m_stats.s_dmg} ${vf_hit}x1`);
 					if (--pstats.s_hpt <= 0)
-					r.death('F');
+						r.death('F');
 					break; 
 				case 'L':
 				{
