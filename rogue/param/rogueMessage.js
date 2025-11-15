@@ -28,12 +28,12 @@ function rogueMessages(lang){
         INITMT_STAFF: "杖 ",
         
         ADDPACK: "巻物は手に取ると塵と化した",
-        PACKROOM: "かばんが一杯です",
+        PACKROOM: "持ち物が一杯です",
         
         MOVEMSG: (name)=>{ return `足元には ${name}がある` },
 
         NPICKY_INVEN1: "何も持っていない",
-        NPICKY_INVEN2:(ch)=>{return `${ch}) はかばんに存在しません`},
+        NPICKY_INVEN2:(ch)=>{return `${ch}) は持ち物に存在しません`},
 
 
         //fight

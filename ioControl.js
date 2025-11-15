@@ -14,7 +14,7 @@ class ioControl extends GameTask {
 			//fontID,prompt	,charw, linew, location x,y
 			[80, 24,"std"	,["_" ," "], 8,16	,  0,  0], //0:printw, addch, move, clear
 			//[80, 24,"mini"	,["_" ," "], 4,6	,  0,  0], //0:printw, addch, move, clear
-			[60, 10,"small"	,[String.fromCharCode(26) ,"_"], 6, 8	, 24,384, true],	//1:msg
+			[60, 60,"small"	,[String.fromCharCode(26) ,"_"], 6, 8	, 24,384, true],	//1:msg
 			[32, 40,"small"	,["_" ," "], 6, 8	,480, 16], //2:debug, comment
 			[40, 32,"small"	,false ,	 6, 10	,400,384, true], //3:inventry
 			[32, 50,"mini"	,["_" ," "], 4, 6	,  0, 18], //4:mobslist
@@ -39,36 +39,13 @@ class ioControl extends GameTask {
 		}
 		g.console = cnsl;
 		this.layout = layo;
-		/*
-		const c0 = new textConsole(80, 25);
-		c0.setFontId("std");
-		c0.setPrompt( ["_" ," "]);
-		c0.setLinewidth(16);
-		c0.setCharwidth(8);
 
-		const c1 = new textConsole(80, 5);
-		c1.setFontId("std");
-		c1.setPrompt( ["_" ," "]);
-		c1.setLinewidth(16);
-		c1.setCharwidth(8);
-
-		const c2 = new textConsole(32, 58);
-		c2.setFontId("small");
-		c2.setPrompt( ["_" ," "]);
-		c2.setLinewidth(8);
-		c2.setCharwidth(6);
-
-		g.console = [c0, c1, c2];
-		this.layout = [
-			{con:c0, x: 0	, y:0}, 
-			{con:c1, x: 0	, y:400}, 
-			{con:c2, x: 640-50, y: 16}
-		];
-		*/
 		this.debugview = true;
 		this.overlapview = false;
 		this.waittime = g.time();
 		this.input = {};
+
+		this.msgCfullposition = false;
 	}
 //----------------------------------------------------------------------
 	step(g){// this.enable が true時にループ毎に実行される。
@@ -77,21 +54,10 @@ class ioControl extends GameTask {
 	    let w = g.keyboard.check();
 
 		const input = {
-			//A: Boolean(w[65]),
-			//D: Boolean(w[68]),
-			//W: Boolean(w[87]),
-			//S: Boolean(w[83]),
-			//Q: Boolean(w[81]),
-			//E: Boolean(w[69]),
-			//UP:	  Boolean(w[38]),
-			//DOWN: Boolean(w[40]),
-			//LEFT: Boolean(w[37]),
-			//RIGHT: Boolean(w[39]),
-			//SPACE: Boolean(w[32]),
-			//Z: Boolean(w[90]),
-			HOME: Boolean(w["Home"]),//Boolean(w[36]),
-			//P: Boolean(w[80]),
-			LOG: Boolean(w["End"])
+			HOME:	Boolean(w["Home"]),
+			LOG:	Boolean(w["End"]),
+			P_UP:	Boolean(w["PageUp"]),
+			P_DOWN: Boolean(w["PageDown"])
 		}
 
 		if (this.waittime < g.time()){
@@ -105,6 +71,10 @@ class ioControl extends GameTask {
 			if (input.LOG) {
 				this.debugview = (this.debugview)?false:true;
 				this.waittime = g.time() + 500;
+			}
+
+			if (input.P_UP || input.P_DOWN){
+				this.msgCfullposition = (input.P_DOWN)?true:false;
 			}
 		}
 		let p = false;
@@ -124,6 +94,17 @@ class ioControl extends GameTask {
 		input.keylist = keylist;
 		this.input = input;
 
+		if (this.msgCfullposition){
+			if (this.layout[1].y > 0) 
+				this.layout[1].y-= 16; 
+			else 
+				this.layout[1].y = 0;
+		}else{
+			if (this.layout[1].y <384 ) 
+				this.layout[1].y+= 16;
+			else 
+				this.layout[1].y = 384;
+		}
 		//-----------------------------------------------------------------------------
 		// internal function 
 		function GpadToKey(g, input){
@@ -191,6 +172,10 @@ class ioControl extends GameTask {
 			let r = g.fpsload.result();
 			let dt = g.deltaTime().toString().substring(0,4);
 			g.font["small"].putchr(`FPS:${Math.floor(r.fps)}  delta:${dt}`,520, 0);
+
+			let s = "input:";
+			for (let i in this.input.keylist){s += `${this.input.keylist[i]},`}
+			g.font["small"].putchr(s,0 , 480-8);
 		}
 		//let dispf = [true, true, !this.debugview, !this.overlapview, !this.debugview, true, this.overlapview];
 		let dispf = [true, true, !this.debugview, true, !this.debugview, true, this.overlapview];
@@ -203,10 +188,5 @@ class ioControl extends GameTask {
 			//if (!((this.debugview && (i ==2 || i ==4)) || (this.overlapview && i==6))) d.con.draw(g, d.x, d.y);
 			//if (this.debugview) d.con.draw(g, d.x, d.y);
 		}
-
-		let s = "input:";
-		for (let i in this.input.keylist){s += `${this.input.keylist[i]},`}
-		g.font["small"].putchr(s,0 , 480-8);
-
 	}
 }
