@@ -220,6 +220,7 @@ function thingsf(r){
 		const p_colors_alias = res.ALIAS_COLOR;
 		const r_stones_alias = res.ALIAS_STONE;
 		const ws_made_alias  = res.ALIAS_MADE;
+		const ws_type_alias = res.ALIAS_TYPE;
 
 		const fruit = r.fruit;;
 
@@ -257,7 +258,7 @@ function thingsf(r){
 				pb = nameit_alias(obj, ms.INVNAME_AL_RING, r_stones_alias[which], ring_info[which], r.item.rings.ring_num);
 				break; 
 			case d.STICK:
-				pb = nameit_alias(obj, ws_type[which], ws_made_alias[which], ws_info[which], r.item.sticks.charge_str);//charge_str ,file :sticks
+				pb = nameit_alias(obj, ws_type_alias[which], ws_made_alias[which], ws_info[which], r.item.sticks.charge_str);//charge_str ,file :sticks
 				break; 
 			case d.SCROLL:
 				let shead, stype

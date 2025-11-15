@@ -44,6 +44,11 @@ function scroll(r){
 	{
 		//const scr_info = r.globalValiable.scr_info;
 
+		res = r.item.get_itemparam();
+
+		const scr_info	= res.SCROLL;
+		const weap_info = res.WEAPON;
+
 		const player = r.player.player;
 		const hero = player.t_pos;
 
@@ -190,7 +195,7 @@ function scroll(r){
 			* Identify, let him figure something out
 			*/
 			scr_info[obj.o_which].oi_know = true;
-			r.UI.msg(ms.READS_ID_ANY(scr_info[obj.o_which].oi_name));
+			r.UI.msg(ms.READS_ID_ANY(scr_info[obj.o_which].oi_alias));
 			whatis(true, id_type[obj.o_which]); //whatis identify commands
 		}
 		break; 
@@ -314,7 +319,6 @@ function scroll(r){
 			break; 
 		case d.S_ENCH:
 			let cur_weapon = r.player.get_cur_weapon();
-			const weap_info = r.globalValiable.weap_info
 
 			if (cur_weapon == null || cur_weapon.o_type != d.WEAPON)
 				r.UI.msg(ms.READS_HOLD);
@@ -325,7 +329,7 @@ function scroll(r){
 					cur_weapon.o_hplus++;
 				else
 					cur_weapon.o_dplus++;
-				r.UI.msg(ms.READS_ENCH(weap_info[cur_weapon.o_which].oi_name, pick_color("blue")));
+				r.UI.msg(ms.READS_ENCH(weap_info[cur_weapon.o_which].oi_alias, pick_color("blue")));
 				r.player.set_cur_weapon(cur_weapon);
 			}
 			break; 

@@ -239,11 +239,11 @@ function sticks(r){
 		case d.WS_FIRE:
 		case d.WS_COLD:
 			if (obj.o_which == d.WS_ELECT)
-				name = "bolt";
+				name = ms.DOZAP_BOLT_E;
 			else if (obj.o_which == d.WS_FIRE)
-				name = "flame";
+				name = ms.DOZAP_BOLT_F;
 			else
-				name = "ice";
+				name = ms.DOZAP_BOLT_I;
 			this.fire_bolt(hero, delta, name);
 			ws_info[obj.o_which].oi_know = true;
 			break; 

@@ -23,6 +23,9 @@ function rogueMessages(lang){
 
         //Item
         INITCOLOR: true, //ポーション名にカラーマーカをつける
+
+        INITMT_WAND: "錫杖 ",
+        INITMT_STAFF: "杖 ",
         
         ADDPACK: "巻物は手に取ると塵と化した",
         PACKROOM: "バックには空きがありません",
@@ -145,6 +148,10 @@ function rogueMessages(lang){
         DOZAP_MISSILE: "ミサイルは煙の塊となって消えた",
         DOZAP_NOP: "何もしない。なんて奇妙な芸当だ！",
         DOZAP_ETC: "なんという奇妙な芸当だ！",
+
+        DOZAP_BOLT_E: "電撃",
+        DOZAP_BOLT_F: "炎",
+        DOZAP_BOLT_I: "氷",
 
         DRAIN: "チクチクする感じがする",
 
@@ -272,7 +279,7 @@ function rogueMessages(lang){
         INVNAME_AL_AMU: "The Amulet of Yendor",
         INVNAME_AL_DEF: "なし",
 
-        NAMEIT_AL1: (head, type, name, etc)=>{return `${head}${name}の${type}${etc}`},
+        NAMEIT_AL1: (head, type, name, etc)=>{return `${head} ${name}の${type}${etc}`},
         NAMEIT_AL2: (head, name, type)=>{return `${head}${name}の${type}`},
         NAMEIT_AL3: (head, name, type)=>{return `${head} ${name}の${type}`},
 
@@ -282,9 +289,9 @@ function rogueMessages(lang){
         DROPCHECK:"できない。呪われているようだ",
 
         //rips
-        KILLNAME_1:"arrow",
-        KILLNAME_2:"bolt",
-        KILLNAME_3:"dart",
+        KILLNAME_1:"矢",
+        KILLNAME_2:"魔法攻撃",
+        KILLNAME_3:"ダーツ",
         KILLNAME_4:"低体温症",
         KILLNAME_5:"空腹により飢餓",
 
@@ -573,6 +580,9 @@ function rogueMessages(lang){
         //Item
         INITCOLOR: false,
 
+        INITMT_WAND: "wand ",
+        INITMT_STAFF: "staff ",
+
         ADDPACK: "the scroll turns to dust as you pick it up",
         PACKROOM: "there's no room in your pack",
 
@@ -695,6 +705,10 @@ function rogueMessages(lang){
         DOZAP_MISSILE: "the missle vanishes with a puff of smoke",
         DOZAP_NOP: "no operation. what a bizarre schtick!",
         DOZAP_ETC: "what a bizarre schtick!",
+
+        DOZAP_BOLT_E: "bolt",
+        DOZAP_BOLT_F: "flame",
+        DOZAP_BOLT_I: "ice",
 
         DRAIN: "you have a tingling feeling",
 

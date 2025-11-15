@@ -131,7 +131,7 @@ function quick_storage(r){
                     pl.o_hurldmg = m.o_hurldmg;
                     pl.o_damage = m.o_damage;
                     pl.o_arm = m.o_arm;
-                    pl.o_charge = m.o_arm;
+                    pl.o_charges = m.o_arm;
                     pl.o_goldval = m.o_arm;
                     pl.o_flags = m.o_flags;
                     pl.o_count = m.o_count;

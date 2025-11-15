@@ -167,7 +167,7 @@ function weapons(r){
                 r.UI.endmsg("");
                 r.UI.has_hit = false;
             }
-            r.UI.msg(ms.FALL(weap_info[obj.o_which].oi_name));
+            r.UI.msg(ms.FALL(weap_info[obj.o_which].oi_alias));
         }
         r.discard(obj);
     }

@@ -60,6 +60,7 @@ function ItemManager(r){
     const p_colors_alias = Array(d.MAXPOTIONS);		/* Colors of the potions */
     const r_stones_alias = Array(d.MAXRINGS);		/* Stone settings of the rings */
     const ws_made_alias  = Array(d.MAXSTICKS);		/* What sticks are made of */
+    const ws_type_alias  = Array(d.MAXSTICKS);		/* Is it a wand or a staff */
 
     let group = 2;
 
@@ -128,6 +129,7 @@ function ItemManager(r){
             ALIAS_COLOR: p_colors_alias,
             ALIAS_STONE: r_stones_alias,
             ALIAS_MADE: ws_made_alias ,
+            ALIAS_TYPE: ws_type_alias ,
         }
     }
 
@@ -139,6 +141,7 @@ function ItemManager(r){
         for (let i in pot_info)   pot_info[i].oi_alias = ms.POT_NAME[i];
         for (let i in ring_info) ring_info[i].oi_alias = ms.RING_NAME[i];
         for (let i in ws_info)     ws_info[i].oi_alias = ms.WANDS_NAME[i];
+        //ws_type is setup init_materials
     }
 
     this.init_probs = function(){
@@ -244,13 +247,15 @@ function ItemManager(r){
         {
             if (r.rnd(2) == 0)
             {
-                ws_type[i] = "wand";
+                ws_type[i] = "wand ";
+                ws_type_alias[i] = ms.INITMT_WAND;
                 str = metal[metnum[i]];
                 a_str = ms.METAL_NAME[metnum[i]];
             }
             else
             {
-                ws_type[i] = "staff";
+                ws_type[i] = "staff ";
+                ws_type_alias[i] = ms.INITMT_STAFF;
                 str = wood[woodnum[i]];
                 a_str = ms.WOOD_NAME[woodnum[i]];
             }
@@ -434,6 +439,8 @@ function ItemManager(r){
     //fix_stick(THING *cur)
     this.fix_stick = function(cur)
     {
+        let cn = 0;
+
         if (ws_type[cur.o_which] == "staff") 
             cur.o_damage = "2x3";
         else
@@ -444,5 +451,9 @@ function ItemManager(r){
             cur.o_charges = r.rnd(10) + 10
         else 
             cur.o_charges = r.rnd(5) + 3;
+
+        //cur.o_arm
+        //cur.o_charges
+        //cur.o_goldval
     }
 }
