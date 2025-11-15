@@ -599,7 +599,7 @@ function packf(r){
 	*/
 	this.move_msg = function(obj)//THING *obj)
 	{
-		r.UI.msg(`you moved onto ${r.item.things.inv_name(obj, true)}`);
+		r.UI.msg(ms.MOVEMSG(r.item.things.inv_name_alias(obj, true)));
 	}
 
 	/*
@@ -654,7 +654,7 @@ function packf(r){
 				itable.push(r.mobs[i]);
 
 		if (itable.length < 1) {
-			r.UI.msg("you aren't carrying anything");
+			r.UI.msg(ms.NPICKY_INVEN1);
 			return null;
 		}
 		else if (itable.length == 1){
@@ -666,7 +666,7 @@ function packf(r){
 				if (mch == itable[i].o_packch)
 					return itable[i];
 			}
-			r.UI.msg(`'${mch}' not in pack`);
+			r.UI.msg(ms.NPICKY_INVEN2(mch));
 			return null;
 		}
 	}

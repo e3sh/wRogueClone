@@ -320,17 +320,18 @@ function battle(r){
 					* and pick out one we like.
 					*/
 					steal = null;
-					for (nobj = 0, obj = pack; obj != null; obj = obj.l_next)
+					nobj = 0
+					for (obj = r.player.player.t_pack; obj != null; obj = obj.l_next)
 					if (obj != r.player.get_cur_armor() && obj != r.player.get_cur_weapon()
 						&& obj != r.player.get_cur_ring(d.LEFT) && obj != r.player.get_cur_ring(d.RIGHT)
 						&& is_magic(obj) && r.rnd(++nobj) == 0)
 						steal = obj;
 					if (steal != null)
 					{
-						remove_mon(mp.t_pos, moat(mp.t_pos.y, mp.t_pos.x), false);
-									mp=null;
+						remove_mon(mp.t_pos, r.dungeon.moat(mp.t_pos.y, mp.t_pos.x), false);
+						mp = null;
 						r.player.packf.leave_pack(steal, false, false);
-						r.UI.msg(ms.ms.ATTACK_N(r.item.things.inv_name_alias(steal, true)));
+						r.UI.msg(ms.ATTACK_N(r.item.things.inv_name_alias(steal, true)));
 						r.discard(steal);
 					}
 				}

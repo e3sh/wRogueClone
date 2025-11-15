@@ -119,20 +119,19 @@ function scroll(r){
 						obj.t_flags &= ~d.ISRUN;
 						obj.t_flags |= d.ISHELD;
 						ch++;
+						r.UI.setEffect(`HOLD`, {x:hero.x,y:hero.y} ,{x: x, y: y},120);
+
 					}
 			if (ch)
 			{
-				r.UI.addmsg("the monster");
-				if (ch > 1)
-					r.UI.addmsg("s around you");
-				r.UI.addmsg(" freeze");
-				if (ch == 1)
-					r.UI.addmsg("s");
-				r.UI.endmsg("");
+				r.UI.msg(ms.READS_HOLD1(
+					(ch  > 1)?ms.READS_HOLD1_A:"",
+					(ch == 1)?ms.READS_HOLD1_B:"",
+				));
 				scr_info[d.S_HOLD].oi_know = true;
 			}
 			else
-				r.UI.msg(ms.READS_HOLD);
+				r.UI.msg(ms.READS_HOLD2);
 			break; 
 		case d.S_SLEEP:
 			/*

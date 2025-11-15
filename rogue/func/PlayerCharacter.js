@@ -549,9 +549,7 @@ function PlayerCharacter(r){
 	*/
     this.move_msg = function(obj)
 	{
-		if (!terse)
-		r.UI.addmsg("you ");
-		r.UI.msg(`moved onto ${r.item.things.inv_name(obj, true)}`);
+		r.UI.msg(`you moved onto ${r.item.things.inv_name(obj, true)}`);
 	}
     /*
     * enter_room:

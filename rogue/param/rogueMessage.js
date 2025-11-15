@@ -28,7 +28,14 @@ function rogueMessages(lang){
         INITMT_STAFF: "杖 ",
         
         ADDPACK: "巻物は手に取ると塵と化した",
-        PACKROOM: "バックには空きがありません",
+        PACKROOM: "かばんが一杯です",
+        
+        MOVEMSG: (name)=>{ return `足元には ${name}がある` },
+
+        NPICKY_INVEN1: "何も持っていない",
+        NPICKY_INVEN2:(ch)=>{return `${ch}) はかばんに存在しません`},
+
+
         //fight
         H_NAMES: [		/* strings for hitting */
             " 見事な一撃を放った",
@@ -113,7 +120,10 @@ function rogueMessages(lang){
         //scroll
         READS_CONFUSE: (color)=>{return `手が${color}に輝き始める`},
         READS_ARMOR: (color)=>{return `鎧が一瞬、${color}に輝いた`},
-        READS_HOLD: "奇妙な喪失感を感じる",
+        READS_HOLD1:(text, mu)=>{return `${text}モンスターが拘束された`},
+        READS_HOLD1_A: "あなたの周りの",
+        READS_HOLD1_B: "",
+        READS_HOLD2: "奇妙な喪失感を感じる",
         READS_SLEEP: "眠りに落ちた",
         READS_CREATE: "遠くでかすかな苦痛の叫びが聞こえる",
         READS_ID_ANY: (name)=>{return `この巻物は${name}です`},
@@ -177,7 +187,7 @@ function rogueMessages(lang){
         STOMACH_3C: "パニックになる",
         STOMACH_3D: "気絶した",
 
-        DO_MOVE_1: "まだ拘束の罠に引っかかったままです",
+        DO_MOVE_1: "まだ拘束のわなに引っかかったままです",
         DO_MOVE_2: "拘束されています",
 
         //trap
@@ -263,7 +273,7 @@ function rogueMessages(lang){
         INVNAME_AL_POT: "薬 ",
         INVNAME_AL_RING: "指輪 ",
 
-        INVNAME_AL_SCR0: (head, type, name)=>{return `${head}${name}${type}`},
+        INVNAME_AL_SCR0: (head, type, name)=>{return `${head} ${name}${type}`},
         INVNAME_AL_SCR1: "巻物 ",
         INVNAME_AL_SCR2: "巻物 ",
         INVNAME_AL_SCR3: (name)=>{return `${name}の`},
@@ -280,7 +290,7 @@ function rogueMessages(lang){
         INVNAME_AL_DEF: "なし",
 
         NAMEIT_AL1: (head, type, name, etc)=>{return `${head} ${name}の${type}${etc}`},
-        NAMEIT_AL2: (head, name, type)=>{return `${head}${name}の${type}`},
+        NAMEIT_AL2: (head, name, type)=>{return `${head} ${name}の${type}`},
         NAMEIT_AL3: (head, name, type)=>{return `${head} ${name}の${type}`},
 
         DROP_1:"そこにはすでに何かがある",
@@ -447,7 +457,7 @@ function rogueMessages(lang){
 
         WANDS_NAME:[
             "照明", 		
-            "隠すinvisibility",	 
+            "隠ぺい",	 
             "いなずま", 	 
             "火炎",			
             "氷結",			 
@@ -586,6 +596,11 @@ function rogueMessages(lang){
         ADDPACK: "the scroll turns to dust as you pick it up",
         PACKROOM: "there's no room in your pack",
 
+        MOVEMSG: (name)=>{ return `you moved onto ${name}` },
+
+        NPICKY_INVEN1: "you aren't carrying anything",
+        NPICKY_INVEN2:(ch)=>{return `'${ch}' not in pack`},
+
         //fight
         H_NAMES: [		/* strings for hitting */
             " scored an excellent hit on ",
@@ -670,7 +685,10 @@ function rogueMessages(lang){
         //scroll
         READS_CONFUSE: (color)=>{return `your hands begin to glow ${color}`},
         READS_ARMOR: (color)=>{return `your armor glows ${color} for a moment`},
-        READS_HOLD: "you feel a strange sense of loss",
+        READS_HOLD1:(text, mu)=>{return `the monster${text} freeze${mu}`},
+        READS_HOLD1_A: "s around you",
+        READS_HOLD1_B: "s",
+        READS_HOLD2: "you feel a strange sense of loss",
         READS_SLEEP: "you fall asleep",
         READS_CREATE: "you hear a faint cry of anguish in the distance",
         READS_ID_ANY: (name)=>{return `this scroll is an ${name} scroll`},
