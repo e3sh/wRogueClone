@@ -84,6 +84,17 @@ function wizard(r, g){
 		r.player.set_food_left(1500);
 		msg("wizard: food_supply");
 	}
+	/**
+	 * wand/stick　Re-charge (wizard)
+	 */
+	this.ws_recharge = function(obj){
+
+		if (!Boolean(obj)) return;
+		if (obj.o_type != d.STICK) return; 
+
+		obj.o_charges += 5;
+		msg("wizard: ws_recharge");
+	}
 
 	/*
 	* whatis: (wizard)
@@ -287,7 +298,7 @@ function wizard(r, g){
 			"6: monsterViewTest",
 			"7: r.dungeon.show_map() (cls)",
 			"8:",
-			"9:",
+			"9: ws_recharge (stick charge+5)",
 			"0: Help (this menu)",
 			"",
 			"Q:Quit",

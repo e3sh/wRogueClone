@@ -221,6 +221,7 @@ function thingsf(r){
 		const r_stones_alias = res.ALIAS_STONE;
 		const ws_made_alias  = res.ALIAS_MADE;
 		const ws_type_alias = res.ALIAS_TYPE;
+		const s_names_alias = res.ALIAS_SNAME;
 
 		const fruit = r.fruit;;
 
@@ -276,7 +277,7 @@ function thingsf(r){
 				if (op.oi_know)
 					pb = ms.INVNAME_AL_SCR0(shead, stype, ms.INVNAME_AL_SCR3(op.oi_alias));
 				else
-					pb = ms.INVNAME_AL_SCR0(shead, stype, ms.INVNAME_AL_SCR4(s_names[which]));
+					pb = ms.INVNAME_AL_SCR0(shead, stype, ms.INVNAME_AL_SCR4(s_names_alias[which]));
 				break; 
 			case d.FOOD:
 				if (which == 1)

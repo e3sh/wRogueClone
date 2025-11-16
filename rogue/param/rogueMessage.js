@@ -119,7 +119,7 @@ function rogueMessages(lang){
 
         //scroll
         READS_CONFUSE: (color)=>{return `手が${color}に輝き始める`},
-        READS_ARMOR: (color)=>{return `鎧が一瞬、${color}に輝いた`},
+        READS_ARMOR: (color)=>{return `防具が一瞬、${color}に輝いた`},
         READS_HOLD1:(text, mu)=>{return `${text}モンスターが拘束された`},
         READS_HOLD1_A: "あなたの周りの",
         READS_HOLD1_B: "",
@@ -135,7 +135,7 @@ function rogueMessages(lang){
         READS_REMOVE_1: "あなたは宇宙の一体性に繋がっていると感じる", 
         READS_REMOVE_2: "誰かに見守られているような気がする",
         READS_AGGR: "甲高いブーンという音が聞こえる",
-        READS_PROTECT: (color)=>{return `鎧はきらめく${color}の盾で覆われている`},
+        READS_PROTECT: (color)=>{return `防具はきらめく${color}の盾で覆われている`},
         READS_ETC: "なんという不可解な巻物だ！",
 
         WHATIS_1: "識別実施",
@@ -148,7 +148,7 @@ function rogueMessages(lang){
         TYPENAME_RING: "指輪",
         TYPENAME_STICK: "魔法の杖",
         TYPENAME_WEAPON: "武器",
-        TYPENAME_ARMOR: "胴装備",
+        TYPENAME_ARMOR: "防具",
 
         //stick
         DOZAP_NOCHARGE: "何も起こらない",
@@ -165,10 +165,11 @@ function rogueMessages(lang){
 
         DRAIN: "チクチクする感じがする",
 
-        FIREBOLT_1: "炎が竜に跳ね返る",
+        FIREBOLT_1: "炎は竜に弾かれた",
         FIREBOLT_2: (bname, ename)=>{return `${bname}が${ename}のそばをビュッと通り過ぎる`},
         FIREBOLT_3: (bname)=>{return `${bname}に攻撃された`},
         FIREBOLT_4: (bname)=>{return `${bname}がそばをすっ飛んでいく`},
+        FIREBOLT_5: (name)=>{return `${name}が跳ね返る`},
 
         //player
         FIND_U_STAIR:"上り階段を見つけた",
@@ -219,7 +220,7 @@ function rogueMessages(lang){
         BE_TRAP_RUST: "水が勢いよく頭にかかってくる",
 
         RUST_ARMOR_1: "さびはたちまち消える",
-        RUST_ARMOR_2: "鎧が弱くなったようだ。あらまあ！",
+        RUST_ARMOR_2: "防具が弱くなったようだ。あらまあ！",
 
         UNCONFISE_1: `トリップ感が薄れていると感じる`,
         UNCONFISE_2: `混乱が少し和らいだと感じる`,
@@ -247,7 +248,7 @@ function rogueMessages(lang){
         //weapon
         FALL:(name)=>{return `${name} は地面にぶつかると消えた`},
 
-        WIELD_1: "鎧を装備することはできません",
+        WIELD_1: "防具を装備することはできません",
         WIELD_2: (name, ch)=>{ return `${name} (${ch}) を装備しました`},
         //armor
         WEAR_1: "すでに身につけています。まず外さなければなりません",
@@ -277,7 +278,7 @@ function rogueMessages(lang){
         INVNAME_AL_SCR1: "巻物 ",
         INVNAME_AL_SCR2: "巻物 ",
         INVNAME_AL_SCR3: (name)=>{return `${name}の`},
-        INVNAME_AL_SCR4: (text)=>{return `'${text}'と書かれた`},
+        INVNAME_AL_SCR4: (text)=>{return `表題「${text}」の`},
 
         INVNAME_AL_FOOD1: "食料",
         INVNAME_AL_FOOD2: (num)=>{return `${num} 食分の食料`},
@@ -431,7 +432,7 @@ function rogueMessages(lang){
             "消化遅延",	
             "転送",
             "ステルス",		     
-            "よろい保全",
+            "防具保全",
         ],
 
         SCR_NAME:[
@@ -439,11 +440,11 @@ function rogueMessages(lang){
             "魔法の地図",		
             "足止め",		
             "睡眠",				 
-            "よろい強化",		
+            "防具強化",		
             "ポーション鑑定",		
             "巻物鑑定",		
             "武器鑑定",		 
-            "よろい鑑定",		 
+            "防具鑑定",		 
             "指輪、杖 鑑定",	
             "モンスターを怖がらせる",		 
             "食料発見",		
@@ -452,7 +453,7 @@ function rogueMessages(lang){
             "モンスター作製",		
             "解呪",			
             "挑発",	 
-            "よろい保護",		 
+            "防具保護",		 
         ],
 
         WANDS_NAME:[
@@ -734,7 +735,7 @@ function rogueMessages(lang){
         FIREBOLT_2: (bname, ename)=>{return `the ${bname} whizzes past ${ename}`},
         FIREBOLT_3: (bname)=>{return `you are hit by the ${bname}`},
         FIREBOLT_4: (bname)=>{return `the ${bname} whizzes by you`},
-
+        FIREBOLT_5: (name)=>{return `he ${name} bounces`},
 
         //player
         FIND_U_STAIR: "you find up stairs.",

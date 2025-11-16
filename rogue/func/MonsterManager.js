@@ -227,11 +227,13 @@ function MonsterManager(r){
                     && dist_cp(th.t_pos, hero) <= d.BOLT_LENGTH * d.BOLT_LENGTH
                     && !on(th, d.ISCANC) && r.rnd(d.DRAGONSHOT) == 0)
                 {
+                    let delta = {};
+
                     delta.y = Math.sign(hero.y - th.t_pos.y);
                     delta.x = Math.sign(hero.x - th.t_pos.x);
                     if (r.UI.has_hit)
                         r.UI.endmsg();
-                    r.item.sticks.fire_bolt(th.t_pos, delta, "flame");
+                    r.item.sticks.fire_bolt(th.t_pos, delta, ms.DOZAP_BOLT_F);
                     running = false;
                     count = 0;
                     quiet = 0;

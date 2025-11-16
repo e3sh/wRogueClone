@@ -254,6 +254,8 @@ function command(r, g)
                 if (r.UI.wait_for("Digit5")) r.debug.mapcheckTest(); //debug command
                 if (r.UI.wait_for("Digit6")) r.debug.monsterViewTest(); //debug command
                 if (r.UI.wait_for("Digit7")) r.dungeon.show_map(); //debug command
+                if (r.UI.wait_for("Digit8")); //resurb
+                if (r.UI.wait_for("Digit9")) r.debug.wizard.ws_recharge(r.player.packf.picky_inven(r.player.packf.get_cur())); //debug command
                 if (r.UI.wait_for("Digit0")) {r.setScene(d.WIZ_HELP); break}//debug command
             }
             //if (this.wait_for("ArrowDown")) r.debug.checkListsCount(); //debug command

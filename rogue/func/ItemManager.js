@@ -59,6 +59,7 @@ function ItemManager(r){
 
     const p_colors_alias = Array(d.MAXPOTIONS);		/* Colors of the potions */
     const r_stones_alias = Array(d.MAXRINGS);		/* Stone settings of the rings */
+    const s_names_alias  = Array(d.MAXSCROLLS);		/* Names of the scrolls */
     const ws_made_alias  = Array(d.MAXSTICKS);		/* What sticks are made of */
     const ws_type_alias  = Array(d.MAXSTICKS);		/* Is it a wand or a staff */
 
@@ -130,6 +131,8 @@ function ItemManager(r){
             ALIAS_STONE: r_stones_alias,
             ALIAS_MADE: ws_made_alias ,
             ALIAS_TYPE: ws_type_alias ,
+            ALIAS_SNAME: s_names_alias,
+
         }
     }
 
@@ -171,7 +174,10 @@ function ItemManager(r){
     /* Set up names of scrolls スクロールの名前をランダムに生成します。*/
     this.init_names = function(){
 
-        const MAXNAME = 40; /* Max number of characters in a name */       
+        //const ga = "αβγδεζηθικλμνξοπρσΣτυφχΨωΔθ";
+        const kga = "ｱﾋｾﾃｴﾌｼﾁｲｷｹﾙﾑﾇｵｻｸﾛｽﾀｳﾊﾜｨﾔﾝｶｺｿﾂ";
+
+        const MAXNAME = 26; /* Max number of characters in a name */       
         let nsyl;
         let sp;
         let nwords;
@@ -190,6 +196,21 @@ function ItemManager(r){
                 }
             }
             s_names[i] = prbuf;
+
+            let wbuf = "";
+            for (let i=0; i<prbuf.length; i++){
+                let num = prbuf.charCodeAt(i) - "a".charCodeAt(0);
+                if (num <0){
+                    wbuf += " ";//ga.substring(num,num+1);
+                    i++;
+                } else {
+                    wbuf += kga.substring(num,num+1);
+                    //i++;
+                }
+            }
+            s_names_alias[i] = wbuf.substring(0,wbuf.length-1);//prbuf;
+            //console.log(prbuf);
+            //console.log(wbuf);
         }
         //for (let i in s_names) console.log(s_names[i]);
     };

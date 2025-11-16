@@ -69,7 +69,7 @@ function sticks(r){
 			r.UI.msg("you can't zap with that!");
 			return;
 		}
-		if (obj.o_charges == 0)
+		if (obj.o_charges <= 0)
 		{
 			r.UI.msg(ms.DOZAP_NOCHARGE);
 			return;
@@ -330,7 +330,7 @@ function sticks(r){
 				{
 					bolt.o_pos = pos;
 					used = true;
-					if (tp.t_type == 'D' && name == "flame") 
+					if (tp.t_type == 'D' && name == ms.DOZAP_BOLT_F) 
 					{
 						r.UI.msg(ms.FIREBOLT_1);
 					}
@@ -392,7 +392,7 @@ function sticks(r){
 		weap_info[d.FLAME].oi_name = name;
 		switch (dir.y + dir.x)
 		{
-			case 0: dirch = '/';
+			case 0: dirch = '-';
 				break; 
 			case 1: 
 			case -1: 
@@ -400,7 +400,7 @@ function sticks(r){
 				break; 
 			case 2: 
 			case -2: 
-				dirch = '\\';
+				dirch = '-';
 		}
 		pos = {x:start.x, y:start.y};
 		hit_hero = (start != hero);
@@ -439,7 +439,7 @@ function sticks(r){
 					dir.y = -dir.y;
 					dir.x = -dir.x;
 					//c1--;
-					r.UI.msg(`he ${name} bounces`);
+					r.UI.msg(ms.FIREBOLT_5(name));
 					break;
 				default:
 		//def:	
