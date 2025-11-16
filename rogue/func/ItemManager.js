@@ -223,7 +223,8 @@ function ItemManager(r){
 
         for (let i = 0; i < d.MAXRINGS; i++)
         {
-            r_stones[i] = stones[stype[i]].name;
+            let jewelchip = "";//String.fromCharCode(128+stype[i]);
+            r_stones[i] = `${jewelchip}${stones[stype[i]].name}`;
             r_stones_alias[i] = ms.STONE_NAME[stype[i]];
             ring_info[i].oi_worth += stones[stype[i]].value;
             //console.log(`${r_stones[i]} ${ring_info[i].oi_worth}`);

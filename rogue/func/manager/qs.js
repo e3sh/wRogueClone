@@ -30,6 +30,9 @@ function quick_storage(r){
             if (r.mobs[i].location == d.PLOBJ || r.mobs[i].location == d.PACK_P){
                 r.mobs[i].equiped = r.player.equip_state_check(r.mobs[i].o_packch);
 
+                if (r.mobs[i].o_type == d.STICK)
+                    r.mobs[i].o_arm = r.mobs[i].o_charges;
+
                 sl.push(r.mobs[i]);
             }
         }
