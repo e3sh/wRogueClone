@@ -208,7 +208,7 @@ function ItemManager(r){
                     //i++;
                 }
             }
-            s_names_alias[i] = wbuf.substring(0,wbuf.length-1);//prbuf;
+            s_names_alias[i] = (ms.INITCOLOR)?wbuf.substring(0,wbuf.length-1):prbuf;//wbuf.substring(0,wbuf.length-1);//prbuf;
             //console.log(prbuf);
             //console.log(wbuf);
         }
