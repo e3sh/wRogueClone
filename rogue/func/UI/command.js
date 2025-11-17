@@ -43,7 +43,7 @@ function command(r, g)
                 beginf = true;
                 r.UI.msg(" ");
                 r.UI.msg(" ");
-                r.UI.clear(1);
+                r.UI.clear(d.DSP_MESSAGE);
                 r.beginproc();
             }
             return;
@@ -380,7 +380,7 @@ function command(r, g)
         let io = g.task.read("io");
         io.overlapview = true;
         r.UI.setHomesub(true);
-        r.UI.clear(6); //centerconsole
+        r.UI.clear(d.DSP_WINDOW); //centerconsole
         r.player.packf.inventory(r.player.player.t_pack, 0, true);
 
         if (ki.includes("Numpad4") || ki.includes("Numpad6") || ki.includes("Numpad5") ||
@@ -389,7 +389,7 @@ function command(r, g)
         {
             let st = r.player.get_invstat();
             r.UI.setHomesub();
-            r.UI.clear(3); //sideconsole 
+            r.UI.clear(d.DSP_EQUIP); //sideconsole 
 
             let io = g.task.read("io");
             for (let i in st){
@@ -411,7 +411,7 @@ function command(r, g)
         //r.after = false; inventory(pack, 0);
         let st = r.player.get_invstat();
         r.UI.setHomesub();
-        r.UI.clear(3); //sideconsole 
+        r.UI.clear(d.DSP_EQUIP); //sideconsole 
         for (let i in st){
             r.UI.submsg(st[i]);
         }
@@ -420,7 +420,7 @@ function command(r, g)
         io.overlapview = mode;
         if (mode){
             r.UI.setHomesub(true);
-            r.UI.clear(6); //centerconsole
+            r.UI.clear(d.DSP_WINDOW); //centerconsole
             r.player.packf.inventory(r.player.player.t_pack, 0, true);
             r.setScene(d.INVSCE); 
         } 

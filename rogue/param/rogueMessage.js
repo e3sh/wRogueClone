@@ -171,6 +171,7 @@ function rogueMessages(lang){
         FIREBOLT_4: (bname)=>{return `${bname}がそばをすっ飛んでいく`},
         FIREBOLT_5: (name)=>{return `${name}が跳ね返る`},
 
+        CHARGE_STR: (num)=>{return ` [残 ${num}回]`},
         //player
         FIND_U_STAIR:"上り階段を見つけた",
         FIND_D_STAIR:"下り階段を見つけた",
@@ -188,11 +189,11 @@ function rogueMessages(lang){
         STOMACH_3C: "パニックになる",
         STOMACH_3D: "気絶した",
 
-        DO_MOVE_1: "まだ拘束のわなに引っかかったままです",
+        DO_MOVE_1: "まだ拘束の罠に引っかかったままです",
         DO_MOVE_2: "拘束されています",
 
         //trap
-        BE_TRAP_DOOR: "わなにかかった！",
+        BE_TRAP_DOOR: "罠にかかった！",
         BE_TRAP_BEAR: "トラバサミにかかっている",
 
         BE_TRAP_MIST_0: "突然、並行次元にいる",
@@ -380,7 +381,7 @@ function rogueMessages(lang){
 
         //itemnames
         WEAP_NAME:[
-            "こんぼう",
+            "棍棒",
             "長剣",
             "短弓",
             "矢(arrow)",	
@@ -388,7 +389,7 @@ function rogueMessages(lang){
             "両手剣",
             "ダーツ",				
             "手裏剣",			
-            "やり",			
+            "槍",			
         ],
         ARM_NAME:[
             "かわのよろい",
@@ -736,6 +737,8 @@ function rogueMessages(lang){
         FIREBOLT_3: (bname)=>{return `you are hit by the ${bname}`},
         FIREBOLT_4: (bname)=>{return `the ${bname} whizzes by you`},
         FIREBOLT_5: (name)=>{return `he ${name} bounces`},
+
+        CHARGE_STR: (num)=>{return ` [${num} charges]`},
 
         //player
         FIND_U_STAIR: "you find up stairs.",

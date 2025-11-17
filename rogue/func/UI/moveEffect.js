@@ -5,6 +5,10 @@ function moveEffect(g){
 
     let elist = []; //effectlist
 
+    let shiftx = 0;
+    let shifty = 0;
+
+    this.setDrawIndex =(x, y)=>{shiftx = x; shifty = y;} 
     /**
      * タスク用
      * @param {char} aschr 表示キャラクタ
@@ -21,8 +25,11 @@ function moveEffect(g){
         let sx = st.x * 8;
         let sy = st.y * 16;
 
-        let cw = (ed.x*8 ) - sx;
+        let cw = (ed.x*8 ) - sx
         let ch = (ed.y*16) - sy;
+
+        sx += shiftx;
+        sy += shifty;
 
         let count = Math.max(Math.abs(cw), Math.abs(ch));
         

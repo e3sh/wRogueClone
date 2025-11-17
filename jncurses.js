@@ -315,7 +315,7 @@ class jncurses{
                     if (!useutf) {
                         g.font[fontId].putchr(textbuffer[i], x,  y + i*linew + w);
                     }else{
-                        g.kanji.print(textbuffer[i], x,  y + i*linew + w);
+                        g.kanji.putchr(textbuffer[i], x,  y + i*linew + w, 0.5);
                     }
                 }        
                 if (Boolean(prompt)){   
@@ -324,7 +324,7 @@ class jncurses{
                     if (!useutf) {
                         g.font[fontId].putchr(d,x + cursor.x*charw ,y + cursor.y*linew);
                     }else{
-                        g.kanji.print(d,x + cursor.x*charw ,y + cursor.y*linew);
+                        g.kanji.putchr(d,x + cursor.x*charw ,y + cursor.y*linew, 0.5);
                     }
                 }
                 //g.font[fontId].putchr(`${this.rewritecheck()}`,x,y);    

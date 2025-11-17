@@ -10,16 +10,30 @@ class ioControl extends GameTask {
 
 		g.font["std"].useScreen(0);
 
+		const PTUB = ["_" ," "];
+		const PTMSG = [String.fromCharCode(26) ,"_"];
+
+		/*
 		const cp = [
-			//fontID,prompt	,charw, linew, location x,y
-			[80, 24,"std"	,["_" ," "], 8,16	,  0,  0], //0:printw, addch, move, clear
-			//[80, 24,"mini"	,["_" ," "], 4,6	,  0,  0], //0:printw, addch, move, clear
-			[60, 60,"small"	,[String.fromCharCode(26) ,"_"], 6, 8	, 24,384, true],	//1:msg
-			[32, 40,"small"	,["_" ," "], 6, 8	,480, 16], //2:debug, comment
-			[40, 32,"small"	,false ,	 6, 10	,400,384, true], //3:inventry
-			[32, 50,"mini"	,["_" ," "], 4, 6	,  0, 18], //4:mobslist
-			[80,  1,"std"	,false, 8,16,   0,368], //5:statusbar
-			[60, 27,"stdbg"	,false,	8,14, 160, 48]	//6:viewUpwindow "stdbg"
+			//fontID,prompt	,charw, linew, location x,y,bgcolor, useutf
+			[80, 24,"std"	,PTUB  ,8,16,  0,  0,null], //0:printw, addch, move, clear
+			[80,  1,"std"	,false ,8,16,  0,368,"rgb(128  0   0)"], //1:statusbar
+			[40, 32,"small"	,false ,6,10,400,384,"rgb( 64 64  64)",true], //2:equip/select
+			[60, 59,"small"	,PTMSG ,6, 8, 24,384,"rgb(  0  0 100)",true],	//3:msg
+			[60, 27,"stdbg"	,false ,8,14,160, 48,"rgb(  0  0 144)"	],	//4:viewUpwindow "stdbg"
+			[32, 40,"small"	,PTUB  ,6, 8,480, 16,"rgb(  0 64  0/0.5)"], //5:debug, comment
+			[32, 50,"mini"	,PTUB  ,4, 6,  0, 18,"rgb(  0 64  0/0.5)"], //6:mobslist
+		]
+		*/
+		const cp = [
+			//fontID,prompt	,charw, linew, location x,y,bgcolor, useutf
+			[80, 24,"std"	,PTUB  ,8,16,160,  0,null], //0:printw, addch, move, clear
+			[80,  1,"std"	,false ,8,16,160,368,"rgb(128  0   0)"], //1:statusbar
+			[40, 16,"std_l"	,false ,8,16,640,384,"rgb( 64 64  64)",true], //2:equip/select
+			[74, 36,"std_l"	,PTMSG ,8,16, 48,384,"rgb(  0  0 100)",true],	//3:msg
+			[64, 28,"std_l"	,false ,8,16,240, 48,"rgb(  0  0 144)",true],	//4:viewUpwindow "stdbg"
+			[32, 40,"small"	,PTUB  ,6, 8,760, 16,"rgb(  0 64  0/0.5)"], //5:debug, comment
+			[32, 50,"small"	,PTUB  ,6, 8,  8,  8,"rgb(  0 64  0/0.5)"], //6:mobslist
 		]
 
 		let cnsl = [];
@@ -31,8 +45,8 @@ class ioControl extends GameTask {
 			c.setPrompt(p[3]);
 			c.setCharwidth(p[4]);
 			c.setLinewidth(p[5]);
-			const l = {con:c, x:p[6], y:p[7]};
-			c.setUseUTF(Boolean(p[8]));
+			const l = {con:c, x:p[6], y:p[7], w:p[0]*p[4], h:p[1]*p[5], bg:p[8]};
+			c.setUseUTF(Boolean(p[9]));
 
 			cnsl.push(c);
 			layo.push(l);
@@ -75,7 +89,7 @@ class ioControl extends GameTask {
 
 			if (input.P_UP || input.P_DOWN){
 				this.msgCfullposition = (input.P_DOWN)?true:false;
-			}
+			}6
 		}
 		let p = false;
 		for (let i in input){
@@ -95,15 +109,15 @@ class ioControl extends GameTask {
 		this.input = input;
 
 		if (this.msgCfullposition){
-			if (this.layout[1].y > 0) 
-				this.layout[1].y-= 16; 
+			if (this.layout[3].y > 0) 
+				this.layout[3].y-= 16; 
 			else 
-				this.layout[1].y = 0;
+				this.layout[3].y = 0;
 		}else{
-			if (this.layout[1].y <384 ) 
-				this.layout[1].y+= 16;
+			if (this.layout[3].y <384 ) 
+				this.layout[3].y+= 16;
 			else 
-				this.layout[1].y = 384;
+				this.layout[3].y = 384;
 		}
 		//-----------------------------------------------------------------------------
 		// internal function 
@@ -171,20 +185,23 @@ class ioControl extends GameTask {
 		if (!this.debugview){
 			let r = g.fpsload.result();
 			let dt = g.deltaTime().toString().substring(0,4);
-			g.font["small"].putchr(`FPS:${Math.floor(r.fps)}  delta:${dt}`,520, 0);
+			g.font["small"].putchr(`FPS:${Math.floor(r.fps)}  delta:${dt}`,840, 0);
 
 			let s = "input:";
 			for (let i in this.input.keylist){s += `${this.input.keylist[i]},`}
-			g.font["small"].putchr(s,0 , 480-8);
+			g.font["small"].putchr(s,0 , 600-8);
 		}
 		//let dispf = [true, true, !this.debugview, !this.overlapview, !this.debugview, true, this.overlapview];
-		let dispf = [true, true, !this.debugview, true, !this.debugview, true, this.overlapview];
-
+		//let dispf = [true, true, !this.debugview, true, !this.debugview, true, this.overlapview];
+		let dispf = [true, true, true, true, this.overlapview, !this.debugview, !this.debugview];
 
 		for (let i in this.layout){
 			let d = this.layout[i];
 
-			if (dispf[i]) d.con.draw(g, d.x, d.y);
+			if (dispf[i]) {
+				if (d.bg) g.screen[0].fill(d.x, d.y, d.w, d.h, d.bg);
+				d.con.draw(g, d.x, d.y);
+			}
 			//if (!((this.debugview && (i ==2 || i ==4)) || (this.overlapview && i==6))) d.con.draw(g, d.x, d.y);
 			//if (this.debugview) d.con.draw(g, d.x, d.y);
 		}

@@ -265,7 +265,7 @@ function wizard(r, g){
 		let io = g.task.read("io");
 		io.overlapview = true;
 
-		r.UI.clear(6);
+		r.UI.clear(d.DSP_WINDOW);
 		for (let i in menu){
 			r.UI.submvprintw(i, 0, `${(col == i && (col >=2 && col <=4))?">":" "} ${menu[i]}`, true);
 		}
@@ -307,7 +307,7 @@ function wizard(r, g){
 		let io = g.task.read("io");
 		io.overlapview = true;
 
-		r.UI.clear(6);
+		r.UI.clear(d.DSP_WINDOW);
 		for (let i in menu){
 			r.UI.submvprintw(i, 0, `${menu[i]}`, true);
 		}

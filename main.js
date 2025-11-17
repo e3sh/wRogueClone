@@ -2,7 +2,9 @@
 //----------------------------------------------------------------------
 function main() {
 
-    const sysParam = { canvasId: "layer0", screen: [{ resolution: { w: 640, h: 480 , x:0, y:0 } }] 	};
+    const sysParam = { canvasId: "layer0", 
+            screen: [{ resolution: { w: 960, h: 600 , x:0, y:0 } }]
+     	};
 	const game = new GameCore( sysParam );
 
 	//Game Asset Setup
@@ -12,10 +14,12 @@ function main() {
     game.asset.imageLoad("MINIF", p + "font4x6.png");
     game.asset.imageLoad("ASCBG", p + "pdcfont_bg.png");
     game.asset.imageLoad("SJISK", p + "k12x8_jisx0208c.png")
+    game.asset.imageLoad("ASC32", p + "a32_jisx0201c.png")
+    game.asset.imageLoad("KNJ32", p + "k32_jisx0208.png")
 
     game.kanji = new fontPrintControl( game,
-        game.asset.image["SMALL"].img, 6, 8,
-        game.asset.image["SJISK"].img, 12, 8
+        game.asset.image["ASC32"].img, 16, 32,
+        game.asset.image["KNJ32"].img, 32, 32
     );
     game.kanji.useScreen(0);
 
@@ -64,9 +68,26 @@ function SpriteFontData() {
             ss.push(ptn);
         }
     }
+    //16_32_font
+    let s3 = [];
+    for (let i = 0; i < 16; i++) {
+        for (j = 0; j <16; j++) {
+            ptn = { x:  8 * j, y: 16 * i, w:  8, h: 16 }
+            s3.push(ptn);
+        }
+    }
+
     //↑↑
+    /*
     return [
         { name: "std"   , id: "ASCII", pattern: sp, ucc: true },
+        { name: "small" , id: "SMALL", pattern: s2 ,ucc: true},
+        { name: "mini"  , id: "MINIF", pattern: ss },
+        { name: "stdbg" , id: "ASCBG", pattern: sp, ucc: true },
+    ]*/
+    return [
+        { name: "std"   , id: "ASCII", pattern: sp, ucc: true },
+        { name: "std_l" , id: "ASC32", pattern: s3, ucc: true },
         { name: "small" , id: "SMALL", pattern: s2 ,ucc: true},
         { name: "mini"  , id: "MINIF", pattern: ss },
         { name: "stdbg" , id: "ASCBG", pattern: sp, ucc: true },

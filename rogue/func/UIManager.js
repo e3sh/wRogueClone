@@ -147,16 +147,19 @@ function UIManager(r, g){
     //cursor move
     //textConsole 0:main 1:msg 2:debug/comment 3:submsg(inventry) 
     // (4):r.debug.checkListsCount (5):statisline 
-    this.move    = function(y, x){     g.console[0].move(x, y);  }
-    this.printw  = function(text){     g.console[0].printw(text); }
-    this.mvaddch = function(y, x, ch){ g.console[0].mvprintw(ch, x, y); }
+    //cursor move
+    //textConsole 0:main 1:status 2:equip/select 3:msg 4:overWin 5:debug/comment 6:moblist 
+
+    this.move    = function(y, x){     g.console[d.DSP_MAIN].move(x, y);  }
+    this.printw  = function(text){     g.console[d.DSP_MAIN].printw(text); }
+    this.mvaddch = function(y, x, ch){ g.console[d.DSP_MAIN].mvprintw(ch, x, y); }
     this.mvaddstr = this.mvaddch;
-    this.addch   = function(ch){ g.console[0].printw(ch); }
+    this.addch   = function(ch){ g.console[d.DSP_MAIN].printw(ch); }
     this.addstr = this.addch;
     this.inch    = function(){
-        let buff = g.console[0].buffer;
-        let cx = g.console[0].cursor.x;
-        let cy = g.console[0].cursor.y;
+        let buff = g.console[d.DSP_MAIN].buffer;
+        let cx = g.console[d.DSP_MAIN].cursor.x;
+        let cy = g.console[d.DSP_MAIN].cursor.y;
 
         let res = ' '; 
         if (buff.length >= cy){
@@ -170,7 +173,7 @@ function UIManager(r, g){
         this.move(y, x);
         return this.inch();
     }
-    this.clear   = function(num){ if (isNaN(num)) num=0; g.console[num].clear(); }
+    this.clear   = function(num){ if (isNaN(num)) num=d.DSP_MAIN; g.console[num].clear(); }
     
     this.texwork = "";
     this.msg    =(text)=>{
@@ -180,14 +183,14 @@ function UIManager(r, g){
         text = `${this.texwork + text}`;
         if (!Boolean(text)) return;
         if (text.length >0){
-            g.console[1].move(0,0);
-            g.console[1].insertln(); g.console[1].printw(text);
+            g.console[d.DSP_MESSAGE].move(0,0);
+            g.console[d.DSP_MESSAGE].insertln(); g.console[d.DSP_MESSAGE].printw(text);
 
             let cl = 1;
             for (let i=0; i<text.length; i++){
                 cl += (text.charCodeAt(i) < 128)?1:2;
             }
-            g.console[1].move(cl, 0);
+            g.console[d.DSP_MESSAGE].move(cl, 0);
         } 
         this.texwork = "";
     }
@@ -197,24 +200,24 @@ function UIManager(r, g){
     this.msgbuf_reset =()=>{this.texwork ="";}
 
     this.debug  = function(text){      this.comment(`d: ${text}`); }
-    this.comment = function(text){     g.console[2].insertln(); g.console[2].printw(text); }
+    this.comment = function(text){     g.console[d.DSP_COMMENT].insertln(); g.console[d.DSP_COMMENT].printw(text); }
 
     this.submsg = function(text, mode){
-        let cn = (!Boolean(mode))?3:6; 
+        let cn = (!Boolean(mode))?d.DSP_EQUIP:d.DSP_WINDOW; 
 
         //g.console[3].insertln();
         g.console[cn].move(g.console[cn].cursor.x, g.console[cn].cursor.y+1); 
         g.console[cn].printw(text); 
     }
     this.submvprintw = function(y, x, text, mode){
-        let cn = (!Boolean(mode))?3:6; 
+        let cn = (!Boolean(mode))?d.DSP_EQUIP:d.DSP_WINDOW; 
         
         g.console[cn].move(x, y); 
         g.console[cn].printw(text); 
     }
 
     this.setHomesub = function(mode){
-        let cn = (!Boolean(mode))?3:6; 
+        let cn = (!Boolean(mode))?d.DSP_EQUIP:d.DSP_WINDOW; 
        
         g.console[cn].move(0,0);
     }
@@ -318,8 +321,8 @@ function UIManager(r, g){
         else
         {
             //this.move(d.STATLINE, 0);
-            g.console[5].clear();
-            g.console[5].mvprintw(`${getPtnDelta(this.delta)} Level: ${level}  Gold: ${purse}  Hp: ${pstats.s_hpt}(${max_hp})`+  
+            g.console[d.DSP_STATUS].clear();
+            g.console[d.DSP_STATUS].mvprintw(`${getPtnDelta(this.delta)} Level: ${level}  Gold: ${purse}  Hp: ${pstats.s_hpt}(${max_hp})`+  
                 `  Str: ${pstats.s_str}(${max_stats.s_str})  Arm: ${10 - s_arm}` +
                 `  Exp: ${pstats.s_lvl}/${pstats.s_exp}  ${state_name[hungry_state]}`
                 ,0,0);
@@ -354,8 +357,8 @@ function UIManager(r, g){
     *
     */
     this.pause = function(text){
-        g.console[5].clear();
-        g.console[5].mvprintw(text 
+        g.console[d.DSP_STATUS].clear();
+        g.console[d.DSP_STATUS].mvprintw(text 
             ,23,0);
     }
 

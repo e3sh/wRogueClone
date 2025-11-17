@@ -427,7 +427,7 @@ function packf(r){
 
 		n_objs = 0;
 
-		r.UI.submsg("Inventory)",mode);
+		r.UI.submsg(`Inventory) ${inpack}/${d.MAXPACK-1}`,mode);
 
 		let itable = [];
 		for (let i in r.mobs)
@@ -457,7 +457,7 @@ function packf(r){
 			let cur = (list.o_packch == this.get_cur())?">":" ";
 
 			inv_temp = `${equip}${cur}${list.o_packch}) `;
-			inv_temp += r.item.things.inv_name(list, false);
+			inv_temp += r.item.things.inv_name_alias(list, false);
 			r.UI.submsg(inv_temp, mode);
 		}
 		if (n_objs == 0)

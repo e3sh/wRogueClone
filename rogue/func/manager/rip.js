@@ -405,7 +405,7 @@ function rips(r){
 		res_mode = false;
 		r.setScene(d.RESULT);
 
-		r.UI.clear(6);
+		r.UI.clear(d.DSP_WINDOW);
 		//r.pause = true;
 		//r.quickstorage.reset();
 		//my_exit(0);

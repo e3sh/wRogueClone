@@ -467,7 +467,7 @@ function sticks(r){
 		//else if (terse)
 		//	buf = ` [${obj.o_charges}]`;
 		else
-			buf = ` [${obj.o_charges} charges]`;
+			buf = ms.CHARGE_STR(obj.o_charges);
 		return buf;
 	}
 }

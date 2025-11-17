@@ -233,7 +233,7 @@ function GameManager(g, LANG){
         //this.mapcheckTest();
         this.UI.status();
         this.UI.setHomesub();
-        this.UI.clear(3); //inventry display
+        this.UI.clear(d.DSP_EQUIP); //inventry display
         this.player.packf.inventory(this.player.player.t_pack, 0);
 
         this.playit(g); //ゲームのメインループです。オプションの解析とcommand()の呼び出しを行います。

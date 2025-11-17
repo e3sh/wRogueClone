@@ -18,7 +18,7 @@ function rogueDefines(){
         MAXROOMS  : 9,
         MAXTHINGS : 9,
         MAXOBJ    : 9,
-        MAXPACK   : 23,
+        MAXPACK   : 27,
         MAXTRAPS  : 10,
         AMULETLEVEL : 26,
         NUMTHINGS : 7,    /* number of types of things */
@@ -312,6 +312,15 @@ function rogueDefines(){
         SIC_NOOP: 0,
         SIC_USE:  1,
         SIC_DROP: 2,
+
+        //textFlameNumbers
+        DSP_MAIN: 0,
+        DSP_STATUS: 1,
+        DSP_EQUIP: 2,
+        DSP_MESSAGE: 3,
+        DSP_WINDOW: 4,
+        DSP_COMMENT: 5,
+        DSP_MOBLIST: 6 ,
 
     }
     return d;

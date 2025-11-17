@@ -69,8 +69,18 @@ function debug(r, g){
 
     this.mobslist = function()
     {
+        let count = 0;
+        let free = 0;
+        let mon = 0;
+        let lvlo = 0;
+        let ppl = 0;
+        let ppm = 0;
+        let line = 1;
+
+        let fcheck_ml = [];
+
         //console.log(locount);
-        g.console[4].clear();
+        g.console[d.DSP_MOBLIST].clear();
         for (let i in r.mobs){
             const mc = r.mobs[i];
             const str = "  " + mc.id
@@ -87,21 +97,37 @@ function debug(r, g){
             switch(mc.location){
                 case d.PLOBJ:
                     txt = `Player[${st_tpx},${st_tpy}] hp:${mc.t_stats.s_hpt}/${mc.t_stats.s_maxhp} `;
+                    sw = true;
                     break;
                 case d.FREE:
                     txt = `Free`;
+                    free++;
+                    sw = false;
                     break;
                 case d.MLIST:
-                    txt = `Mon [${st_tpx},${st_tpy}]${(Boolean(mc.t_dest.x))?"*":" "}hp:${mc.t_stats.s_hpt}`;
+                    let fs = `00000${Number(mc.t_flags).toString(8)}`;
+                    let wst = fs.substring(fs.length-6,fs.length);
+
+                    txt = `Mon [${st_tpx},${st_tpy}]${(Boolean(mc.t_dest.x))?"*":" "}hp:${mc.t_stats.s_hpt} ${wst}`;
+                    fcheck_ml.push(mc);
+
+                    mon++;
+                    sw = true;
                     break;
                 case d.LVLOBJ:
                     txt = `Lvl [${st_opx},${st_opy}]`;
+                    lvlo++;
+                    sw = false;
                     break;
                 case d.PACK_P:
                     txt = `Ppl (${mc.o_packch})${r.player.equip_state_check(mc.o_packch)?"*":""}`;
+                    ppl++;
+                    sw = false;
                     break;
                 case d.PACK_M:
                     txt = `Pmo`;
+                    ppm++;
+                    sw = false;
                     break;
                 default:
                     txt = `Unknown`;
@@ -110,15 +136,19 @@ function debug(r, g){
             if (sw) {
                 //g.screen[0].fill(0, 0, 32*6, 50*8, "Blue");   
                 //g.console[4].mvprintw(`${state_i}${state_e} ${st_tt}${st_ot} ${st_loc}${st_pc} ${st_parm} `, 0, i);
-                g.console[4].mvprintw(`${state_i}${state_e}${st_tt}${st_ot} ${txt}`, 0, Number(i)+1);
+                g.console[d.DSP_MOBLIST].mvprintw(`${state_i}${state_e}${st_tt}${st_ot} ${txt}`, 0, line++);
             }
             //    st += ((r.mobs[i].enable)?String.fromCharCode(Number("A".charCodeAt(0))+Number(i)):"_");
+            count++;
         }
         sw = true;//!sw
-        sysstate();
+        g.console[d.DSP_MOBLIST].mvprintw(`Free${free}:Mon${mon}:Lv${lvlo}:Pack${ppl}-${ppm}(${count})`, 0, 0);
+
+        sysstate(line, fcheck_ml);
     }
 
-    function sysstate(){
+    function sysstate(line, ml){
+        //console.log(ml);
 
         const on = (thing,flag)=>{return ((thing.t_flags & flag) != 0)};
         const player = r.player.player;
@@ -129,20 +159,43 @@ function debug(r, g){
 
         txt.push(`no_command:${r.player.get_no_command()}`);
         txt.push(`food_left :${r.player.get_food_left()}`);
-        txt.push(`to_death:${r.player.to_death?"o":"_"}`);     
-        txt.push(`CANHUH :${on(player, d.CANHUH )?"o":"_"}`);
-        txt.push(`CANSEE :${on(player, d.CANSEE )?"o":"_"}`);
-        txt.push(`ISBLIND:${on(player, d.ISBLIND)?"o":"_"}`);
-        txt.push(`ISLEVIT:${on(player, d.ISLEVIT)?"o":"_"}`);
-        txt.push(`ISHASTE:${on(player, d.ISHASTE)?"o":"_"}`);
-        txt.push(`ISHELD :${on(player, d.ISHELD )?"o":"_"}`);
-        txt.push(`ISHUH  :${on(player, d.ISHUH  )?"o":"_"}`);
-        txt.push(`ISHALU :${on(player, d.ISHALU )?"o":"_"}`);
+        //txt.push(`to_death:${r.player.to_death?"o":"_"}`);
 
-        const sline = r.mobs.length +2;
+        let tt = (m)=>{let s =""; for (let i in m){s+= m[i].t_type}; return s; };
+        let tf = (m, type)=>{let s =""; for (let i in m){s+= on(m[i], type)?"o":"_"}; return s; };
+
+
+        let fs = `0000${Number(player.t_flags).toString(8)}`;
+        txt.push(`${fs.substring(fs.length-5,fs.length)}:t_flag:`);
+
+        txt.push(`----1:CANHUH :${on(player, d.CANHUH )?"o":"_"}`);
+        txt.push(`----2:CANSEE :${on(player, d.CANSEE )?"o":"_"}`);
+        txt.push(`----4:ISBLIND:${on(player, d.ISBLIND)?"o":"_"}`);
+        txt.push(`---1-:ISLEVIT:${on(player, d.ISLEVIT)?"o":"_"}`);
+        txt.push(`--1--:ISHASTE:${on(player, d.ISHASTE)?"o":"_"}`);
+        txt.push(`--4--:ISHELD :${on(player, d.ISHELD )?"o":"_"}`);
+        txt.push(`-1---:ISHUH  :${on(player, d.ISHUH  )?"o":"_"}`);
+        txt.push(`-4---:ISHALU :${on(player, d.ISHALU )?"o":"_"}`);
+        txt.push(`1----:SEEMONS:${on(player, d.SEEMONST)?"o":"_"}`);
+        txt.push("");
+        txt.push(`creature flag :${tt(ml)}`);
+        txt.push(`-----4:ISBLIND:${tf(ml,d.ISBLIND)}`);
+        txt.push(`----1-:ISCANC :${tf(ml,d.ISCANC )}`);
+        txt.push(`----4-:ISGREED:${tf(ml,d.ISGREED)}`);
+        txt.push(`---1--:ISHASTE:${tf(ml,d.ISHASTE)}`);
+        txt.push(`---4--:ISHELD :${tf(ml,d.ISHELD )}`);
+        txt.push(`--1---:ISHUH  :${tf(ml,d.ISHUH  )}`);
+        txt.push(`--2---:ISINVIS:${tf(ml,d.ISINVIS)}`);
+        txt.push(`--4---:ISMEAN :${tf(ml,d.ISMEAN )}`);
+        txt.push(`-1----:ISREGEN:${tf(ml,d.ISREGEN)}`);
+        txt.push(`-2----:ISRUN  :${tf(ml,d.ISRUN  )}`);
+        txt.push(`-4----:ISFLY  :${tf(ml,d.ISFLY  )}`);
+        txt.push(`1-----:ISSLOW :${tf(ml,d.ISSLOW )}`);
+
+        const sline = line+2;//r.mobs.length +2;
 
         for (let i in txt)
-            g.console[4].mvprintw(txt[i], 0, sline+Number(i));
+            g.console[d.DSP_MOBLIST].mvprintw(txt[i], 0, sline+Number(i));
     }
 
     //debug
@@ -151,7 +204,7 @@ function debug(r, g){
         let ws = this.placesCheck();
 
         for (let i in ws){
-            g.console[0].mvprintw(ws[i], 0, i);
+            g.console[d.DSP_MAIN].mvprintw(ws[i], 0, i);
         }
         r.dungeon.passf.add_pass();
     }
