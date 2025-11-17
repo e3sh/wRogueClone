@@ -45,8 +45,9 @@ const w = [
     p + "rogueDefines.js",
     p + "rogueTypes.js",
     p + "globalvInit.js",
-    p + "rogueMessage.js",
- ];
+    p + "rogueMessage_org.js",
+    p + "rogueMessage_jp.js",
+];
 
 for (let i in w) {
     document.write(`<script type="text/javascript" src="${w[i]}"></script>`);

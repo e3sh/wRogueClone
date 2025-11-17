@@ -175,7 +175,7 @@ function ItemManager(r){
     this.init_names = function(){
 
         //const ga = "αβγδεζηθικλμνξοπρσΣτυφχΨωΔθ";
-        const kga = "ｱﾋｾﾃｴﾌｼﾁｲｷｹﾙﾑﾇｵｻｸﾛｽﾀｳﾊﾜｨﾔﾝｶｺｿﾂ";
+        //const kga = "ｱﾋｾﾃｴﾌｼﾁｲｷｹﾙﾑﾇｵｻｸﾛｽﾀｳﾊﾜｨﾔﾝｶｺｿﾂ";
 
         const MAXNAME = 26; /* Max number of characters in a name */       
         let nsyl;
@@ -185,30 +185,25 @@ function ItemManager(r){
         for (let i = 0; i < d.MAXSCROLLS; i++)
         {
             let prbuf = "";
+            let bufal = "";
+
             nwords = r.rnd(3) + 2;
             while (nwords--)
             {
                 nsyl = r.rnd(3) + 1;
+
                 while (nsyl--)
                 {
-                    sp = sylls[r.rnd(sylls.length)];
-                    if (prbuf.length + sp.length < MAXNAME) prbuf += sp + " ";
+                    let num = r.rnd(sylls.length);
+                    sp = sylls[num];
+                    if (prbuf.length + sp.length < MAXNAME) {
+                        prbuf += sp + " ";
+                        bufal += ms.SYLLS[num] + " ";// + (r.rnd(2)==0)?" ":"";
+                    }
                 }
             }
             s_names[i] = prbuf;
-
-            let wbuf = "";
-            for (let i=0; i<prbuf.length; i++){
-                let num = prbuf.charCodeAt(i) - "a".charCodeAt(0);
-                if (num <0){
-                    wbuf += " ";//ga.substring(num,num+1);
-                    i++;
-                } else {
-                    wbuf += kga.substring(num,num+1);
-                    //i++;
-                }
-            }
-            s_names_alias[i] = (ms.INITCOLOR)?wbuf.substring(0,wbuf.length-1):prbuf;//wbuf.substring(0,wbuf.length-1);//prbuf;
+            s_names_alias[i] = bufal;//wbuf.substring(0,wbuf.length-1);//prbuf;
             //console.log(prbuf);
             //console.log(wbuf);
         }

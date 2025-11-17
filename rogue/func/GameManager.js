@@ -23,7 +23,8 @@ function GameManager(g, LANG){
     const v = {}; //new rogueGlobals();
     const t = new rogueTypes();
 
-    const ms = new rogueMessages(LANG);
+
+    const ms = (LANG == 'jp')? rogueMessages_jp(): rogueMessages_org();
 
     this.define = d;
     this.func   = f;

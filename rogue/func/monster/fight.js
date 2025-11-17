@@ -562,12 +562,11 @@ function battle(r){
 		if (r.player.to_death)
 			return;
 		if (weap.o_type == d.WEAPON)
-			r.UI.addmsg(ms.THUNK_1(weap_info[weap.o_which].oi_name));
+			r.UI.addmsg(ms.THUNK_1(weap_info[weap.o_which].oi_name, mname));
 		else
-			r.UI.addmsg(ms.THUNK_2);
-		r.UI.addmsg(ms.THUNK_3(mname));
+			r.UI.addmsg(ms.THUNK_2(mname));
 		if (!noend)
-			r.UI.msg(ms.THUNK_4);
+			r.UI.msg(ms.THUNK_3);
 	}
 
 	/*
