@@ -79,24 +79,25 @@ function debug(r, g){
 
         let fcheck_ml = [];
 
+        const col2 =(n)=>{const str = "  " + n; return str.slice(str.length-2); };
+
         //console.log(locount);
         g.console[d.DSP_MOBLIST].clear();
         for (let i in r.mobs){
-            const mc = r.mobs[i];
-            const str = "  " + mc.id
-            const state_i = str.slice(str.length-2);
+            let mc = r.mobs[i];
+            const state_i = col2(mc.id);//str.slice(str.length-2);
             const state_e = mc.enable   ?".":"/";
             const st_tt   = (mc.t_type != null) ?mc.t_type:"";
             const st_ot   = (mc.o_type != null) ?mc.o_type:"";
-            const st_opx  = (Boolean(mc.o_pos.x))?mc.o_pos.x:"";
-            const st_opy  = (Boolean(mc.o_pos.y))?mc.o_pos.y:"";
-            const st_tpx  = (Boolean(mc.t_pos.x))?mc.t_pos.x:"";
-            const st_tpy  = (Boolean(mc.t_pos.y))?mc.t_pos.y:"";
+            const st_opx  = (Boolean(mc.o_pos.x))?col2(mc.o_pos.x):"";
+            const st_opy  = (Boolean(mc.o_pos.y))?col2(mc.o_pos.y):"";
+            const st_tpx  = (Boolean(mc.t_pos.x))?col2(mc.t_pos.x):"";
+            const st_tpy  = (Boolean(mc.t_pos.y))?col2(mc.t_pos.y):"";
 
             let txt = "";
             switch(mc.location){
                 case d.PLOBJ:
-                    txt = `Player[${st_tpx},${st_tpy}] hp:${mc.t_stats.s_hpt}/${mc.t_stats.s_maxhp} `;
+                    txt = `Play [${st_tpx},${st_tpy}] hp:${mc.t_stats.s_hpt}/${mc.t_stats.s_maxhp} `;
                     sw = true;
                     break;
                 case d.FREE:
@@ -105,7 +106,7 @@ function debug(r, g){
                     sw = false;
                     break;
                 case d.MLIST:
-                    let fs = `00000${Number(mc.t_flags).toString(8)}`;
+                    let fs = `.....${Number(mc.t_flags).toString(8)}`;
                     let wst = fs.substring(fs.length-6,fs.length);
 
                     txt = `Mon [${st_tpx},${st_tpy}]${(Boolean(mc.t_dest.x))?"*":" "}hp:${mc.t_stats.s_hpt} ${wst}`;
@@ -142,7 +143,7 @@ function debug(r, g){
             count++;
         }
         sw = true;//!sw
-        g.console[d.DSP_MOBLIST].mvprintw(`Free${free}:Mon${mon}:Lv${lvlo}:Pack${ppl}-${ppm}(${count})`, 0, 0);
+        g.console[d.DSP_MOBLIST].mvprintw(`Fre${free}:Mon${mon}:Lvo${lvlo}:Pac${ppl}-${ppm}(${count})`, 0, 0);
 
         sysstate(line, fcheck_ml);
     }
@@ -157,16 +158,17 @@ function debug(r, g){
 
         let txt = [];
 
-        txt.push(`no_command:${r.player.get_no_command()}`);
-        txt.push(`food_left :${r.player.get_food_left()}`);
+        txt.push(`.${!r.wizard?"standard":"wizard"}`);
+        txt.push(`.no_command  :${r.player.get_no_command()}`);
+        txt.push(`.food_left   :${r.player.get_food_left()}`);
         //txt.push(`to_death:${r.player.to_death?"o":"_"}`);
 
         let tt = (m)=>{let s =""; for (let i in m){s+= m[i].t_type}; return s; };
         let tf = (m, type)=>{let s =""; for (let i in m){s+= on(m[i], type)?"o":"_"}; return s; };
 
 
-        let fs = `0000${Number(player.t_flags).toString(8)}`;
-        txt.push(`${fs.substring(fs.length-5,fs.length)}:t_flag:`);
+        let fs = `....${Number(player.t_flags).toString(8)}`;
+        txt.push(`player t_flag:${fs.substring(fs.length-5,fs.length)}`);
 
         txt.push(`----1:CANHUH :${on(player, d.CANHUH )?"o":"_"}`);
         txt.push(`----2:CANSEE :${on(player, d.CANSEE )?"o":"_"}`);
@@ -192,7 +194,7 @@ function debug(r, g){
         txt.push(`-4----:ISFLY  :${tf(ml,d.ISFLY  )}`);
         txt.push(`1-----:ISSLOW :${tf(ml,d.ISSLOW )}`);
 
-        const sline = line+2;//r.mobs.length +2;
+        const sline = line+1;//r.mobs.length +2;
 
         for (let i in txt)
             g.console[d.DSP_MOBLIST].mvprintw(txt[i], 0, sline+Number(i));
