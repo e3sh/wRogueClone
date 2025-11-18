@@ -499,7 +499,7 @@ function DungeonMap(r){
         if (levit_check())
             return;
         if (this.chat(hero.y, hero.x) != d.STAIRS)
-            r.UI.msg("I see no way down");
+            r.UI.msg(ms.D_LEVEL);
         else
         {
             level++;
@@ -531,12 +531,12 @@ function DungeonMap(r){
                     return;
                 }
                 r.dungeon.new_level();
-                r.UI.msg("you feel a wrenching sensation in your gut");
+                r.UI.msg(ms.U_LEVEL_1);
             }
             else
-                r.UI.msg("your way is magically blocked");
+                r.UI.msg(ms.U_LEVEL_2);
         else
-            r.UI.msg("I see no way up");
+            r.UI.msg(ms.U_LEVEL_3);
     }
 
     /*

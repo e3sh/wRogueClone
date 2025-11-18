@@ -247,6 +247,12 @@ function rogueMessages_org(){
 
         CMDMAIN: "you can move again",
 
+        //dungeon
+        D_LEVEL:"I see no way down",
+        U_LEVEL_1:"you feel a wrenching sensation in your gut",
+        U_LEVEL_2:"your way is magically blocked",
+        U_LEVEL_3:"I see no way up",
+
         //weapon
         FALL:(name)=>{return `the ${name} vanishes as it hits the ground`},
 

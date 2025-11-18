@@ -1,0 +1,450 @@
+<html>
+<head>
+<meta name="Content-Style" content="text/css">
+<title></title>
+</head>
+<body>
+
+<h1 align=center><b>wRogueClone説明書<br> (Guide to the Dungeons of Doom)
+	rogue5.4.4 Base jsclone</b></h1>
+
+<h2 align="justify"><b>1. 目的</b></h2>
+<p align="justify">できるだけ多くの宝物を集め、The Amulet of Yender を見つけ、運命のダンジョンから生きて出ること。</p>
+
+<h2 align="justify"><b>2. 画面説明</b></h2>
+<div align="center">
+
+<table><tr><td>
+<pre>
+____________________________________________________________
+
+
+                        ------------
+                        |..........+
+                        |..@....]..|
+                        |....B.....|
+                        |..........|
+                        -----+------
+
+
+
+Level: 1  Gold: 0      Hp: 12(12)  Str: 16(16)  Arm: 4  Exp: 1/0
+
+                        　　図1
+____________________________________________________________
+</pre>
+</td></tr></table>
+</div>
+<h3 align="justify"><b>2.1. ボトムライン</b></h3>
+<p align="justify">画面の下部にはいくつかある現在の状況を描写する情報の断片 
+	。これらのものが何かについて意味するかを説明します：<br>
+</p>
+<table border="0" width="100%" id="table1" cellspacing="3" cellpadding="3">
+	<tr>
+		<td width="7%" valign="top">
+		<p align="justify">Level</td>
+		<td>
+		<p align="justify">この数字はダンジョンに入った深さを示しています。1から始まりダンジョンの奥ほど数字が大きくなります。</td>
+	</tr>
+	<tr>
+		<td valign="top">
+		<p align="justify">Gold</td>
+		<td>
+		<p align="justify">今までにあなたが見つけて持ち歩いた金貨の数</td>
+	</tr>
+	<tr>
+		<td valign="top">
+		<p align="justify">Hp</td>
+		<td>
+		<p align="justify">現在の体力値と最大体力値です。 体力値は受けることができるダメージ量を示します。休むことでを回復できます。括弧内の数字はあなたの最大体力値です。</p>
+
+		</td>
+	</tr>
+	<tr>
+		<td valign="top">
+		<p align="justify">Str</td>
+		<td>
+
+<p align="justify">今の腕力と過去最大の腕力。これは3以上31以下のいずれかの整数で数字が高いほど強いです。括弧内の数字はこれまでに達成した最大の腕力。
+
+</p>
+
+		</td>
+	</tr>
+	<tr>
+		<td valign="top">
+		<p align="justify">Arm</td>
+		<td>
+		<p align="justify">今の防具の防護力。この数字は防具がどれだけ敵対的な生き物からの一撃を効果的に止めるかを示しています。この数値が高いほど防具の効果は高まります。</p>
+
+		</td>
+	</tr>
+	<tr>
+		<td valign="top">
+		<p align="justify">Exp</td>
+		<td>
+		<p align="justify">この2つの数字が経験値レベルと経験値の現在の状況を示しています。あなたが物事をする中で経験値が得られます。ある経験値の合計で経験値レベルが上がります。レベルが上がるほど、より強く戦えるようになります。
+
+</p>
+
+		</td>
+	</tr>
+</table>
+
+<h3 align="justify"><b>2.3. 画面の残りの部分</b></h3>
+<p align="justify">画面の残りの部分は これまでに探索してきたレベルです。各記号は 画面が何かを送信します。以下は さまざまな記号は以下の意味を持ちます:</p>
+<table border="0" width="100%" id="table2" cellspacing="3" cellpadding="3">
+	<tr>
+		<td width="7%" align="center" valign="top">
+		<p align="justify">@</td>
+		<td>
+		<p align="justify">このシンボルは冒険者であるあなたを表しています。</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">- |</td>
+		<td>
+		<p align="justify">これらのシンボルは部屋の壁を表しています。</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">+</td>
+		<td>
+		<p align="justify">部屋への出入りのドア。</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">.</td>
+		<td>
+		<p align="justify">部屋の床。</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">#</td>
+		<td>
+		<p align="justify">部屋の間の通路の床。</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">*</td>
+		<td>
+		<p align="justify">金の山か壺</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">)</td>
+		<td>
+		<p align="justify">何かの武器だ。</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">]</td>
+		<td>
+		<p align="justify">鎧の一部だ。</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">!</td>
+		<td>
+		<p align="justify">魔法の薬が入ったフラスコ。</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">?</td>
+		<td>
+		<p align="justify">紙切れ、たいていは魔法の巻物。</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">=</td>
+		<td>
+		<p align="justify">魔法の性質を持つ指輪</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">/</td>
+		<td>
+		<p align="justify">魔法の杖か錫杖</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">^</td>
+		<td>
+		<p align="justify">罠だ、これに気をつけろ。</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">%</td>
+		<td>
+		<p align="justify">他の階への階段</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">:</td>
+		<td>
+		<p align="justify">食べ物の一切れ。</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+		<p align="justify">A-Z</td>
+		<td>
+		<p align="justify">大文字は様々な 運命のダンジョンの住人たち。気をつけてください、彼らは意地悪で、 悪質。</td>
+	</tr>
+</table>
+
+<h2 align="justify"><b>3. Commands</b></h2>
+<div align="center">
+
+<table border="0" cellspacing="3" cellpadding="3" id="table3">
+	<tr>
+		<td align="left" valign="top">
+		テンキー[4] (GamePad:十字キー)&nbsp;</td>
+		<td align="justify">
+			<p align="justify">左に動け。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>テンキー[2] (GamePad:十字キー)</td>
+		<td align="justify">
+			<p align="justify">下に下がれ。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>テンキー[8] (GamePad:十字キー)</td>
+		<td align="justify">
+			<p align="justify">前に進め。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>テンキー[6] (GamePad:十字キー)</td>
+		<td align="justify">
+			<p align="justify">右に動け。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>テンキー[7] (GamePad:十字キー)</td>
+		<td align="justify">
+			<p align="justify">斜めに上に動いて左に動く。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>テンキー[9] (GamePad:十字キー)</td>
+		<td align="justify">
+			<p align="justify">斜め上に右に動く。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>テンキー[1] (GamePad:十字キー)</td>
+		<td align="justify">
+			<p align="justify">斜めに下に動いて左に動かします。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>テンキー[3] (GamePad:十字キー)</td>
+		<td align="justify">
+			<p align="justify">斜めに下に、そして右に動く。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p> [I] (GamePad:B)</td>
+		<td align="justify">
+			<p>持ちものをリストアップして表示する。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>テンキー[+][-] [↑][↓]  (GamePad:RB/RT/LB,十字キー上下) </td>
+		<td align="justify">
+			<p>インベントリ選択. 持ち物から使用するアイテムを選択する。持ち物の中のから単一のアイテムを選択する。</td>
+	<tr>
+		<td align="left" valign="top">
+		<p>選択したアイテム: テンキー[0] (GamePad:X)</td>
+		<td align="justify">
+		<p align="justify">選択している杖や錫杖を向いている方向に向けて発射します。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p align="justify">選択しているポーションの一つを飲み干します。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p align="justify">選択している巻物の一つを読みます。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p align="justify">持ち物から選択している食べ物を食べます。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p align="justify">選択している武器をバッグから取り出して持ち歩きます。 戦闘中は、現在使っているもの(もしあれば)を交換します。</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p align="justify">選択している鎧を着る。一度に着用できるのは一着の鎧だけです。これ 余計な時間がかかります</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p align="justify">選択している鎧を脱ぐ。呪われた鎧は脱ぐことはできません。
+</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p align="justify">選択している指輪をはめる。同時に2個の指輪しかつけられません(手にそれぞれ1つずつ)。
+</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p align="justify">選択している指輪を外す。
+
+		</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>選択したアイテム: [D](GamePad:Y)</td>
+		<td align="justify">
+		<p align="justify">選択している武器を向いている方向に投げる。矢の場合は弓を装備して矢を投げることで攻撃。
+</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p align="justify">選択している物を落とす。リュックから何か取り出して床に置く。各スペースに一つのオブジェクトしか占められません。足元にものがある場合や呪われた物の場合は落とすことはできません。
+</td>
+	</tr>
+<tr>
+		<td align="left" valign="top">
+		<p>テンキー[5] (GamePad:A)</td>
+		<td align="justify">
+		<p align="justify">隣接している罠や秘密の扉があるかどうかを探します。そこには たとえ何かあっても、見つけられない可能性が高いです。 なので、何か見つかるまでしばらく探す必要があるかもしれません。
+</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p>休む。これは「何もしない」コマンドです。治癒などで待つのに良い方法です。
+</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p>階段を降りて次の階へ。当然のことながら、これはあなたが 階段の上に立っている必要があります。
+</td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+		<p>-</td>
+		<td align="justify">
+		<p>階段を上って上の階へ行く。これはThe Amulet of Yenderが手元にある必要があります。
+</table>
+
+</div>
+
+<h2 align="justify"><b>4. 部屋</b></h2>
+<p align="justify">ダンジョン内の部屋は照明がついているか、 暗い。 もし明るい部屋に入ると、部屋全体が入った瞬間に画面に描かれます。もし暗い部屋に入ると、探索中だけ表示されます。 部屋を出ると、部屋の中のモンスターはすべて画面から消されます。暗闇の中で見えるのは周囲のすべての方向に一つの空間だけです。廊下は常に 暗い。</p>
+
+<h2 align="justify"><b>5. 戦闘</b></h2>
+<p align="justify">モンスターを見つけて戦いたいなら、ただ突っ込んでみるだけ。多くの場合、あなたが見つけたモンスターは攻撃しない限り、自分のことに集中しています。 そうです 多くの場合、慎重さが最良の勇気となります。
+</p>
+
+<h2 align="justify"><b>6. 見つけられる物</b></h2>
+<p align="justify">ダンジョンで何かを見つけると、その物を拾いたくなるのはよくあることです。 これは ローグではオブジェクトの上を歩くことで達成できます。もしあなたが持ちすぎているなら、プログラムが教えてくれて、そのオブジェクトを拾い上げません。そうでなければ、あなたのパックに追加して、今拾ったものを教えてくれます。
+
+</p>
+<p align="justify">防具や武器のような一部のオブジェクトは 詳細なしの名称で表示されます。巻物や薬のようなものは、 種類によって異なるラベルが付けられています。その際 同じラベルを持つ場合は、同じ種類のものです。ただし、そのラベルはゲームごとに変更されます。
+</p>
+
+<p align="justify">これらのラベル付けされたオブジェクトのいずれかを使うと、 効果が明らかであれば、オブジェクトが目的が識別され状態になります。その効果があまり明確でなければ、識別されません。
+</p>
+
+<h3 align="justify"><b>6.1. 武器</b></h3>
+<p align="justify">矢のように、いくつかの武器は束で存在します。 しかし、ほとんどはひとつずつ手に入ります。武器を使うには、 装備をする必要があります。弓から矢を放つには、まず 弓を装備してから矢を投げます。武器は同時に一つしか装備できません。 使っている武器が呪われている場合は武器が変更できません。</p>
+
+<h3 align="justify"><b>6.2. アーマー</b></h3>
+<p align="justify">ダンジョンには様々な種類の鎧が転がっています。その一部は 魔法にかけられているもの、呪われているもの、普通のものもいます。異なる防具タイプには 異なる装甲の防護力。装甲の防護力が高いほど、その防具は モンスター。以下は様々な防具の種類のリストです。 通常の装甲防護:
+
+</p>
+<div align="center">
+	<table border="1" cellspacing="3" cellpadding="3" id="table4" style="border-collapse: collapse">
+		<tr>
+			<th><i>種類</i></th>
+			<th><i>防御力</i></th>
+		</tr>
+		<tr>
+			<td>None</td>
+			<td align="center">0</td>
+		</tr>
+		<tr>
+			<td>かわのよろい</td>
+			<td align="center">2</td>
+		</tr>
+		<tr>
+			<td>鋲付きのかわよろい / リングメール</td>
+			<td align="center">3</td>
+		</tr>
+		<tr>
+			<td>スケイルメール</td>
+			<td align="center">4</td>
+		</tr>
+		<tr>
+			<td>くさりかたびら&nbsp; </td>
+			<td align="center">5</td>
+		</tr>
+		<tr>
+			<td>バンデットメイル / スプリントメイル</td>
+			<td align="center">6</td>
+		</tr>
+		<tr>
+			<td>プレートメイル</td>
+			<td align="center">7</td>
+		</tr>
+	</table>
+	<p>&nbsp;</div>
+<p align="justify">
+もし鎧の一部がエンチャントされていれば、 装甲の防護力は通常より高くなります。 呪われている場合、その鎧の防護力は低く、着用すると脱ぐことができなくなります。
+</p>
+
+<h3 align="justify">
+<b>6.3. 巻物</b></h3>
+<p align="justify">巻物には未知の言語で書かれたタイトルが付いています。巻物を読んだ後、 あなたの手元から消えてしまいます。
+</p>
+
+<h3 align="justify">
+<b>6.4. ポーション</b>
+</h3>
+<p align="justify">ポーションは フラスコの中の液体。飲み終わると消えます。
+</p>
+
+<h3 align="justify"><b>6.5. 杖と錫杖</b></h3>
+<p align="justify">杖や錫杖も同じような効果を発揮します。杖は木材の種類で 錫杖は 金属や骨の種類で識別されます。いくつかの杖・錫杖は向いている方向に効果が発生します。 杖には複数の魔法チャージが搭載されており、その数は ランダムで、使い切ると杖は木製か金属製かのただの部品に過ぎません。
+</p>
+
+<h3 align="justify"><b>6.6. リング</b></h3>
+
+<p align="justify">リングはとても便利なアイテムです。なぜなら、 通常は儚い魔法とは違い、比較的永続的な効果を発揮します。もちろん、悪いことも リングはより強力です。ほとんどのリングはあなたに 食べ物をより早く消化させます。 指輪は石のセッティングによって区別されます。
+</p>
+
+<h3 align="justify"><b>6.7. 食料
+</b></h3>
+<p align="justify">食べ物はあなたを支えるために必要です。もしあなたが 長く食べないと気を失い、最終的には 飢え死にします。</p>
+<hr>
+Base: Rogue 5.4.4 /   <a href="originalLICENSE.txt">Original LICENSE</a>
+</body>
+</html>

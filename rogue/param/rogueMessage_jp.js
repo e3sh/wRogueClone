@@ -244,6 +244,12 @@ function rogueMessages_jp(){
         
         CMDMAIN: "動けるようになった",
 
+        //dungeon
+        D_LEVEL: "降りる方法が見当たらない",
+        U_LEVEL_1: "胃のあたりがぎゅっと締め付けられるような感覚を覚える",
+        U_LEVEL_2: "あなたの行く道は魔法で塞がれている",
+        U_LEVEL_3: "登る方法は見当たらない",
+
         //weapon
         FALL:(name)=>{return `${name} は地面にぶつかると消えた`},
 
