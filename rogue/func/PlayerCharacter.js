@@ -486,14 +486,14 @@ function PlayerCharacter(r){
             if (r.player.see_monst(tp))
             {
                 if (tp.t_type == 'X' && tp.t_disguise != 'X')
-                    r.UI.addch(rnd_thing());
+                    r.UI.addch(r.rnd_thing());
                 else
-                    r.UI.addch(String.fromCharCode(rnd(26) + 'A'.charCodeAt(0)));
+                    r.UI.addch(String.fromCharCode(r.rnd(26) + 'A'.charCodeAt(0)));
             }
             else if (seemonst)
             {
                 //standout();
-                r.UI.addch(String.fromCharCode(rnd(26) + 'A'.charCodeAt(0)));
+                r.UI.addch(String.fromCharCode(r.rnd(26) + 'A'.charCodeAt(0)));
                 //standend();
             }
         }

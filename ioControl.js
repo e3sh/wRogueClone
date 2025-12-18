@@ -27,7 +27,7 @@ class ioControl extends GameTask {
 		*/
 		const cp = [
 			//fontID,prompt	,charw, linew, location x,y,bgcolor, useutf
-			[80, 24,"std"	,PTUB  ,8,16,160,  0,null], //0:printw, addch, move, clear
+			[80, 24,"stdbg"	,PTUB  ,8,16,160,  0,null], //0:printw, addch, move, clear
 			[80,  1,"std"	,false ,8,16,160,368,"rgb(128  0   0)"], //1:statusbar
 			[40, 16,"std_l"	,false ,8,16,640,384,"rgb( 64 64  64)",true], //2:equip/select
 			[74, 36,"std_l"	,PTMSG ,8,16, 48,384,"rgb(  0  0 100)",true],	//3:msg
