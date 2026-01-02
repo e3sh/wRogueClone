@@ -611,10 +611,11 @@ function UIManager(r, g){
         let found;	//bool found;
 
         const foundone =()=>{
-            found = d.TRUE;
+            found = true;//d.TRUE;
             fp |= d.F_REAL;
             count = false;
             running = false;
+            r.UI.setEffect("find",{x:x,y:y} ,{x: x, y: y-1},90);
         }
 
         ey = hero.y + 1;
@@ -639,8 +640,10 @@ function UIManager(r, g){
                             break;
                         r.dungeon.places[y][x].p_ch = d.DOOR;
                         r.UI.msg("a secret door");
+                        r.UI.setEffect("door",{x:x,y:y} ,{x: x, y: y-1},90);
+
                 //foundone:
-                        found = d.TRUE;
+                        found = true;// d.TRUE;
                         fp |= d.F_REAL;
                         count = false;
                         running = false;

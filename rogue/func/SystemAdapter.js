@@ -178,7 +178,7 @@ function debug(r, g){
         txt.push(`--4--:ISHELD :${on(player, d.ISHELD )?"o":"_"}`);
         txt.push(`-1---:ISHUH  :${on(player, d.ISHUH  )?"o":"_"}`);
         txt.push(`-4---:ISHALU :${on(player, d.ISHALU )?"o":"_"}`);
-        txt.push(`2----:?      :${on(player, d.ISRUN  )?"o":"_"}`);
+        //txt.push(`2----:?      :${on(player, d.ISRUN  )?"o":"_"}`);
         txt.push(`4----:SEEMONS:${on(player, d.SEEMONST)?"o":"_"}`);
         txt.push("");
         txt.push(`creature flag :${tt(ml)}`);

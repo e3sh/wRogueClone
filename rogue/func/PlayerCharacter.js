@@ -1259,7 +1259,7 @@ function PlayerCharacter(r){
     *	Take the hero down off her acid trip.
     */
     //void
-    this.come_down = function()
+    this.come_down = ()=>
     {
         const player = r.player.player
 

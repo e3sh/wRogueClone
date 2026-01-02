@@ -285,7 +285,7 @@ function passages_f(r, dg){
 
         pp = dg.places[cp.y][cp.x];//INDEX(cp.y, cp.x);
         pp.p_flags |= d.F_PASS;
-        if (r.rnd(10) + 1 < level && r.rnd(40) == 0)
+        if (r.rnd(10) + 1 < dg.level && r.rnd(40) == 0)
             pp.p_flags &= ~d.F_REAL;
         else
             pp.p_ch = d.PASSAGE;
@@ -308,7 +308,7 @@ function passages_f(r, dg){
         return;
 
         pp = dg.places[cp.y][cp.x];//INDEX(cp.y, cp.x);
-        if (r.rnd(10) + 1 < level && r.rnd(5) == 0)
+        if (r.rnd(10) + 1 < dg.level && r.rnd(5) == 0)
         {
             if (cp.y == rm.r_pos.y || cp.y == rm.r_pos.y + rm.r_max.y - 1)
                 pp.p_ch = '-';

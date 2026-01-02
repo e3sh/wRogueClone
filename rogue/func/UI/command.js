@@ -262,6 +262,9 @@ function command(r, g)
 
             //} else {
             //}
+            if (ki.includes("KeyH")){
+                window.open('rogue_manual.html', '_blank');
+            }
             //set delta
             for (let i in ki)
                 if (ki[i].includes("Numpad")){

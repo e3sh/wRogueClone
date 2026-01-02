@@ -26,30 +26,14 @@
     layer-0
     </canvas>
     <div id="memo">
-        <b>wRogueClone</b> (5.4base javascript porting study)
+        <b>wRogueClone</b> (5.4base)
         (<input type="checkbox" id="lang" checked = "true">:Lang:jp)     
         <br>
+        <input type="button" id="btn" value="GAME START" onclick="page_start()">
+        <small> (ゲーム中[H]キーで説明書を別Tabに表示)</small><br>
         <br>
+        <hr>
         5ch-dnc-th16 2025.11.01 >456<br>
-        <hr>
-        <ul><small><a href="rogue_manual.html">wRogueClone説明書</a></small></ul>
-        <ul>操作 ([]はキーボード/（）はGamePad(X-input))
-        <li>　移動（各方向：  テンキー[1][2][3][4][6][7][8][9] (GamePad:十字キー)</li>
-        <li>　実行操作（階段、調べる)：  テンキー[5] (GamePad:A)</li>
-        <li>　インベントリ表示：  [I] (GamePad:B)</li>
-        <li>　アイテム選択： テンキー[+][-] or [↑][↓] (GamePad:RB/RT/LB,十字キー上下)</li>
-        <li>　アイテム使用/装備： テンキー[0] (GamePad:X)</li>
-        <li>　アイテムを置く/武器投擲： [D] (GamePad:Y)</li>
-        <li>　近接攻撃： 敵に向かって移動</li>
-        <li>　全画面表示：    [Home]</li>
-        <li>　Push return key：[Enter] (GamePad:Start)</li>
-        <input type="button" id="btn" value="GAME START" onclick="page_start()">     
-        <hr>
-        <li>　(level毎にautosave(一時保存)：エラー停止時の復帰対応/Gameoverで消去)</li>
-        <li>　[PageDown] backlog表示(一画面分) [PageUp] 通常表示</li>
-        <li>　[End] DEBUG-View:Player&monsterStatus/RunningStatusLog</li>
-        <hr>
-        </ul>
     </div>
 </body>
 </html>
