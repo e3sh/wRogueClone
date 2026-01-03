@@ -8,7 +8,6 @@
 /**
  * 
  * @param {GameCore} g GameCoreインスタンス
- * @param {String} LANG "jp" 日本語指定/　他 Original
  */
 function GameManager(g, LANG){
 
@@ -23,8 +22,11 @@ function GameManager(g, LANG){
     const v = {}; //new rogueGlobals();
     const t = new rogueTypes();
 
-
-    const ms = (LANG == 'jp')? rogueMessages_jp(): rogueMessages_org();
+    let lang;
+    if (Boolean(localStorage.getItem("rogue.lang"))){
+        lang = localStorage.getItem("rogue.lang");
+    }
+    const ms = (lang == 'jp')? rogueMessages_jp(): rogueMessages_org();
 
     this.define = d;
     this.func   = f;

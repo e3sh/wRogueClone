@@ -18,9 +18,9 @@ class sceneControl extends GameTask {
 			this.moveEffect = new moveEffect(g);
 			this.moveEffect.setDrawIndex(160, 0);
 
-			let mode = document.getElementById("lang").checked;
+			//let mode = document.getElementById("lang").checked;
 
-			const r = new GameManager(g ,mode? "jp":"en"); 
+			const r = new GameManager(g);// ,mode? "jp":"en"); 
 			g.rogue = r;
 
 			//roguemain(g);

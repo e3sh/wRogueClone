@@ -10,7 +10,20 @@
         function page_start(){
             document.getElementById("layer0").style.display = "";
             document.getElementById("memo").style.display = "none";
-            main();
+
+            let mode = document.getElementById("lang").checked;
+            localStorage.setItem("rogue.lang",mode? "jp":"en");
+            console.log("lang:",mode? "jp":"en");
+
+            let ver = document.getElementById("selver").value;
+            console.log("version:",ver);
+
+            if (ver === "544") {
+                main();
+            }else if (ver === "sr9") {
+                window.open(`https://e3sh.github.io/wRogueNine/rogue9${mode? "_jp":""}.html`);
+                window.close();
+            }
         }
         </script>
     <title>wRogueClone.js</title>
@@ -26,14 +39,19 @@
     layer-0
     </canvas>
     <div id="memo">
-        <b>wRogueClone</b> (5.4base)
+        <b>wRogueClone</b>
+        <select name="choice" id ="selver">
+        <option value="544" selected>rogue 5.4.4 base</option>
+        <option value="sr9">s-rogue 9.0 base</option>
+        </select>
         (<input type="checkbox" id="lang" checked = "true">:Lang:jp)     
+        <br>
         <br>
         <input type="button" id="btn" value="GAME START" onclick="page_start()">
         <small> (ゲーム中[H]キーで説明書を別Tabに表示)</small><br>
         <br>
         <hr>
-        5ch-dnc-th16 2025.11.01 >456<br>
+        5ch-dnc-th16 2025.11.01 >456 
     </div>
 </body>
 </html>
